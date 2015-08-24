@@ -249,9 +249,34 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLogout();
 
     }
-/*    public function it_should_rename_user(HttpClient $client)
-{
-}
+    public function it_should_rename_user(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
+
+        //Valid rename
+        $client->post('Users/Rename', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newUserName' => $newUserName,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $this->rename($repository, $newUserName);
+
+        //Unexpected response
+        $client->post('Users/Rename', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newUserName' => $newUserName,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        //Username taken
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(true);
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+
+        //Model doesn't exist
+        $this->Id = null;
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+    }
+/*
 public function it_should_set_email(HttpClient $client)
 {
 }
