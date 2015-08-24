@@ -1,0 +1,5 @@
+suites:
+    gizmoapi_suite:
+        namespace: Pisa\Api\Gizmo
+        psr4_prefix: Pisa\Api\Gizmo
+        src_path: src

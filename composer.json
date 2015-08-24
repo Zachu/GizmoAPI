@@ -1,0 +1,35 @@
+{
+    "name": "pisa/gizmo-api",
+    "description": "Gizmo API wrapper for PHP",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jani Korhonen",
+            "email": "zachu@thegroup.fi"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pisa\\Api\\Gizmo\\": "src/",
+            "spec\\Pisa\\Api\\Gizmo\\": "spec/"
+        }
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~2.0",
+        "laracasts/testdummy": "~2.0"
+    },
+
+    "repositories": [
+        {
+            "url": "http://git.zachu.fi:8081/Zachu/zioc.git",
+            "type": "git"
+        }
+    ],
+
+    "require": {
+        "guzzlehttp/guzzle": "~6.0",
+        "guzzlehttp/psr7": "dev-master",
+	"psr/log": "1.0.*",
+        "zachu/zioc": "*@dev"
+    }
+}
