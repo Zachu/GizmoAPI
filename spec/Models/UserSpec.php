@@ -90,7 +90,7 @@ class UserSpec extends ObjectBehavior
         $client->post('Users/SetUserEmail', [
             'userId' => $this->getPrimaryKeyValue(),
             'newEmail' => $this->Email,
-        ])->shouldBeCalled()->willReturn(null);
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
         $this->save($repository);
 
@@ -266,8 +266,8 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
-
         $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+
         //Username taken
         $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(true);
         $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
@@ -276,14 +276,52 @@ class UserSpec extends ObjectBehavior
         $this->Id = null;
         $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
     }
-/*
-public function it_should_set_email(HttpClient $client)
-{
-}
-public function it_should_set_password(HttpClient $client)
+
+    public function it_should_set_email(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newEmail = 'test@example.com';
+        $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
+
+        //Valid email change
+        $client->post('Users/SetUserEmail', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newEmail' => $newEmail,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $this->setEmail($repository, $newEmail)->shouldReturn(true);
+    }
+
+    public function it_should_throw_on_set_email_when_got_unexpected_reply(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newEmail = 'test@example.com';
+        $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
+
+        $client->post('Users/SetUserEmail', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newEmail' => $newEmail,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+
+        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+    }
+
+    public function it_should_throw_on_set_email_if_email_is_taken(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newEmail = 'test@example.com';
+        $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(true);
+        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+    }
+
+    public function it_should_throw_on_set_email_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $this->beConstructedWith($client, []);
+        $newEmail = 'test@example.com';
+        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+    }
+
+/*public function it_should_set_password(HttpClient $client)
 {
 }
 public function it_should_set_user_group(HttpClient $client)
 {
 }*/
+
 }

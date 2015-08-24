@@ -289,12 +289,12 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 'newEmail' => $newEmail,
             ]);
 
-            if (!empty($result)) {
-                throw new Exception("Didn't expect any results, got " . gettype($result));
+            if ($result->getStatusCode() === 204) {
+                $this->Email = $newEmail;
+                return true;
+            } else {
+                throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
             }
-
-            $this->Email = $newEmail;
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to set user email: " . $e->getMessage());
         }
