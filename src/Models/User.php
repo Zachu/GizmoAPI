@@ -307,16 +307,16 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 throw new Exception("User doesn't exist");
             }
 
-            $result = $this->client->request('Users/SetUserPassword', [
-                'userId' => $this->getPrimaryKey(),
+            $result = $this->client->post('Users/SetUserPassword', [
+                'userId' => $this->getPrimaryKeyValue(),
                 'newPassword' => $newPassword,
-            ], 'POST');
+            ]);
 
-            if (!empty($result)) {
-                throw new Exception("Didn't expect any results, got " . gettype($result));
+            if ($result->getStatusCode() === 204) {
+                return true;
+            } else {
+                throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
             }
-
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to set user password: " . $e->getMessage());
         }

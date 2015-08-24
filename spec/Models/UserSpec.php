@@ -317,9 +317,37 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
     }
 
-/*public function it_should_set_password(HttpClient $client)
-{
-}
+    public function it_should_set_password(HttpClient $client)
+    {
+        $newPassword = 'newPassword';
+        $client->post('Users/SetUserPassword', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newPassword' => $newPassword,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+
+        $this->setPassword($newPassword)->shouldReturn(true);
+    }
+
+    public function it_should_throw_on_set_password_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $newPassword = 'newPassword';
+        $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
+    }
+
+    public function it_should_throw_on_set_password_when_got_unexpected_reply(HttpClient $client)
+    {
+        $newPassword = 'newPassword';
+
+        $client->post('Users/SetUserPassword', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newPassword' => $newPassword,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+
+        $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
+    }
+
+/*
 public function it_should_set_user_group(HttpClient $client)
 {
 }*/
