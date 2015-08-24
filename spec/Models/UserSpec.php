@@ -74,7 +74,7 @@ class UserSpec extends ObjectBehavior
         $client->post('Users/SetUserGroup', [
             'userId' => $this->getPrimaryKey(),
             'newUserGroup' => $this->GroupId,
-        ])->shouldBeCalled()->willReturn(null);
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
 
         $this->save();
@@ -347,9 +347,34 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
     }
 
-/*
-public function it_should_set_user_group(HttpClient $client)
-{
-}*/
+    public function it_should_set_user_group(HttpClient $client)
+    {
+        $newUserGroup = 2;
+        $client->post('Users/SetUserGroup', [
+            'userId' => $this->getPrimaryKey(),
+            'newUserGroup' => $newUserGroup,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
+        $this->setUserGroup($newUserGroup)->shouldReturn(true);
+        $this->GroupId->shouldBe($newUserGroup);
+    }
+
+    public function it_should_throw_on_set_user_group_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $newUserGroup = 2;
+        $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+    }
+
+    public function it_should_throw_on_set_user_group_when_got_unexpected_reply(HttpClient $client)
+    {
+        $newUserGroup = 2;
+
+        $client->post('Users/SetUserGroup', [
+            'userId' => $this->getPrimaryKey(),
+            'newUserGroup' => $newUserGroup,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+
+        $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+    }
 }

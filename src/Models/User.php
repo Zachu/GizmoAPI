@@ -336,12 +336,12 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 'newUserGroup' => $groupId,
             ]);
 
-            if (!empty($result)) {
-                throw new Exception("Didn't expect any results, got " . gettype($result));
+            if ($result->getStatusCode() === 204) {
+                $this->GroupId = $groupId;
+                return true;
+            } else {
+                throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
             }
-
-            $this->GroupId = $groupId;
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to set user group: " . $e->getMessage());
         }
