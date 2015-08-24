@@ -260,6 +260,7 @@ class UserSpec extends ObjectBehavior
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $this->rename($repository, $newUserName);
+        $this->UserName->shouldBe($newUserName);
 
         //Unexpected response
         $client->post('Users/Rename', [
@@ -288,6 +289,7 @@ class UserSpec extends ObjectBehavior
             'newEmail' => $newEmail,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $this->setEmail($repository, $newEmail)->shouldReturn(true);
+        $this->Email->shouldBe($newEmail);
     }
 
     public function it_should_throw_on_set_email_when_got_unexpected_reply(HttpClient $client, UserRepositoryInterface $repository)

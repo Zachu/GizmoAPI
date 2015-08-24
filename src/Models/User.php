@@ -266,6 +266,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 'newUserName' => $newUserName,
             ]);
             if ($result->getStatusCode() === 204) {
+                $this->UserName = $newUserName;
                 return true;
             } else {
                 throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
