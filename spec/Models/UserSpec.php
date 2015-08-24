@@ -15,28 +15,19 @@ class UserSpec extends ObjectBehavior
         $this->beConstructedWith($client, ['Id' => self::$id, 'UserName' => 'Teddy', 'FirstName' => 'Tedd', 'LastName' => 'Tester']);
     }
 
+    //
+    // Construct
+    //
+
     public function it_is_initializable()
     {
         $this->shouldHaveType('Pisa\Api\Gizmo\Models\User');
     }
 
-    public function it_should_create_new_user_on_save(HttpClient $client)
-    {
-        $this->load(['Id' => null], true); //Lets fake that the model isn't created yet
+    //
+    // Delete
+    //
 
-        $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(null);
-        $this->save();
-
-        //@todo test exceptions
-    }
-    public function it_should_update_user_information_on_save(HttpClient $client)
-    {
-        $this->FirstName = 'Todd';
-        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
-        $this->save();
-
-        //@todo test exceptions
-    }
     public function it_should_delete_user(HttpClient $client)
     {
         $client->get('Users/GetLoginState', [
@@ -48,6 +39,30 @@ class UserSpec extends ObjectBehavior
 
         //@todo test exceptions
     }
+
+    //
+    // Save
+    //
+
+    public function it_should_create_new_user_on_save(HttpClient $client)
+    {
+        $this->load(['Id' => null], true); //Lets fake that the model isn't created yet
+
+        $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(null);
+        $this->save();
+
+        //@todo test exceptions
+    }
+
+    public function it_should_update_user_information_on_save(HttpClient $client)
+    {
+        $this->FirstName = 'Todd';
+        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
+        $this->save();
+
+        //@todo test exceptions
+    }
+
     public function it_should_handle_rename_on_save(HttpClient $client, UserRepositoryInterface $repository)
     {
         //Username is available should be ok
@@ -101,6 +116,11 @@ class UserSpec extends ObjectBehavior
 
         //@todo Invalid response exception
     }
+
+    //
+    // Get logged in host id
+    //
+
     public function it_should_get_logged_in_host_id(HttpClient $client)
     {
         //Valid response, should return the HostId
@@ -125,6 +145,11 @@ class UserSpec extends ObjectBehavior
         $this->Id = null;
         $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
     }
+
+    //
+    // Is logged in
+    //
+
     public function it_should_check_if_user_is_logged_in(HttpClient $client)
     {
         //Valid response true, should return true
@@ -149,6 +174,11 @@ class UserSpec extends ObjectBehavior
         $this->Id = null;
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
     }
+
+    //
+    // Get last login time
+    //
+
     public function it_should_get_last_login_time(HttpClient $client)
     {
         //Valid response
@@ -168,6 +198,11 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLastLoginTime();
 
     }
+
+    //
+    // Get last logout time
+    //
+
     public function it_should_get_last_logout_time(HttpClient $client)
     {
         //Valid response
@@ -186,6 +221,11 @@ class UserSpec extends ObjectBehavior
         $this->Id = null;
         $this->shouldThrow('\Exception')->duringLastLogoutTime();
     }
+
+    //
+    // Login
+    //
+
     public function it_should_login_user_to_host(HttpClient $client, HostInterface $host)
     {
         //Valid login
@@ -221,6 +261,11 @@ class UserSpec extends ObjectBehavior
         $this->Id = null;
         $this->shouldThrow('\Exception')->duringLogin($host);
     }
+
+    //
+    // Logout
+    //
+
     public function it_should_logout_user_from_host(HttpClient $client)
     {
         //Valid logout
@@ -249,45 +294,69 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLogout();
 
     }
+
+    //
+    // Rename
+    //
+
     public function it_should_rename_user(HttpClient $client, UserRepositoryInterface $repository)
     {
         $newUserName = 'NewName';
         $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
 
-        //Valid rename
         $client->post('Users/Rename', [
             'userId' => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $this->rename($repository, $newUserName);
         $this->UserName->shouldBe($newUserName);
+    }
 
-        //Unexpected response
+    public function it_should_throw_on_rename_when_got_unexpected_response(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
+
         $client->post('Users/Rename', [
             'userId' => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
         $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
-
-        //Username taken
-        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(true);
-        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
-
-        //Model doesn't exist
-        $this->Id = null;
-        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->UserName->shouldNotBe($newUserName);
     }
+
+    public function it_should_throw_on_rename_if_username_is_taken(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(true);
+
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->UserName->shouldNotBe($newUserName);
+    }
+
+    public function it_should_throw_on_rename_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $this->beConstructedWith($client, []);
+
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->UserName->shouldNotBe($newUserName);
+    }
+
+    //
+    // Set Email
+    //
 
     public function it_should_set_email(HttpClient $client, UserRepositoryInterface $repository)
     {
         $newEmail = 'test@example.com';
         $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
 
-        //Valid email change
         $client->post('Users/SetUserEmail', [
             'userId' => $this->getPrimaryKeyValue(),
             'newEmail' => $newEmail,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+
         $this->setEmail($repository, $newEmail)->shouldReturn(true);
         $this->Email->shouldBe($newEmail);
     }
@@ -303,6 +372,7 @@ class UserSpec extends ObjectBehavior
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
         $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+        $this->Email->shouldNotBe($newEmail);
     }
 
     public function it_should_throw_on_set_email_if_email_is_taken(HttpClient $client, UserRepositoryInterface $repository)
@@ -310,6 +380,7 @@ class UserSpec extends ObjectBehavior
         $newEmail = 'test@example.com';
         $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(true);
         $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+        $this->Email->shouldNotBe($newEmail);
     }
 
     public function it_should_throw_on_set_email_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
@@ -317,7 +388,12 @@ class UserSpec extends ObjectBehavior
         $this->beConstructedWith($client, []);
         $newEmail = 'test@example.com';
         $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+        $this->Email->shouldNotBe($newEmail);
     }
+
+    //
+    // Set Password
+    //
 
     public function it_should_set_password(HttpClient $client)
     {
@@ -349,6 +425,10 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
     }
 
+    //
+    // Usergroup
+    //
+
     public function it_should_set_user_group(HttpClient $client)
     {
         $newUserGroup = 2;
@@ -366,6 +446,7 @@ class UserSpec extends ObjectBehavior
         $this->beConstructedWith($client, []);
         $newUserGroup = 2;
         $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+        $this->GroupId->shouldNotBe($newUserGroup);
     }
 
     public function it_should_throw_on_set_user_group_when_got_unexpected_reply(HttpClient $client)
@@ -378,5 +459,6 @@ class UserSpec extends ObjectBehavior
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
         $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+        $this->GroupId->shouldNotBe($newUserGroup);
     }
 }
