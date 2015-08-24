@@ -238,9 +238,9 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 throw new Exception("User is not logged in anywhere");
             }
 
-            $result = $this->client->request('Users/UserLogout', [
+            $result = $this->client->post('Users/UserLogout', [
                 'userId' => $this->getPrimaryKeyValue(),
-            ], 'POST');
+            ])->getBody();
 
             if (!empty($result)) {
                 throw new Exception("Didn't expect any results, got " . gettype($result));

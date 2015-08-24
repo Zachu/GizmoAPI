@@ -223,22 +223,42 @@ class UserSpec extends ObjectBehavior
     }
     public function it_should_logout_user_from_host(HttpClient $client)
     {
+        //Valid logout
+        $client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->post('Users/UserLogout', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $this->logout();
+
+        //Should throw when getting a weird response
+        $client->post('Users/UserLogout', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        $this->shouldThrow('\Exception')->duringLogout();
+
+        //User isn't logged in
+        $client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::false());
+        $this->shouldThrow('\Exception')->duringLogout();
+
+        //Should throw if the model doesn't exist
+        $this->Id = null;
+        $this->shouldThrow('\Exception')->duringLogout();
 
     }
-    public function it_should_rename_user(HttpClient $client)
-    {
-
-    }
-    public function it_should_set_email(HttpClient $client)
-    {
-
-    }
-    public function it_should_set_password(HttpClient $client)
-    {
-
-    }
-    public function it_should_set_user_group(HttpClient $client, UserGroupInterface $group)
-    {
-
-    }
+/*    public function it_should_rename_user(HttpClient $client)
+{
+}
+public function it_should_set_email(HttpClient $client)
+{
+}
+public function it_should_set_password(HttpClient $client)
+{
+}
+public function it_should_set_user_group(HttpClient $client)
+{
+}*/
 }
