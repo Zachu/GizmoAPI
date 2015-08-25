@@ -37,6 +37,15 @@ class HttpResponses
         ));
     }
 
+    public static function null()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode(null)
+        ));
+    }
+
     public static function true()
     {
         return new HttpResponseAdapter(new HttpResponse(
