@@ -2,7 +2,7 @@
 
 use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
 
-interface UserInterface
+interface UserInterface extends BaseModelInterface
 {
     public function getLoggedInHostId();
     public function isLoggedIn();
