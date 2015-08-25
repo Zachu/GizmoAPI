@@ -10,6 +10,24 @@ class HttpResponses
         return new HttpResponseAdapter(new HttpResponse(204));
     }
 
+    public static function emptyArray()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode([])
+        ));
+    }
+
+    public static function content($content)
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode($content)
+        ));
+    }
+
     public static function false()
     {
         return new HttpResponseAdapter(new HttpResponse(
@@ -52,6 +70,15 @@ class HttpResponses
             200,
             ['Content-Type' => 'application/json;charset=utf-8'],
             json_encode(date('c'))
+        ));
+    }
+
+    public static function internalServerError()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            500,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode(['message' => 'An error has occured'])
         ));
     }
 }

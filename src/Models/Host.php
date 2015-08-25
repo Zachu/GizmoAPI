@@ -5,12 +5,22 @@ use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
 
 class Host extends BaseModel implements HostInterface
 {
+    protected $guarded = [
+        'Id',
+    ];
+
+    protected $fillable = [
+        'IsSecurityEnabled',
+        'IsOutOfOrder',
+        'IsLocked',
+    ];
+
     protected $client;
 
-    public function __construct(HttpClient $client, array $attributes = [])
+    public function __construct(HttpClient $client, array $attributes = array())
     {
         $this->client = $client;
-        $this->fill($attributes, true);
+        $this->load($attributes);
     }
 
     protected function create()
@@ -38,7 +48,12 @@ class Host extends BaseModel implements HostInterface
                     'hostId' => $this->getPrimaryKeyValue(),
                 ])->getBody();
 
-                return $result;
+                if (is_array($result)) {
+                    return $result;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
+                }
+
             }
         } catch (Exception $e) {
             throw new Exception("Unable to list processes: " . $e->getMessage());
@@ -58,8 +73,11 @@ class Host extends BaseModel implements HostInterface
                     'processId' => (int) $processId,
                 ])->getBody();
 
-                return $result;
-                //@todo check return values
+                if (is_array($result)) {
+                    return $result;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
+                }
             }
         } catch (Exception $e) {
             throw new Exception("Unable to get processes by id: " . $e->getMessage());
@@ -79,8 +97,11 @@ class Host extends BaseModel implements HostInterface
                     'processName' => (string) $processName,
                 ])->getBody();
 
-                return $result;
-                //@todo check return values
+                if (is_array($result)) {
+                    return $result;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
+                }
             }
         } catch (Exception $e) {
             throw new Exception("Unable to get processes by name: " . $e->getMessage());
@@ -98,9 +119,16 @@ class Host extends BaseModel implements HostInterface
                 $result = $this->client->post('Host/CreateProcess', array_merge(
                     $startInfo,
                     ['hostId' => $this->getPrimaryKeyValue()]
-                ))->getBody();
+                ));
 
-                return $result;
+                if (is_object($result) && is_integer($result->getBody())) {
+                    return $result->getBody();
+                } elseif (is_object($result) && $result->getStatusCode() === 500) {
+                    return false;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
+                }
+
                 //@todo check return values
             }
         } catch (Exception $e) {
@@ -124,7 +152,7 @@ class Host extends BaseModel implements HostInterface
                 if ($result->getStatusCode() === 204) {
                     return true;
                 } else {
-                    throw new Exception("Unexpected response for terminateProcess: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
                 }
             }
         } catch (Exception $e) {
@@ -195,7 +223,7 @@ class Host extends BaseModel implements HostInterface
                 if ($result->getStatusCode() === 204) {
                     return true;
                 } else {
-                    throw new Exception("Unexpected response for UserLogout: " . $result->getStatusCode() . " " . $result->getReasonPhrase() . ": " . $result);
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
                 }
             }
         } catch (Exception $e) {
@@ -221,7 +249,7 @@ class Host extends BaseModel implements HostInterface
                 if ($result->getStatusCode() === 204) {
                     return true;
                 } else {
-                    throw new Exception("Unexpected response for UINotify: " . $result->getStatusCode() . " " . $result->getReasonPhrase() . ": " . $result);
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
                 }
             }
         } catch (Exception $e) {
@@ -243,9 +271,10 @@ class Host extends BaseModel implements HostInterface
                 ]);
 
                 if ($result->getStatusCode() === 204) {
+                    $this->IsLocked = $isLocked;
                     return true;
                 } else {
-                    throw new Exception("Unexpected response for setLockState: " . $result->getStatusCode() . " " . $result->getReasonPhrase() . ": " . $result);
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
                 }
             }
         } catch (Exception $e) {
@@ -267,9 +296,10 @@ class Host extends BaseModel implements HostInterface
                 ]);
 
                 if ($result->getStatusCode() === 204) {
+                    $this->IsSecurityEnabled = $isEnabled;
                     return true;
                 } else {
-                    throw new Exception("Unexpected response for setSecurityState: " . $result->getStatusCode() . " " . $result->getReasonPhrase() . ": " . $result);
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
                 }
             }
         } catch (Exception $e) {
@@ -277,23 +307,24 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
-    public function setOrderState($isInOrder)
+    public function setOrderState($isOutOfOrder)
     {
         try {
             if ($this->exists() === false) {
                 throw new Exception("Model does not exist");
-            } elseif (!is_bool($isInOrder)) {
+            } elseif (!is_bool($isOutOfOrder)) {
                 throw new Exception("Provided order state isn't boolean");
             } else {
                 $result = $this->client->post('Host/SetOrderState', [
                     'hostId' => $this->getPrimaryKeyValue(),
-                    'inOrder' => ($isInOrder ? 'true' : 'false'),
+                    'inOrder' => (!$isOutOfOrder ? 'true' : 'false'),
                 ]);
 
-                if ($result->getStatusCode() === 204) {
+                if (is_object($result) && $result->getStatusCode() === 204) {
+                    $this->IsOutOfOrder = $isOutOfOrder;
                     return true;
                 } else {
-                    throw new Exception("Unexpected response for setOrderState: " . $result->getStatusCode() . " " . $result->getReasonPhrase() . ": " . $result);
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
                 }
             }
         } catch (Exception $e) {
@@ -326,7 +357,22 @@ class Host extends BaseModel implements HostInterface
                 }
             }
         } catch (Exception $e) {
-            throw new Exceptoin("Unable to get free status: " . $e->getMessage());
+            throw new Exception("Unable to get free status: " . $e->getMessage());
         }
+    }
+
+    protected function setIsOutOfOrderAttribute($value)
+    {
+        $this->setOrderState($value);
+    }
+
+    protected function setIsSecurityEnabledAttribute($value)
+    {
+        $this->setSecurityState($value);
+    }
+
+    protected function setIsLockedAttribute($value)
+    {
+        $this->setLockState($value);
     }
 }
