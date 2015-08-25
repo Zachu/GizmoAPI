@@ -4,7 +4,7 @@ use Exception;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
 use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
 
-class User extends BaseModel implements BaseModelInterface, UserInterface
+class User extends BaseModel implements UserInterface
 {
     protected $fillable = [
         'FirstName',
@@ -124,7 +124,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 unset($this->Id);
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
 
             unset($this->Id);
@@ -242,7 +242,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
             if (is_object($result) && $result->getStatusCode() === 204) {
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
 
         } catch (Exception $e) {
@@ -268,7 +268,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
             if (is_object($result) && $result->getStatusCode() === 204) {
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
 
             return true;
@@ -294,7 +294,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 $this->UserName = $newUserName;
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
         } catch (Exception $e) {
             throw new Exception("Unable to rename user: " . $e->getMessage());
@@ -319,7 +319,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 $this->Email = $newEmail;
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set user email: " . $e->getMessage());
@@ -341,7 +341,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
             if ($result->getStatusCode() === 204) {
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set user password: " . $e->getMessage());
@@ -366,7 +366,7 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 $this->GroupId = $groupId;
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set user group: " . $e->getMessage());
