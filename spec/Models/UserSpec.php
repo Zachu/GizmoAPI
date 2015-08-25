@@ -15,180 +15,254 @@ class UserSpec extends ObjectBehavior
         $this->beConstructedWith($client, ['Id' => self::$id, 'UserName' => 'Teddy', 'FirstName' => 'Tedd', 'LastName' => 'Tester']);
     }
 
+    //
+    // Construct
+    //
+
     public function it_is_initializable()
     {
         $this->shouldHaveType('Pisa\Api\Gizmo\Models\User');
     }
 
-    public function it_should_create_new_user_on_save(HttpClient $client)
-    {
-        $this->load(['Id' => null], true); //Lets fake that the model isn't created yet
+    //
+    // Delete
+    //
 
-        $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(null);
-        $this->save();
-
-        //@todo test exceptions
-    }
-    public function it_should_update_user_information_on_save(HttpClient $client)
-    {
-        $this->FirstName = 'Todd';
-        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
-        $this->save();
-
-        //@todo test exceptions
-    }
     public function it_should_delete_user(HttpClient $client)
     {
         $client->get('Users/GetLoginState', [
-            'userId' => self::$id,
+            'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::false());
 
-        $client->delete('Users/Delete', ['userId' => self::$id])->shouldBeCalled()->willReturn(null);
-        $this->delete();
-
-        //@todo test exceptions
+        $client->delete('Users/Delete', ['userId' => self::$id])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $this->delete()->shouldReturn(true);
     }
+
+    public function it_should_throw_on_delete_if_got_unexpected_response(HttpClient $client)
+    {
+        $client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->willReturn(HttpResponses::false());
+
+        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(HttpResponses::true());
+        $this->shouldThrow('\Exception')->duringDelete();
+    }
+
+    public function it_should_logout_on_delete_if_user_is_logged_in(HttpClient $client)
+    {
+        $client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->willReturn(HttpResponses::true());
+
+        $client->post('Users/UserLogout', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $client->delete('Users/Delete', ['userId' => self::$id])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+
+        $this->delete()->shouldReturn(true);
+    }
+
+    public function it_should_throw_on_delete_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $this->shouldThrow('\Exception')->duringDelete();
+    }
+
+    //
+    // Save
+    //
+
+    public function it_should_create_new_user_on_save(HttpClient $client)
+    {
+        $this->beConstructedWith($client, ['FirstName' => 'Tedd', 'LastName' => 'Tester']);
+
+        $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $this->save()->shouldReturn(true);
+    }
+
+    public function it_should_throw_on_create_if_got_unexpected_response(HttpClient $client)
+    {
+        $this->beConstructedWith($client, ['FirstName' => 'Tedd', 'LastName' => 'Tester']);
+
+        $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::true());
+        $this->shouldThrow('\Exception')->duringSave();
+    }
+
+    public function it_should_update_user_information_on_save(HttpClient $client)
+    {
+        $this->FirstName = 'Todd';
+        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $this->save()->shouldReturn(true);
+    }
+
+    public function it_should_throw_on_update_if_got_unexpected_response(HttpClient $client)
+    {
+        $this->FirstName = 'Todd';
+        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::true());
+        $this->shouldThrow('\Exception')->duringSave();
+    }
+
     public function it_should_handle_rename_on_save(HttpClient $client, UserRepositoryInterface $repository)
     {
-        //Username is available should be ok
-        $this->UserName = 'Available';
-        $repository->hasUserName($this->UserName)->shouldBeCalled()->willReturn(false);
-        $client->post('Users/Rename', [
-            'userId' => self::$id,
-            'newUserName' => $this->UserName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
-        $this->save($repository);
+        $newUserName = 'NewUserName';
 
-        //Username is taken should throw exception
-        $this->UserName = 'Taken';
-        $repository->hasUserName($this->UserName)->shouldBeCalled()->willReturn(true);
+        $this->UserName = $newUserName;
+        $repository->hasUserName($newUserName)->shouldBeCalled();
         $this->shouldThrow('\Exception')->duringSave($repository);
-
-        //@todo Invalid response exception
     }
+
     public function it_should_handle_usergroup_change_on_save(HttpClient $client)
     {
-        $this->GroupId = 1;
+        $groupId = 1;
 
+        $this->GroupId = $groupId;
         $client->post('Users/SetUserGroup', [
-            'userId' => $this->getPrimaryKey(),
-            'newUserGroup' => $this->GroupId,
-        ])->shouldBeCalled()->willReturn(null);
-        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
+            'userId' => $this->getPrimaryKeyValue(),
+            'newUserGroup' => $groupId,
+        ])->shouldBeCalled();
 
-        $this->save();
-
-        //@todo test exceptions
+        $this->shouldThrow('\Exception')->duringSave();
     }
 
     public function it_should_handle_email_on_save(HttpClient $client, UserRepositoryInterface $repository)
     {
-        //Email is not taken should be ok
-        $this->Email = 'free@example.com';
-        $repository->hasUserEmail($this->Email)->shouldBeCalled()->willReturn(false);
-        $client->post('Users/SetUserEmail', [
-            'userId' => $this->getPrimaryKeyValue(),
-            'newEmail' => $this->Email,
-        ])->shouldBeCalled()->willReturn(null);
-        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(null);
-        $this->save($repository);
+        $newEmail = 'test@example.com';
 
-        //Email is taken should throw exception
-        $this->Email = 'taken@example.com';
-        $repository->hasUserEmail($this->Email)->shouldBeCalled()->willReturn(true);
+        $this->Email = $newEmail;
+        $repository->hasUserEmail($newEmail)->shouldBeCalled();
         $this->shouldThrow('\Exception')->duringSave($repository);
-
-        //@todo Invalid response exception
     }
+
+    //
+    // Get logged in host id
+    //
+
     public function it_should_get_logged_in_host_id(HttpClient $client)
     {
-        //Valid response, should return the HostId
         $client->get('Users/GetLoggedInHost', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::one());
-        $this->getLoggedInHostId()->shouldReturn(self::$id);
 
-        //Zero-response (meaning no host) should return false
+        $this->getLoggedInHostId()->shouldReturn(1);
+    }
+
+    public function it_should_return_false_on_get_logged_in_host_if_not_logged_in(HttpClient $client)
+    {
         $client->get('Users/GetLoggedInHost', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::zero());
-        $this->getLoggedInHostId()->shouldReturn(false);
 
-        //Invalid response should throw exception
+        $this->getLoggedInHostId()->shouldReturn(false);
+    }
+
+    public function it_should_throw_on_get_logged_in_host_id_if_got_unexpected_response(HttpClient $client)
+    {
         $client->get('Users/GetLoggedInHost', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::false());
-        $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
 
-        //Should throw if the model doesn't exist
-        $this->Id = null;
         $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
     }
+
+    public function it_should_throw_on_get_logged_in_host_id_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
+    }
+
+    //
+    // Is logged in
+    //
+
     public function it_should_check_if_user_is_logged_in(HttpClient $client)
     {
-        //Valid response true, should return true
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
         $this->isLoggedIn()->shouldReturn(true);
 
-        //Valid response false, should return false
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::false());
         $this->isLoggedIn()->shouldReturn(false);
+    }
 
-        //Invalid response should throw exception
+    public function it_should_throw_on_is_logged_in_if_got_unexpected_response(HttpClient $client)
+    {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::zero());
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
+    }
 
-        //Should throw if the model doesn't exist
-        $this->Id = null;
+    public function it_should_throw_on_is_logged_in_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
     }
+
+    //
+    // Get last login time
+    //
+
     public function it_should_get_last_login_time(HttpClient $client)
     {
-        //Valid response
         $client->get('Users/GetLastUserLogin', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::time());
-        $this->lastLoginTime()->shouldBeInteger();
 
-        //Invalid response should throw exception
+        $this->lastLoginTime()->shouldBeInteger();
+    }
+
+    public function it_should_throw_on_last_login_if_got_unexpected_response(HttpClient $client)
+    {
         $client->get('Users/GetLastUserLogin', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->shouldThrow('\Exception')->duringLastLoginTime();
 
-        //Should throw if the model doesn't exist
-        $this->Id = null;
         $this->shouldThrow('\Exception')->duringLastLoginTime();
-
     }
+
+    public function it_should_throw_on_get_last_login_time_if_model_does_not_exists(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $this->shouldThrow('\Exception')->duringLastLoginTime();
+    }
+
+    //
+    // Get last logout time
+    //
+
     public function it_should_get_last_logout_time(HttpClient $client)
     {
-        //Valid response
         $client->get('Users/GetLastUserLogout', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::time());
-        $this->lastLogoutTime()->shouldBeInteger();
 
-        //Invalid response should throw exception
+        $this->lastLogoutTime()->shouldBeInteger();
+    }
+
+    public function it_should_throw_on_get_last_logout_time_if_got_unexpected_response(HttpClient $client)
+    {
         $client->get('Users/GetLastUserLogout', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->shouldThrow('\Exception')->duringLastLogoutTime();
 
-        //Should throw if the model doesn't exist
-        $this->Id = null;
         $this->shouldThrow('\Exception')->duringLastLogoutTime();
     }
+
+    public function it_should_throw_on_get_last_logout_time_if_model_not_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $this->shouldThrow('\Exception')->duringLastLogoutTime();
+    }
+
+    //
+    // Login
+    //
+
     public function it_should_login_user_to_host(HttpClient $client, HostInterface $host)
     {
-        //Valid login
         $host->isFree()->shouldBeCalled()->willReturn(true);
         $host->getPrimaryKeyValue()->shouldBeCalled()->willReturn(1);
         $client->get('Users/GetLoginState', [
@@ -199,46 +273,250 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
             'hostId' => 1,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->login($host);
+        $this->login($host)->shouldReturn(true);
+    }
 
-        //Host is not free, should throw exception
-        $host->isFree()->shouldBeCalled()->willReturn(false);
-        $host->getPrimaryKeyValue()->shouldBeCalled()->willReturn(1);
+    public function it_should_throw_on_login_if_host_is_not_free(HttpClient $client, HostInterface $host)
+    {
+        $host->getPrimaryKeyValue()->willReturn(1);
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::false());
-        $this->shouldThrow('\Exception')->duringLogin($host);
+        ])->willReturn(HttpResponses::false());
 
-        //User is already logged in, should throw exception
-        $host->isFree()->shouldBeCalled()->willReturn(true);
-        $host->getPrimaryKeyValue()->shouldBeCalled()->willReturn(1);
+        $host->isFree()->shouldBeCalled()->willReturn(false);
+
+        $this->shouldThrow('\Exception')->duringLogin($host);
+    }
+
+    public function it_should_throw_on_login_if_user_already_logged_in(HttpClient $client, HostInterface $host)
+    {
+        $host->isFree()->willReturn(true);
+        $host->getPrimaryKeyValue()->willReturn(1);
+
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
-        $this->shouldThrow('\Exception')->duringLogin($host);
 
-        //Should throw if the model doesn't exist
-        $this->Id = null;
         $this->shouldThrow('\Exception')->duringLogin($host);
     }
+
+    public function it_should_throw_on_login_if_model_doesnt_exist(HttpClient $client, HostInterface $host)
+    {
+        $this->beConstructedWith($client, []);
+        $host->isFree()->willReturn(true);
+        $host->getPrimaryKeyValue()->willReturn(1);
+
+        $this->shouldThrow('\Exception')->duringLogin($host);
+    }
+
+    //
+    // Logout
+    //
+
     public function it_should_logout_user_from_host(HttpClient $client)
     {
+        $client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
+        $client->post('Users/UserLogout', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+
+        $this->logout()->shouldReturn(true);
     }
-    public function it_should_rename_user(HttpClient $client)
+
+    public function it_should_throw_on_logout_when_got_unexpected_response(HttpClient $client)
     {
+        $client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->post('Users/UserLogout', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
+        $this->shouldThrow('\Exception')->duringLogout();
     }
-    public function it_should_set_email(HttpClient $client)
+
+    public function it_should_throw_on_logout_if_user_not_logged_in(HttpClient $client)
     {
+        $client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
+        $this->shouldThrow('\Exception')->duringLogout();
     }
+
+    public function it_should_throw_on_logout_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $this->shouldThrow('\Exception')->duringLogout();
+    }
+
+    //
+    // Rename
+    //
+
+    public function it_should_rename_user(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
+
+        $client->post('Users/Rename', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newUserName' => $newUserName,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $this->rename($repository, $newUserName);
+        $this->UserName->shouldBe($newUserName);
+    }
+
+    public function it_should_throw_on_rename_when_got_unexpected_response(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
+
+        $client->post('Users/Rename', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newUserName' => $newUserName,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->UserName->shouldNotBe($newUserName);
+    }
+
+    public function it_should_throw_on_rename_if_username_is_taken(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(true);
+
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->UserName->shouldNotBe($newUserName);
+    }
+
+    public function it_should_throw_on_rename_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newUserName = 'NewName';
+        $this->beConstructedWith($client, []);
+
+        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->UserName->shouldNotBe($newUserName);
+    }
+
+    //
+    // Set Email
+    //
+
+    public function it_should_set_email(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newEmail = 'test@example.com';
+        $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
+
+        $client->post('Users/SetUserEmail', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newEmail' => $newEmail,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+
+        $this->setEmail($repository, $newEmail)->shouldReturn(true);
+        $this->Email->shouldBe($newEmail);
+    }
+
+    public function it_should_throw_on_set_email_when_got_unexpected_reply(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newEmail = 'test@example.com';
+        $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
+
+        $client->post('Users/SetUserEmail', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newEmail' => $newEmail,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+
+        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+        $this->Email->shouldNotBe($newEmail);
+    }
+
+    public function it_should_throw_on_set_email_if_email_is_taken(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $newEmail = 'test@example.com';
+        $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(true);
+        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+        $this->Email->shouldNotBe($newEmail);
+    }
+
+    public function it_should_throw_on_set_email_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
+    {
+        $this->beConstructedWith($client, []);
+        $newEmail = 'test@example.com';
+        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+        $this->Email->shouldNotBe($newEmail);
+    }
+
+    //
+    // Set Password
+    //
+
     public function it_should_set_password(HttpClient $client)
     {
+        $newPassword = 'newPassword';
+        $client->post('Users/SetUserPassword', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newPassword' => $newPassword,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
+        $this->setPassword($newPassword)->shouldReturn(true);
     }
-    public function it_should_set_user_group(HttpClient $client, UserGroupInterface $group)
-    {
 
+    public function it_should_throw_on_set_password_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $newPassword = 'newPassword';
+        $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
+    }
+
+    public function it_should_throw_on_set_password_when_got_unexpected_reply(HttpClient $client)
+    {
+        $newPassword = 'newPassword';
+
+        $client->post('Users/SetUserPassword', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newPassword' => $newPassword,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+
+        $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
+    }
+
+    //
+    // Set usergroup
+    //
+
+    public function it_should_set_user_group(HttpClient $client)
+    {
+        $newUserGroup = 2;
+        $client->post('Users/SetUserGroup', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newUserGroup' => $newUserGroup,
+        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+
+        $this->setUserGroup($newUserGroup)->shouldReturn(true);
+        $this->GroupId->shouldBe($newUserGroup);
+    }
+
+    public function it_should_throw_on_set_user_group_if_model_doesnt_exist(HttpClient $client)
+    {
+        $this->beConstructedWith($client, []);
+        $newUserGroup = 2;
+        $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+        $this->GroupId->shouldNotBe($newUserGroup);
+    }
+
+    public function it_should_throw_on_set_user_group_when_got_unexpected_reply(HttpClient $client)
+    {
+        $newUserGroup = 2;
+
+        $client->post('Users/SetUserGroup', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'newUserGroup' => $newUserGroup,
+        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+
+        $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+        $this->GroupId->shouldNotBe($newUserGroup);
     }
 }

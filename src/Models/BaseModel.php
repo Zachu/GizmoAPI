@@ -109,13 +109,15 @@ abstract class BaseModel
 
     public function save()
     {
+        $return = null;
         if ($this->exists()) {
-            $this->update();
+            $return = $this->update();
         } else {
-            $this->create();
+            $return = $this->create();
         }
 
         $this->savedAttributes = $this->attributes;
+        return $return;
     }
 
     protected function hasSetMutator($key)
