@@ -19,9 +19,18 @@ class UserSpec extends ObjectBehavior
     // Construct
     //
 
-    public function it_is_initializable()
+    public function it_is_initializable(HttpClient $client)
     {
+        $userName = 'Teddy';
+        $firstName = 'Tedd';
+        $lastName = 'Tester';
+        $this->beConstructedWith($client, ['Id' => self::$id, 'UserName' => $userName, 'FirstName' => $firstName, 'LastName' => $lastName]);
         $this->shouldHaveType('Pisa\Api\Gizmo\Models\User');
+
+        $this->Id->shouldBe(self::$id);
+        $this->UserName->shouldBe($userName);
+        $this->FirstName->shouldBe($firstName);
+        $this->LastName->shouldBe($lastName);
     }
 
     //
