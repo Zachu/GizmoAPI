@@ -43,7 +43,13 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
             if ($this->exists()) {
                 throw new Exception("User already exist. Maybe try update?");
             } else {
-                $this->client->post("Users/Create", $this->getAttributes());
+                $result = $this->client->post("Users/Create", $this->getAttributes());
+
+                if (is_object($result) && $result->getStatusCode() === 204) {
+                    return true;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                }
             }
         } catch (Exception $e) {
             throw new Exception("Unable to create user: " . $e->getMessage());
@@ -55,7 +61,13 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
             if (!$this->exists()) {
                 throw new Exception("User doesn't exists. Maybe try create first?");
             } else {
-                $this->client->post("Users/Update", $this->getAttributes());
+                $result = $this->client->post("Users/Update", $this->getAttributes());
+
+                if (is_object($result) && $result->getStatusCode() === 204) {
+                    return true;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                }
             }
         } catch (Exception $e) {
             throw new Exception("Unable to update user: " . $e->getMessage());
@@ -88,27 +100,37 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                     }
                 }
             }
+
+            return parent::save();
         } catch (Exception $e) {
             throw new Exception("Unable to save user: " . $e->getMessage());
         }
-
-        parent::save();
     }
 
     public function delete()
     {
-        if (!$this->exists()) {
-            throw new Exception("User doesn't exist");
-            //@todo error handling
-        } elseif ($this->isLoggedIn()) {
-            $this->logout();
+        try {
+            if (!$this->exists()) {
+                throw new Exception("User doesn't exist");
+            } elseif ($this->isLoggedIn()) {
+                $this->logout();
+            }
+
+            $result = $this->client->delete("Users/Delete", [
+                'userId' => $this->getPrimaryKeyValue(),
+            ]);
+
+            if (is_object($result) && $result->getStatusCode() === 204) {
+                unset($this->Id);
+                return true;
+            } else {
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+            }
+
+            unset($this->Id);
+        } catch (Exception $e) {
+            throw new Exception("Unable to delete user: " . $e->getMessage());
         }
-
-        $this->client->delete("Users/Delete", [
-            'userId' => $this->getPrimaryKeyValue(),
-        ]);
-
-        unset($this->Id);
     }
 
     public function getLoggedInHostId()
@@ -215,13 +237,14 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
             $result = $this->client->post('Users/UserLogin', [
                 'userId' => $this->getPrimaryKeyValue(),
                 'hostId' => $host->getPrimaryKeyValue(),
-            ])->getBody();
+            ]);
 
-            if (!empty($result)) {
-                throw new Exception("Didn't expect any results, got " . gettype($result));
+            if (is_object($result) && $result->getStatusCode() === 204) {
+                return true;
+            } else {
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
             }
 
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to log user in: " . $e->getMessage());
         }
@@ -240,10 +263,12 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
 
             $result = $this->client->post('Users/UserLogout', [
                 'userId' => $this->getPrimaryKeyValue(),
-            ])->getBody();
+            ]);
 
-            if (!empty($result)) {
-                throw new Exception("Didn't expect any results, got " . gettype($result));
+            if (is_object($result) && $result->getStatusCode() === 204) {
+                return true;
+            } else {
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
             }
 
             return true;
@@ -265,11 +290,11 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 'userId' => $this->getPrimaryKeyValue(),
                 'newUserName' => $newUserName,
             ]);
-            if ($result->getStatusCode() === 204) {
+            if (is_object($result) && $result->getStatusCode() === 204) {
                 $this->UserName = $newUserName;
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
             }
         } catch (Exception $e) {
             throw new Exception("Unable to rename user: " . $e->getMessage());
@@ -290,11 +315,11 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
                 'newEmail' => $newEmail,
             ]);
 
-            if ($result->getStatusCode() === 204) {
+            if (is_object($result) && $result->getStatusCode() === 204) {
                 $this->Email = $newEmail;
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set user email: " . $e->getMessage());
@@ -333,15 +358,15 @@ class User extends BaseModel implements BaseModelInterface, UserInterface
             $groupId = (int) $groupId;
 
             $result = $this->client->post('Users/SetUserGroup', [
-                'userId' => $this->getPrimaryKey(),
+                'userId' => $this->getPrimaryKeyValue(),
                 'newUserGroup' => $groupId,
             ]);
 
-            if ($result->getStatusCode() === 204) {
+            if (is_object($result) && $result->getStatusCode() === 204) {
                 $this->GroupId = $groupId;
                 return true;
             } else {
-                throw new Exception("Unexpected response: " . $result->getStatusCode() . " " . $result->getReasonPhrase());
+                throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set user group: " . $e->getMessage());
