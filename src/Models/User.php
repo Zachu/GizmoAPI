@@ -287,7 +287,7 @@ class User extends BaseModel implements UserInterface
             }
 
             $result = $this->client->post('Users/Rename', [
-                'userId' => $this->getPrimaryKeyValue(),
+                'userId'      => $this->getPrimaryKeyValue(),
                 'newUserName' => $newUserName,
             ]);
             if (is_object($result) && $result->getStatusCode() === 204) {
@@ -311,7 +311,7 @@ class User extends BaseModel implements UserInterface
             }
 
             $result = $this->client->post('Users/SetUserEmail', [
-                'userId' => $this->getPrimaryKeyValue(),
+                'userId'   => $this->getPrimaryKeyValue(),
                 'newEmail' => $newEmail,
             ]);
 
@@ -334,7 +334,7 @@ class User extends BaseModel implements UserInterface
             }
 
             $result = $this->client->post('Users/SetUserPassword', [
-                'userId' => $this->getPrimaryKeyValue(),
+                'userId'      => $this->getPrimaryKeyValue(),
                 'newPassword' => $newPassword,
             ]);
 
@@ -358,7 +358,7 @@ class User extends BaseModel implements UserInterface
             $groupId = (int) $groupId;
 
             $result = $this->client->post('Users/SetUserGroup', [
-                'userId' => $this->getPrimaryKeyValue(),
+                'userId'       => $this->getPrimaryKeyValue(),
                 'newUserGroup' => $groupId,
             ]);
 
@@ -411,7 +411,7 @@ class User extends BaseModel implements UserInterface
 
     protected function setSexAttribute($sex)
     {
-        $male = ['1', 1, 'm', 'male'];
+        $male   = ['1', 1, 'm', 'male'];
         $female = ['2', 2, 'f', 'female'];
 
         if (in_array(strtolower($sex), $male)) {
@@ -427,7 +427,7 @@ class User extends BaseModel implements UserInterface
 
     protected function getSexAttribute()
     {
-        $male = ['male', 'm', '1', 1];
+        $male   = ['male', 'm', '1', 1];
         $female = ['female', 'f', '2', 2];
 
         if (!isset($this->attributes['Sex'])) {

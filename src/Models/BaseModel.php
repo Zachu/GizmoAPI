@@ -1,6 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Models;
 
-abstract class BaseModel
+abstract class BaseModel implements BaseModelInterface
 {
     //@todo how do these work with eachother? If a field isn't fillable nor guarded, or if it's both?
     /**
@@ -15,9 +15,9 @@ abstract class BaseModel
      */
     protected $guarded = [];
 
-    protected $attributes = [];
+    protected $attributes      = [];
     protected $savedAttributes = [];
-    protected $primaryKey = 'Id';
+    protected $primaryKey      = 'Id';
 
     /**
      * Used with method save(). Use that when creating a new model.
@@ -132,8 +132,8 @@ abstract class BaseModel
 
     protected function isFillable($key)
     {
-        $exists = (isset($this->attributes[$key]));
-        $guarded = in_array($key, $this->guarded);
+        $exists   = (isset($this->attributes[$key]));
+        $guarded  = in_array($key, $this->guarded);
         $fillable = in_array($key, $this->fillable);
 
         return ($fillable || (!$exists && $guarded));
