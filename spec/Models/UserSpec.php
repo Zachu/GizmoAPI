@@ -43,8 +43,10 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::false());
 
+        $this->exists()->shouldBe(true);
         $client->delete('Users/Delete', ['userId' => self::$id])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $this->delete()->shouldReturn(true);
+        $this->exists()->shouldBe(false);
     }
 
     public function it_should_throw_on_delete_if_got_unexpected_response(HttpClient $client)
