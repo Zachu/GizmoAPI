@@ -1,35 +1,34 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
 use Exception;
-use Pisa\Api\Gizmo\Factories\GizmoBaseFactory as Factory;
 use Pisa\Api\Gizmo\GizmoClient as Client;
 use Pisa\Api\Gizmo\Models\UserInterface;
 
-class UserRepository implements UserRepositoryInterface
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    private $client;
 
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
+    protected $model = 'User';
 
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
-        $options = ['$skip' => $skip, '$top' => $limit];
-        if ($orderBy !== null) {
-            $options['$orderby'] = $orderBy;
-        }
+        try {
+            $options = ['$skip' => $skip, '$top' => $limit];
+            if ($orderBy !== null) {
+                $options['$orderby'] = $orderBy;
+            }
 
-        $result = $this->client->request('Users/Get', $options);
-        if (is_array($result)) {
-            $users = $this->makeArray($result);
-        } else {
-            throw new Exception("Requesting array of users, got " . gettype($result));
-            //@todo error handling
-        }
+            $result = $this->client->get('Users/Get', $options)->getBody();
+            if (is_array($result)) {
+                $users = $this->makeArray($result);
+            } else {
+                throw new Exception("Requesting array of users, got " . gettype($result));
+                //@todo error handling
+            }
 
-        return $users;
+            return $users;
+        } catch (Exception $e) {
+            throw new Exception("Unable to get all users: " . $e->getMessage());
+        }
     }
 
     public function delete(UserInterface $user)
@@ -46,7 +45,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
-        $filter = $this->criteriaToFilter($criteria, $caseSensitive);
+        $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
@@ -134,11 +133,6 @@ class UserRepository implements UserRepositoryInterface
         return $result;
     }
 
-    public function make(array $attributes = array())
-    {
-        return Factory::make('\Pisa\Api\Gizmo\Models\GizmoUser', $this->client, $this, $attributes);
-    }
-
     public function save(UserInterface $user)
     {
         if ($user->exists()) {
@@ -158,7 +152,7 @@ class UserRepository implements UserRepositoryInterface
             // New user
             try {
                 $user->Registered = date('c');
-                $result = $this->client->request('Users/Add', $user->toArray(), 'PUT');
+                $result           = $this->client->request('Users/Add', $user->toArray(), 'PUT');
                 if (is_int($result)) {
                     $user->Id = $result;
                 } else {
