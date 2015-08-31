@@ -16,7 +16,6 @@
     },
     "require-dev": {
         "phpspec/phpspec": "~2.0",
-        "laracasts/testdummy": "~2.0"
     },
 
     "repositories": [
@@ -29,7 +28,7 @@
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "guzzlehttp/psr7": "dev-master",
-	"psr/log": "1.0.*",
+        "psr/log": "1.0.*",
         "zachu/zioc": "*@dev"
     }
 }
