@@ -4,7 +4,7 @@ use Exception;
 
 //@todo try catch all this shit. I think Models/Host.php looks like promising format
 
-class HostRepository extends BaseRepository implements HostRepositoryInterface, BaseRepositoryInterface
+class HostRepository extends BaseRepository implements HostRepositoryInterface
 {
     protected $model = 'Host';
 
@@ -71,7 +71,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface, 
 
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
-        $filter = $this->criteriaToFilter($criteria, $caseSensitive);
+        $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;

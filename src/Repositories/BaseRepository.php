@@ -5,7 +5,7 @@ use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
 use Pisa\Api\Gizmo\Models\BaseModelInterface;
 use zachu\zioc\IoC;
 
-class BaseRepository
+abstract class BaseRepository implements BaseRepositoryInterface
 {
     protected $client;
     protected $model;
@@ -14,7 +14,7 @@ class BaseRepository
     public function __construct(HttpClient $client, IoC $ioc)
     {
         $this->client = $client;
-        $this->ioc = $ioc;
+        $this->ioc    = $ioc;
 
         if (!isset($this->model)) {
             throw new Exception(get_class($this) . ' should have $model');
@@ -33,6 +33,7 @@ class BaseRepository
     public function make(array $attributes)
     {
         $model = $this->ioc->make($this->model); //@todo not testable :( Damn. What do?
+
         if ($model instanceof BaseModelInterface) {
             $model->fill($attributes, true);
         } else {
@@ -57,7 +58,7 @@ class BaseRepository
         $filter = [];
         foreach ($criteria as $key => $value) {
             if (!$caseSensitive) {
-                $value = strtolower($value);
+                $value    = strtolower($value);
                 $filter[] = "substringof('{$value}',tolower($key)) eq true";
             } else {
                 $filter[] = "substringof('{$value}',$key)";
