@@ -21,15 +21,6 @@ class BaseRepository
         }
     }
 
-    /*public function save(BaseModelInterface $model)
-    {
-    if ($model->exists()) {
-    $this->update($model);
-    } else {
-    $this->create($model);
-    }
-    }*/
-
     public function make(array $attributes)
     {
         $model = $this->ioc->make($this->model); //@todo not testable :( Damn. What do?
