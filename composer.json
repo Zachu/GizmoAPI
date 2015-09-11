@@ -30,6 +30,7 @@
         "guzzlehttp/guzzle": "~6.0",
         "guzzlehttp/psr7": "dev-master",
 	"psr/log": "1.0.*",
-        "zachu/zioc": "*@dev"
+        "zachu/zioc": "*@dev",
+        "fzaninotto/faker": "^1.5"
     }
 }
