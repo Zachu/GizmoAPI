@@ -7,6 +7,18 @@ class Host extends BaseModel implements HostInterface
 {
     protected $guarded = [
         'Id',
+        'OsInfo',
+        'State',
+        'IsMaintenanceMode',
+        'Module',
+        'HostName',
+        'IpAddress',
+        'Port',
+        'MaxAddress',
+        'Registered',
+        'Number',
+        'HasValidDispatcher',
+        'GroupId',
     ];
 
     protected $fillable = [
