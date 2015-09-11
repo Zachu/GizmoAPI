@@ -52,8 +52,8 @@ class HostRepositorySpec extends ApiTester
             '$top' => self::$top,
             '$orderby' => self::$orderby,
         ])->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->getHost(),
-            $this->getHost(),
+            $this->fakeHost(),
+            $this->fakeHost(),
         ]));
 
         $ioc->make('Host')->shouldBeCalled()->willReturn($host);
@@ -80,8 +80,8 @@ class HostRepositorySpec extends ApiTester
     public function it_finds_hosts_by_parameters(HttpClient $client, IoC $ioc, Host $host)
     {
         $client->get('Hosts/Get', ['$filter' => "substringof('host',HostName)", '$skip' => 2, '$top' => 1, '$orderby' => 'Number'])->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->getHost(),
-            $this->getHost(),
+            $this->fakeHost(),
+            $this->fakeHost(),
         ]));
 
         $ioc->make('Host')->shouldBeCalled()->willReturn($host);
@@ -124,7 +124,7 @@ class HostRepositorySpec extends ApiTester
         $client->get('Hosts/Get', [
             '$filter' => "substringof('host',HostName)",
             '$top' => 1,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([$this->getHost()]));
+        ])->shouldBeCalled()->willReturn(HttpResponses::content([$this->fakeHost()]));
 
         $ioc->make('Host')->shouldBeCalled()->willReturn($host);
         $this->findOneBy(['HostName' => 'host'], true)->shouldReturn($host);
@@ -159,7 +159,7 @@ class HostRepositorySpec extends ApiTester
     {
         $id = 1;
 
-        $client->get('Hosts/Get/' . $id)->shouldBeCalled()->willReturn(HttpResponses::content($this->getHost()));
+        $client->get('Hosts/Get/' . $id)->shouldBeCalled()->willReturn(HttpResponses::content($this->fakeHost()));
         $ioc->make('Host')->shouldBeCalled()->willReturn($host);
         $this->get($id)->shouldReturn($host);
 
@@ -189,8 +189,8 @@ class HostRepositorySpec extends ApiTester
     {
         $no = 1;
         $client->get('Hosts/GetByNumber', ['hostNumber' => $no])->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->getHost(),
-            $this->getHost(),
+            $this->fakeHost(),
+            $this->fakeHost(),
         ]));
 
         $ioc->make('Host')->shouldBeCalled()->willReturn($host);
@@ -225,8 +225,8 @@ class HostRepositorySpec extends ApiTester
         $id = 1;
 
         $client->get('Hosts/Get/' . $id)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->getHost(),
-            $this->getHost(),
+            $this->fakeHost(),
+            $this->fakeHost(),
         ]));
         $ioc->make('Host')->shouldBeCalled()->willReturn($host);
         $this->has($id)->shouldReturn(true);
@@ -239,13 +239,5 @@ class HostRepositorySpec extends ApiTester
         $client->get('Hosts/Get/' . $id)->shouldBeCalled()->willReturn(HttpResponses::null());
         $ioc->make('Host')->shouldNotBeCalled();
         $this->has($id)->shouldReturn(false);
-    }
-
-    private function getHost()
-    {
-        return [
-            'Id' => $this->faker->randomDigitNotNull(),
-            'HostName' => $this->faker->username(),
-        ];
     }
 }
