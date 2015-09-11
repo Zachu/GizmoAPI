@@ -27,48 +27,6 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
         return $hosts;
     }
 
-    /*
-    public function create(BaseModelInterface $model)
-    {
-    try {
-    if (!$model instanceof HostInterface) {
-    throw new Exception("Given model is not host");
-    }
-    throw new Exception("New host cannot be created via API. Host is created by connecting new host client to the server service");
-    } catch (Ecception $e) {
-    throw new Exception("Unable to create host: ".$e->getMessage());
-    }
-    }
-     */
-
-    /*
-    public function delete(BaseModelInterface $model)
-    {
-    try {
-    if (!$model instanceof HostInterface) {
-    throw new Exception("Given model is not host");
-    }
-    throw new Exception("Host cannot be deleted via API. Host is deleted by via the server service");
-    } catch (Ecception $e) {
-    throw new Exception("Unable to delete host: ".$e->getMessage());
-    }
-    }
-     */
-
-    /*
-    public function update(BaseModelInterface $model)
-    {
-    try {
-    if (!$model instanceof HostInterface) {
-    throw new Exception("Given model is not host");
-    }
-    throw new Exception("Host cannot be updated via API. Host is updated via the server service");
-    } catch (Ecception $e) {
-    throw new Exception("Unable to update host: ".$e->getMessage());
-    }
-    }
-     */
-
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
