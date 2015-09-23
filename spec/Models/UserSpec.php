@@ -495,7 +495,8 @@ class UserSpec extends ApiTester
 
     public function it_should_set_user_group(HttpClient $client)
     {
-        $newUserGroup = 2;
+        $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
+
         $client->post('Users/SetUserGroup', [
             'userId' => $this->getPrimaryKeyValue(),
             'newUserGroup' => $newUserGroup,
@@ -507,15 +508,17 @@ class UserSpec extends ApiTester
 
     public function it_should_throw_on_set_user_group_if_model_doesnt_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
-        $newUserGroup = 2;
+        $fakeUser = $this->fakeUser(['Id' => null]);
+        $this->beConstructedWith($client, $fakeUser);
+        $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
+
         $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
         $this->GroupId->shouldNotBe($newUserGroup);
     }
 
     public function it_should_throw_on_set_user_group_when_got_unexpected_reply(HttpClient $client)
     {
-        $newUserGroup = 2;
+        $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
 
         $client->post('Users/SetUserGroup', [
             'userId' => $this->getPrimaryKeyValue(),
