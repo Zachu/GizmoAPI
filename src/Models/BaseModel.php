@@ -1,23 +1,37 @@
 <?php namespace Pisa\Api\Gizmo\Models;
 
+<<<<<<< master
+=======
+use Pisa\Api\Gizmo\Contracts\Cacheable;
+
+>>>>>>> local
 abstract class BaseModel implements BaseModelInterface
 {
-    //@todo how do these work with eachother? If a field isn't fillable nor guarded, or if it's both?
+    use \Pisa\Api\Gizmo\Contracts\AttributableTrait;
+    use \Pisa\Api\Gizmo\Contracts\IdentifiableTrait;
+
+    // @todo how do these work with eachother? If a field isn't fillable nor guarded, or if it's both?
     /**
      * @var $fillable
+     * @todo  needed? used even?
      * Let these attributes be filled any time
      */
     protected $fillable = [];
 
     /**
      * @var $guarded
+     * @todo  needed? used even?
      * Don't let these be filled unless its an empty field
      */
     protected $guarded = [];
 
+<<<<<<< master
     protected $attributes      = [];
     protected $savedAttributes = [];
     protected $primaryKey      = 'Id';
+=======
+    protected $savedAttributes = [];
+>>>>>>> local
 
     /**
      * Used with method save(). Use that when creating a new model.
@@ -31,70 +45,15 @@ abstract class BaseModel implements BaseModelInterface
 
     abstract public function delete();
 
-    public function load(array $attributes, $skipChecks = false)
+    public function load(array $attributes)
     {
-        $this->fill($attributes, $skipChecks);
+        $this->fill($attributes);
         $this->savedAttributes = $this->attributes;
     }
 
     protected function changed()
     {
         return array_diff_assoc($this->attributes, $this->savedAttributes);
-    }
-
-    public function fill(array $attributes, $skipChecks = false)
-    {
-        foreach ($attributes as $key => $value) {
-            $this->setAttribute($key, $value, $skipChecks);
-        }
-    }
-
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-    public function getAttribute($key)
-    {
-        if ($this->hasGetMutator($key)) {
-            $method = 'get' . $key . 'Attribute';
-            return $this->{$method}();
-        } elseif (isset($this->$key)) {
-            return $this->attributes[$key];
-        } else {
-            return null;
-        }
-    }
-
-    public function getPrimaryKeyValue()
-    {
-        if (isset($this->{$this->primaryKey})) {
-            return $this->{$this->primaryKey};
-        } else {
-            return null;
-        }
-    }
-
-    public function getPrimaryKey()
-    {
-        return $this->primaryKey;
-    }
-
-    public function setAttribute($key, $value, $skipChecks = false)
-    {
-        if ($this->isFillable($key) || $skipChecks) {
-            if ($this->hasSetMutator($key)) {
-                $method = 'set' . $key . 'Attribute';
-                $this->{$method}($value);
-            } else {
-                $this->attributes[$key] = $value;
-            }
-        }
-    }
-
-    public function toArray()
-    {
-        return $this->attributes;
     }
 
     public function exists()
@@ -117,17 +76,12 @@ abstract class BaseModel implements BaseModelInterface
         }
 
         $this->savedAttributes = $this->attributes;
+
+        if ($this instanceof Cacheable) {
+            $this->saveCached($this->cacheTime);
+        }
+
         return $return;
-    }
-
-    protected function hasSetMutator($key)
-    {
-        return method_exists($this, 'set' . $key . 'Attribute');
-    }
-
-    protected function hasGetMutator($key)
-    {
-        return method_exists($this, 'get' . $key . 'Attribute');
     }
 
     protected function isFillable($key)
@@ -137,31 +91,6 @@ abstract class BaseModel implements BaseModelInterface
         $fillable = in_array($key, $this->fillable);
 
         return ($fillable || (!$exists && $guarded));
-    }
-
-    public function __get($key)
-    {
-        return $this->getAttribute($key);
-    }
-
-    public function __set($key, $value)
-    {
-        $this->setAttribute($key, $value);
-    }
-
-    public function __isset($key)
-    {
-        return isset($this->attributes[$key]);
-    }
-
-    public function __unset($key)
-    {
-        unset($this->attributes[$key]);
-    }
-
-    public function __toString()
-    {
-        return json_encode($this->attributes);
     }
 
     protected function toBool($var)
