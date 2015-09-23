@@ -1,18 +1,19 @@
 <?php namespace spec\Pisa\Api\Gizmo\Models;
 
-use PhpSpec\ObjectBehavior;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
 use Pisa\Api\Gizmo\Models\HostInterface;
 use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
+use spec\Pisa\Api\Gizmo\ApiTester;
 use spec\Pisa\Api\Gizmo\HttpResponses;
 
-class UserSpec extends ObjectBehavior
+class UserSpec extends ApiTester
 {
-    protected static $id = 1;
+    protected static $user;
 
     public function let(HttpClient $client)
     {
-        $this->beConstructedWith($client, ['Id' => self::$id, 'UserName' => 'Teddy', 'FirstName' => 'Tedd', 'LastName' => 'Tester']);
+        self::$user = $this->fakeUser();
+        $this->beConstructedWith($client, self::$user);
     }
 
     //
@@ -21,16 +22,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_is_initializable(HttpClient $client)
     {
-        $userName = 'Teddy';
-        $firstName = 'Tedd';
-        $lastName = 'Tester';
-        $this->beConstructedWith($client, ['Id' => self::$id, 'UserName' => $userName, 'FirstName' => $firstName, 'LastName' => $lastName]);
         $this->shouldHaveType('Pisa\Api\Gizmo\Models\User');
 
-        $this->Id->shouldBe(self::$id);
-        $this->UserName->shouldBe($userName);
-        $this->FirstName->shouldBe($firstName);
-        $this->LastName->shouldBe($lastName);
+        $this->Id->shouldBe(self::$user['Id']);
+        $this->UserName->shouldBe(self::$user['UserName']);
+        $this->FirstName->shouldBe(self::$user['FirstName']);
+        $this->LastName->shouldBe(self::$user['LastName']);
     }
 
     //
@@ -44,7 +41,7 @@ class UserSpec extends ObjectBehavior
         ])->shouldBeCalled()->willReturn(HttpResponses::false());
 
         $this->exists()->shouldBe(true);
-        $client->delete('Users/Delete', ['userId' => self::$id])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $this->delete()->shouldReturn(true);
         $this->exists()->shouldBe(false);
     }
@@ -68,14 +65,14 @@ class UserSpec extends ObjectBehavior
         $client->post('Users/UserLogout', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $client->delete('Users/Delete', ['userId' => self::$id])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
         $this->delete()->shouldReturn(true);
     }
 
     public function it_should_throw_on_delete_if_model_doesnt_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringDelete();
     }
 
@@ -85,7 +82,7 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_create_new_user_on_save(HttpClient $client)
     {
-        $this->beConstructedWith($client, ['FirstName' => 'Tedd', 'LastName' => 'Tester']);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
 
         $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $this->save()->shouldReturn(true);
@@ -93,7 +90,7 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_create_if_got_unexpected_response(HttpClient $client)
     {
-        $this->beConstructedWith($client, ['FirstName' => 'Tedd', 'LastName' => 'Tester']);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
 
         $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::true());
         $this->shouldThrow('\Exception')->duringSave();
@@ -124,7 +121,7 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_handle_usergroup_change_on_save(HttpClient $client)
     {
-        $groupId = 1;
+        $groupId = 99;
 
         $this->GroupId = $groupId;
         $client->post('Users/SetUserGroup', [
@@ -177,7 +174,7 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_get_logged_in_host_id_if_model_doesnt_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
     }
 
@@ -208,7 +205,7 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_is_logged_in_if_model_doesnt_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
     }
 
@@ -236,11 +233,11 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_get_last_login_time_if_model_does_not_exists(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringLastLoginTime();
     }
 
-    //
+//
     // Get last logout time
     //
 
@@ -262,13 +259,13 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLastLogoutTime();
     }
 
-    public function it_should_throw_on_get_last_logout_time_if_model_not_exist(HttpClient $client)
+    public function it_should_throw_on_get_last_logout_time_if_model_does_not_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringLastLogoutTime();
     }
 
-    //
+//
     // Login
     //
 
@@ -313,14 +310,14 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_login_if_model_doesnt_exist(HttpClient $client, HostInterface $host)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $host->isFree()->willReturn(true);
         $host->getPrimaryKeyValue()->willReturn(1);
 
         $this->shouldThrow('\Exception')->duringLogin($host);
     }
 
-    //
+//
     // Logout
     //
 
@@ -360,11 +357,11 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_logout_if_model_doesnt_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringLogout();
     }
 
-    //
+//
     // Rename
     //
 
@@ -406,13 +403,13 @@ class UserSpec extends ObjectBehavior
     public function it_should_throw_on_rename_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
     {
         $newUserName = 'NewName';
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
 
         $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
         $this->UserName->shouldNotBe($newUserName);
     }
 
-    //
+//
     // Set Email
     //
 
@@ -454,13 +451,13 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_set_email_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $newEmail = 'test@example.com';
         $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
         $this->Email->shouldNotBe($newEmail);
     }
 
-    //
+//
     // Set Password
     //
 
@@ -477,7 +474,7 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_set_password_if_model_doesnt_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
         $newPassword = 'newPassword';
         $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
     }
@@ -494,13 +491,14 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
     }
 
-    //
+//
     // Set usergroup
     //
 
     public function it_should_set_user_group(HttpClient $client)
     {
-        $newUserGroup = 2;
+        $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
+
         $client->post('Users/SetUserGroup', [
             'userId' => $this->getPrimaryKeyValue(),
             'newUserGroup' => $newUserGroup,
@@ -512,15 +510,17 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_set_user_group_if_model_doesnt_exist(HttpClient $client)
     {
-        $this->beConstructedWith($client, []);
-        $newUserGroup = 2;
+        $fakeUser = $this->fakeUser(['Id' => null]);
+        $this->beConstructedWith($client, $fakeUser);
+        $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
+
         $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
         $this->GroupId->shouldNotBe($newUserGroup);
     }
 
     public function it_should_throw_on_set_user_group_when_got_unexpected_reply(HttpClient $client)
     {
-        $newUserGroup = 2;
+        $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
 
         $client->post('Users/SetUserGroup', [
             'userId' => $this->getPrimaryKeyValue(),
