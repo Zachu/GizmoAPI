@@ -1,10 +1,5 @@
 <?php namespace Pisa\Api\Gizmo\Models;
 
-<<<<<<< master
-=======
-use Pisa\Api\Gizmo\Contracts\Cacheable;
-
->>>>>>> local
 abstract class BaseModel implements BaseModelInterface
 {
     use \Pisa\Api\Gizmo\Contracts\AttributableTrait;
@@ -25,13 +20,7 @@ abstract class BaseModel implements BaseModelInterface
      */
     protected $guarded = [];
 
-<<<<<<< master
-    protected $attributes      = [];
     protected $savedAttributes = [];
-    protected $primaryKey      = 'Id';
-=======
-    protected $savedAttributes = [];
->>>>>>> local
 
     /**
      * Used with method save(). Use that when creating a new model.
@@ -86,8 +75,8 @@ abstract class BaseModel implements BaseModelInterface
 
     protected function isFillable($key)
     {
-        $exists   = (isset($this->attributes[$key]));
-        $guarded  = in_array($key, $this->guarded);
+        $exists = (isset($this->attributes[$key]));
+        $guarded = in_array($key, $this->guarded);
         $fillable = in_array($key, $this->fillable);
 
         return ($fillable || (!$exists && $guarded));
