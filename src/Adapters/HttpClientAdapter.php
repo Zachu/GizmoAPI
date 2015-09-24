@@ -5,8 +5,6 @@ use GuzzleHttp\ClientInterface as HttpClient;
 class HttpClientAdapter
 {
     protected $client;
-    protected $defaultAttributes = [];
-    protected $attributes;
 
     public function __construct(HttpClient $client)
     {
