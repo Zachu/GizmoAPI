@@ -2,12 +2,10 @@
 
 use Exception;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
-use Pisa\Api\Gizmo\Contracts\Cacheable;
 use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
 
-class User extends BaseModel implements UserInterface, Cacheable
+class User extends BaseModel implements UserInterface
 {
-    use \Pisa\Api\Gizmo\Contracts\CacheableTrait;
 
     protected $fillable = [
         'FirstName',

@@ -1,6 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Contracts;
 
-abstract class AbstractIdentifiable implements Identifiable
+abstract class IdentifiableAbstract implements Identifiable
 {
     protected $primaryKey = 'Id';
 
