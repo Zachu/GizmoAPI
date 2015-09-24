@@ -67,89 +67,90 @@ class UserRepositorySpec extends ObjectBehavior
 
         $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
     }
+/*
+public function it_should_find_users_by_parameters(HttpClient $client)
+{
 
-    public function it_should_find_users_by_parameters(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_find_users_by_case_sensitive_parameters(HttpClient $client)
+{
 
-    public function it_should_find_users_by_case_sensitive_parameters(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_find_users_by_parameters_if_got_unexpected_response(HttpClient $client)
+{
 
-    public function it_should_throw_on_find_users_by_parameters_if_got_unexpected_response(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_find_one_user_by_parameters(HttpClient $client)
+{
 
-    public function it_should_find_one_user_by_parameters(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_find_one_user_by_case_sensitive_parameters(HttpClient $client)
+{
 
-    public function it_should_find_one_user_by_case_sensitive_parameters(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_find_one_user_by_parameters_if_got_unexpected_response(HttpClient $client)
+{
 
-    public function it_should_throw_on_find_one_user_by_parameters_if_got_unexpected_response(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_get_user(HttpClient $client)
+{
 
-    public function it_should_get_user(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_get_user_if_got_unexpected_response(HttpClient $client)
+{
 
-    public function it_should_throw_on_get_user_if_got_unexpected_response(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_get_user_if_parameter_is_not_integer(HttpClient $client)
+{
 
-    public function it_should_throw_on_get_user_if_parameter_is_not_integer(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_check_if_user_exists(HttpClient $client)
+{
 
-    public function it_should_check_if_user_exists(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_has_user_if_got_unexpected_response(HttpClient  $client)
+{
 
-    public function it_should_throw_on_has_user_if_got_unexpected_response(HttpClient  $client)
-    {
+}
 
-    }
+public function it_should_check_if_username_exists(HttpClient $client)
+{
 
-    public function it_should_check_if_username_exists(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_has_username_if_got_unexpected_response(HttpClient  $client)
+{
 
-    public function it_should_throw_on_has_username_if_got_unexpected_response(HttpClient  $client)
-    {
+}
 
-    }
+public function it_should_check_if_email_exists(HttpClient $client)
+{
 
-    public function it_should_check_if_email_exists(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_has_email_if_got_unexpected_response(HttpClient  $client)
+{
 
-    public function it_should_throw_on_has_email_if_got_unexpected_response(HttpClient  $client)
-    {
+}
 
-    }
+public function it_should_check_if_loginname_exists(HttpClient $client)
+{
 
-    public function it_should_check_if_loginname_exists(HttpClient $client)
-    {
+}
 
-    }
+public function it_should_throw_on_has_loginname_if_got_unexpected_response(HttpClient $client)
+{
 
-    public function it_should_throw_on_has_loginname_if_got_unexpected_response(HttpClient $client)
-    {
-
-    }
+}
+ */
 }
