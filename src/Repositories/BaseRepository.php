@@ -2,7 +2,7 @@
 
 use Exception;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
-use Pisa\Api\Gizmo\Models\BaseModelInterface;
+use Pisa\Api\Gizmo\Contracts\Attributable;
 use zachu\zioc\IoC;
 
 abstract class BaseRepository implements BaseRepositoryInterface
@@ -23,10 +23,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     public function make(array $attributes)
     {
-        $model = $this->ioc->make($this->model); //@todo not testable :( Damn. What do?
+        $model = $this->ioc->make($this->model);
 
-        if ($model instanceof BaseModelInterface) {
-            $model->fill($attributes, true);
+        if ($model instanceof Attributable) {
+            $model->fill($attributes);
         } else {
             throw new Exception("Unable to make object because it's not instance of BaseModel");
         }
