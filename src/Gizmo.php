@@ -1,10 +1,10 @@
 <?php namespace Pisa\Api\Gizmo;
 
 use Exception;
-use Illuminate\Container\Container;
+use Illuminate\Contracts\Container\Container;
 use Pisa\Api\Gizmo\Repositories\HostRepositoryInterface;
-use Pisa\Api\Gizmo\Repositories\NewsRepository;
-use Pisa\Api\Gizmo\Repositories\SessionsRepository;
+use Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface;
+use Pisa\Api\Gizmo\Repositories\SessionsRepositoryInterface;
 use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
 
 class Gizmo
@@ -18,33 +18,29 @@ class Gizmo
     protected $config;
     protected $ioc;
 
-    public function __construct(array $config = array())
+    public function __construct(Container $ioc, array $config = array())
     {
         $this->config = $config;
+        $this->ioc    = $ioc;
         $this->bootstrap();
     }
 
     private function bootstrap()
     {
-        $container = new Container;
-        $container->singleton(\Illuminate\Contracts\Container\Container::class, function ($c) {
+        $this->ioc->singleton(\Illuminate\Contracts\Container\Container::class, function ($c) {
             return $c;
         });
 
-        $container->singleton(\Pisa\Api\Gizmo\Adapters\HttpClientAdapter::class);
-        $container->singleton(\GuzzleHttp\ClientInterface::class, function ($c) {
+        $this->ioc->singleton(\Pisa\Api\Gizmo\Adapters\HttpClientAdapter::class);
+        $this->ioc->singleton(\GuzzleHttp\ClientInterface::class, function ($c) {
             $httpConfig = ($this->getConfig('http') !== null ? $this->getConfig('http') : []);
             return new \GuzzleHttp\Client($httpConfig);
         });
 
-        $container->bind(\Pisa\Api\Gizmo\Repositories\UserRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\UserRepository::class);
-        $container->bind(\Pisa\Api\Gizmo\Repositories\HostRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\HostRepository::class);
-/*
-$container->bind(\Pisa\Api\Gizmo\Repositories\SessionRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\SessionsRepository::class);
-$container->bind(\Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\NewsRepository::class);
- */
-
-        $this->ioc = $container;
+        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\UserRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\UserRepository::class);
+        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\HostRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\HostRepository::class);
+        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\SessionRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\SessionsRepository::class);
+        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\NewsRepository::class);
     }
 
     public function getConfig($name = null)
@@ -60,7 +56,7 @@ $container->bind(\Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface::class, \P
 
     public function setConfig($name, $value = null)
     {
-        $this->config[$name] = null;
+        $this->config[$name] = $value;
     }
 
     public function __get($name)
@@ -109,10 +105,10 @@ $container->bind(\Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface::class, \P
                 $repository = $this->ioc->make(HostRepositoryInterface::class);
                 break;
             case 'news':
-                $repository = $this->ioc->make(NewsRepository::class);
+                $repository = $this->ioc->make(NewsRepositoryInterface::class);
                 break;
             case 'sessions':
-                $repository = $this->ioc->make(SessionsRepository::class);
+                $repository = $this->ioc->make(SessionsRepositoryInterface::class);
                 break;
         }
 
