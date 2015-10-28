@@ -75,8 +75,8 @@ abstract class BaseModel implements BaseModelInterface
 
     protected function isFillable($key)
     {
-        $exists = (isset($this->attributes[$key]));
-        $guarded = in_array($key, $this->guarded);
+        $exists   = (isset($this->attributes[$key]));
+        $guarded  = in_array($key, $this->guarded);
         $fillable = in_array($key, $this->fillable);
 
         return ($fillable || (!$exists && $guarded));

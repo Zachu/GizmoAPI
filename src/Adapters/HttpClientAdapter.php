@@ -79,7 +79,6 @@ class HttpClientAdapter
         if (!empty($parameters)) {
             $options['query'] = $this->fixParameters($parameters);
         }
-
         $response = $this->client->request($method, $url, $options);
         return new HttpResponseAdapter($response);
     }

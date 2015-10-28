@@ -81,7 +81,7 @@ class Host extends BaseModel implements HostInterface
                 throw new Exception("Process id has to be integer");
             } else {
                 $result = $this->client->get('Host/GetProcess', [
-                    'hostId' => $this->getPrimaryKeyValue(),
+                    'hostId'    => $this->getPrimaryKeyValue(),
                     'processId' => (int) $processId,
                 ])->getBody();
 
@@ -105,7 +105,7 @@ class Host extends BaseModel implements HostInterface
                 throw new Exception("Process name has to be string");
             } else {
                 $result = $this->client->get('Host/GetProcesses', [
-                    'hostId' => $this->getPrimaryKeyValue(),
+                    'hostId'      => $this->getPrimaryKeyValue(),
                     'processName' => (string) $processName,
                 ])->getBody();
 
@@ -252,8 +252,8 @@ class Host extends BaseModel implements HostInterface
                 //@todo play with $parameters. No idea how to currently work with them.
                 //Parameters probably don't work currently. In fact, they don't.
                 $result = $this->client->post('Host/UINotify', [
-                    'hostId' => $this->getPrimaryKeyValue(),
-                    'message' => $message,
+                    'hostId'     => $this->getPrimaryKeyValue(),
+                    'message'    => $message,
                     'parameters' => implode($parameters),
                 ]);
 
@@ -303,7 +303,7 @@ class Host extends BaseModel implements HostInterface
                 throw new Exception("Provided security state isn't boolean");
             } else {
                 $result = $this->client->post('Host/SetSecurityState', [
-                    'hostId' => $this->getPrimaryKeyValue(),
+                    'hostId'  => $this->getPrimaryKeyValue(),
                     'enabled' => ($isEnabled ? 'true' : 'false'),
                 ]);
 
@@ -328,7 +328,7 @@ class Host extends BaseModel implements HostInterface
                 throw new Exception("Provided order state isn't boolean");
             } else {
                 $result = $this->client->post('Host/SetOrderState', [
-                    'hostId' => $this->getPrimaryKeyValue(),
+                    'hostId'  => $this->getPrimaryKeyValue(),
                     'inOrder' => (!$isOutOfOrder ? 'true' : 'false'),
                 ]);
 
