@@ -373,18 +373,24 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
-    protected function setIsOutOfOrderAttribute($value)
+    public function save()
     {
-        $this->setOrderState($value);
-    }
+        try {
+            if ($this->exists()) {
+                foreach ($this->changed() as $key => $newValue) {
+                    if ($key == 'IsOutOfOrder') {
+                        $this->setOrderState($newValue);
+                    } elseif ($key == 'IsSecurityEnabled') {
+                        $this->setSecurityState($newValue);
+                    } elseif ($key == 'IsLocked') {
+                        $this->setLockState($newValue);
+                    }
+                }
+            }
 
-    protected function setIsSecurityEnabledAttribute($value)
-    {
-        $this->setSecurityState($value);
-    }
-
-    protected function setIsLockedAttribute($value)
-    {
-        $this->setLockState($value);
+            return parent::save();
+        } catch (Exception $e) {
+            throw new Exception("Unable to save host: " . $e->getMessage());
+        }
     }
 }

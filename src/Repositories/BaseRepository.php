@@ -1,17 +1,19 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
 use Exception;
+use Illuminate\Contracts\Container\Container;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
-use Pisa\Api\Gizmo\Contracts\Attributable;
+use Pisa\Api\Gizmo\Models\BaseModelInterface as BaseModel;
 use zachu\zioc\IoC;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
     protected $client;
     protected $model;
+    protected $modelNamespace = 'Pisa\\Api\\Gizmo\\Models\\';
     protected $ioc;
 
-    public function __construct(HttpClient $client, IoC $ioc)
+    public function __construct(Container $ioc, HttpClient $client)
     {
         $this->client = $client;
         $this->ioc    = $ioc;
@@ -23,12 +25,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     public function make(array $attributes)
     {
-        $model = $this->ioc->make($this->model);
+        $model = $this->ioc->make(rtrim($this->modelNamespace, '\\') . '\\' . $this->model);
 
-        if ($model instanceof Attributable) {
-            $model->fill($attributes);
-        } else {
-            throw new Exception("Unable to make object because it's not instance of BaseModel");
+        if ($model instanceof BaseModel) {
+            $model->load($attributes);
         }
 
         return $model;
@@ -54,8 +54,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
             } else {
                 $filter[] = "substringof('{$value}',$key)";
             }
-        }
 
+        }
         $filter = implode(' or ', $filter);
 
         return $filter;

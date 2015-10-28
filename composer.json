@@ -1,5 +1,6 @@
 {
     "name": "pisa/gizmo-api",
+    "version": "0.0.1",
     "description": "Gizmo API wrapper for PHP",
     "license": "MIT",
     "authors": [
@@ -18,18 +19,12 @@
         "phpspec/phpspec": "~2.0"
     },
 
-    "repositories": [
-        {
-            "url": "http://git.zachu.fi:8081/Zachu/zioc.git",
-            "type": "git"
-        }
-    ],
-
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "guzzlehttp/psr7": "dev-master",
+        "illuminate/container": "^5.1",
         "psr/log": "1.0.*",
-        "zachu/zioc": "*@dev",
+        "level-2/dice": "^2.0",
         "fzaninotto/faker": "^1.5"
     }
 }
