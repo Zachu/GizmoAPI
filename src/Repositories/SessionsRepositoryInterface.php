@@ -2,6 +2,6 @@
 
 namespace Pisa\Api\Gizmo\Repositories;
 
-interface SessionsRepositoryInterface
+interface SessionsRepositoryInterface extends BaseRepositoryInterface
 {
 }
