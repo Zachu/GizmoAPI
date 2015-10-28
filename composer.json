@@ -9,22 +9,21 @@
             "email": "zachu@thegroup.fi"
         }
     ],
+    "require-dev": {
+        "phpspec/phpspec": "~2.0"
+    },
+    
     "autoload": {
         "psr-4": {
             "Pisa\\Api\\Gizmo\\": "src/",
             "spec\\Pisa\\Api\\Gizmo\\": "spec/"
         }
     },
-    "require-dev": {
-        "phpspec/phpspec": "~2.0"
-    },
-
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "guzzlehttp/psr7": "dev-master",
         "illuminate/container": "^5.1",
         "psr/log": "1.0.*",
-        "level-2/dice": "^2.0",
         "fzaninotto/faker": "^1.5"
     }
 }
