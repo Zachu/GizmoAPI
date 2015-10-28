@@ -1,16 +1,13 @@
 <?php
 namespace spec\Pisa\Api\Gizmo;
 
+use Illuminate\Contracts\Container\Container;
 use PhpSpec\ObjectBehavior;
-use Pisa\Api\Gizmo\Repositories\HostRepository;
-use Pisa\Api\Gizmo\Repositories\NewsRepository;
-use Pisa\Api\Gizmo\Repositories\SessionsRepository;
-use Pisa\Api\Gizmo\Repositories\UserRepository;
-use zachu\zioc\IoC;
+use Pisa\Api\Gizmo\Repositories;
 
 class GizmoSpec extends ObjectBehavior
 {
-    public function Let(IoC $ioc)
+    public function Let(Container $ioc)
     {
         $this->beConstructedWith($ioc);
     }
@@ -20,31 +17,53 @@ class GizmoSpec extends ObjectBehavior
         $this->shouldHaveType('Pisa\Api\Gizmo\Gizmo');
     }
 
-    public function it_should_return_users_repository(IoC $ioc, UserRepository $repository)
+    public function it_should_return_users_repository(Container $ioc, Repositories\UserRepositoryInterface $repository)
     {
         $this->hasRepository('users')->shouldBe(true);
-        $ioc->make('UserRepository')->willReturn($repository);
+        $ioc->make(Repositories\UserRepositoryInterface::class)->willReturn($repository);
         $this->users->shouldBe($repository);
     }
 
-    public function it_should_return_hosts_repository(IoC $ioc, HostRepository $repository)
+    public function it_should_return_hosts_repository(Container $ioc, Repositories\HostRepositoryInterface $repository)
     {
         $this->hasRepository('hosts')->shouldBe(true);
-        $ioc->make('HostRepository')->willReturn($repository);
+        $ioc->make(Repositories\HostRepositoryInterface::class)->willReturn($repository);
         $this->hosts->shouldBe($repository);
     }
 
-    public function it_should_return_news_repository(IoC $ioc, NewsRepository $repository)
+    public function it_should_return_news_repository(Container $ioc, Repositories\NewsRepositoryInterface $repository)
     {
         $this->hasRepository('news')->shouldBe(true);
-        $ioc->make('NewsRepository')->willReturn($repository);
+        $ioc->make(Repositories\NewsRepositoryInterface::class)->willReturn($repository);
         $this->news->shouldBe($repository);
     }
 
-    public function it_should_return_sessions_repository(IoC $ioc, SessionsRepository $repository)
+    public function it_should_return_sessions_repository(Container $ioc, Repositories\SessionsRepositoryInterface $repository)
     {
         $this->hasRepository('sessions')->shouldBe(true);
-        $ioc->make('SessionsRepository')->willReturn($repository);
+        $ioc->make(Repositories\SessionsRepositoryInterface::class)->willReturn($repository);
         $this->sessions->shouldBe($repository);
+    }
+
+    public function it_should_throw_on_unknown_repository(Container $ioc)
+    {
+        $repository = 'unknown';
+        $this->hasRepository($repository)->shouldBe(false);
+        $this->shouldThrow('\Exception')->duringGetRepository($repository);
+    }
+
+    public function it_should_set_and_get_config_values(Container $ioc)
+    {
+        $config     = ['setting1' => 'value1'];
+        $key        = key($config);
+        $newSetting = ['newSetting' => 'newValue'];
+        $newKey     = key($newSetting);
+        $this->beConstructedWith($ioc, $config);
+
+        $this->getConfig()->shouldBe($config);
+        $this->getConfig($key)->shouldBe($config[$key]);
+
+        $this->setConfig($newKey, $newSetting[$newKey]);
+        $this->getConfig($newKey)->shouldBe($newSetting[$newKey]);
     }
 }
