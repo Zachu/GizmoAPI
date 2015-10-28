@@ -34,7 +34,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function delete(UserInterface $user)
     {
         try {
-            $result = $this->client->request('Users/Delete', ['userId' => $user->Id], 'DELETE');
+            $result = $this->client->delete('Users/Delete', ['userId' => $user->Id]);
             //@todo check return values
             return true;
         } catch (Exception $e) {
@@ -51,7 +51,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $options['$orderby'] = $orderBy;
         }
 
-        $result = $this->client->request('Users/Get', $options);
+        $result = $this->client->get('Users/Get', $options);
         //@todo error handling
         //@todo check return values
 
@@ -61,7 +61,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
         $filter = $this->criteriaToFilter($criteria, $caseSensitive);
-        $result = $this->client->request('Users/Get', ['$filter' => $filter, '$top' => 1]);
+        $result = $this->client->get('Users/Get', ['$filter' => $filter, '$top' => 1]);
 
         if (!is_array($result)) {
             throw new Exception("Requesting array of users, got " . gettype($result));
@@ -75,7 +75,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function get($id)
     {
-        $result = $this->client->request('Users/Get', ['$filter' => 'Id eq ' . $id]);
+        $result = $this->client->get('Users/Get', ['$filter' => 'Id eq ' . $id])->getBody();
 
         if (is_array($result) && !isset($result[0])) {
             return false;
@@ -89,7 +89,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function has($id)
     {
-        $result = $this->client->request('Users/UserExist', ['userId' => $id]);
+        $result = $this->client->get('Users/UserExist', ['userId' => $id]);
 
         if (!is_bool($result)) {
             throw new Exception("Requesting boolean, got " . gettype($result));
@@ -101,7 +101,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function hasUserName($userName)
     {
-        $result = $this->client->request('Users/UserNameExist', ['userName' => $userName]);
+        $result = $this->client->get('Users/UserNameExist', ['userName' => $userName]);
 
         if (!is_bool($result)) {
             throw new Exception("Requesting boolean, got " . gettype($result));
@@ -112,7 +112,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
     public function hasUserEmail($userEmail)
     {
-        $result = $this->client->request('Users/UserEmailExist', ['userEmail' => $userEmail]);
+        $result = $this->client->get('Users/UserEmailExist', ['userEmail' => $userEmail]);
 
         if (!is_bool($result)) {
             throw new Exception("Requesting boolean, got " . gettype($result));
@@ -123,7 +123,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
     public function hasLoginName($loginName)
     {
-        $result = $this->client->request('Users/LoginNameExist', ['loginName' => $loginName]);
+        $result = $this->client->get('Users/LoginNameExist', ['loginName' => $loginName]);
 
         if (!is_bool($result)) {
             throw new Exception("Requesting boolean, got " . gettype($result));
@@ -137,7 +137,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         if ($user->exists()) {
             try {
-                $result = $this->client->request('Users/Update', $user->toArray(), 'POST');
+                $result = $this->client->post('Users/Update', $user->toArray());
                 if (empty($result)) {
                     return true;
                 } else {
@@ -152,7 +152,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             // New user
             try {
                 $user->Registered = date('c');
-                $result           = $this->client->request('Users/Add', $user->toArray(), 'PUT');
+                $result           = $this->client->put('Users/Add', $user->toArray());
                 if (is_int($result)) {
                     $user->Id = $result;
                 } else {
