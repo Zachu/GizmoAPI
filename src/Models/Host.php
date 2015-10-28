@@ -42,8 +42,21 @@ class Host extends BaseModel implements HostInterface
 
     protected function update()
     {
-        throw new Exception("Host cannot be updated via API. Host is updated via the server service");
-    }
+        try {
+            foreach ($this->changed() as $key => $newValue) {
+                if ($key == 'IsOutOfOrder') {
+                    $this->setOrderState($newValue);
+                } elseif ($key == 'IsSecurityEnabled') {
+                    $this->setSecurityState($newValue);
+                } elseif ($key == 'IsLocked') {
+                    $this->setLockState($newValue);
+                } else {
+                    throw new Exception("Host attributes are only changeable from server service.");
+                }
+            }
+        } catch (Exception $e) {
+            throw new Exception("Unable to update host: " . $e->getMessage());
+        }}
 
     public function delete()
     {
@@ -370,27 +383,6 @@ class Host extends BaseModel implements HostInterface
             }
         } catch (Exception $e) {
             throw new Exception("Unable to get free status: " . $e->getMessage());
-        }
-    }
-
-    public function save()
-    {
-        try {
-            if ($this->exists()) {
-                foreach ($this->changed() as $key => $newValue) {
-                    if ($key == 'IsOutOfOrder') {
-                        $this->setOrderState($newValue);
-                    } elseif ($key == 'IsSecurityEnabled') {
-                        $this->setSecurityState($newValue);
-                    } elseif ($key == 'IsLocked') {
-                        $this->setLockState($newValue);
-                    }
-                }
-            }
-
-            return parent::save();
-        } catch (Exception $e) {
-            throw new Exception("Unable to save host: " . $e->getMessage());
         }
     }
 }

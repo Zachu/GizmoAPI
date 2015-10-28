@@ -25,13 +25,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     public function make(array $attributes)
     {
-        $model = $this->ioc->make(rtrim($this->modelNamespace, '\\') . '\\' . $this->model);
+        $model = $this->ioc->make($this->fqnModel());
 
         if ($model instanceof BaseModel) {
             $model->load($attributes);
         }
 
         return $model;
+    }
+
+    public function fqnModel()
+    {
+        return rtrim($this->modelNamespace, '\\') . '\\' . $this->model;
     }
 
     protected function makeArray(array $data)

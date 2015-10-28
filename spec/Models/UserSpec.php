@@ -125,7 +125,7 @@ class UserSpec extends ApiTester
 
         $this->GroupId = $groupId;
         $client->post('Users/SetUserGroup', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'       => $this->getPrimaryKeyValue(),
             'newUserGroup' => $groupId,
         ])->shouldBeCalled();
 
@@ -371,7 +371,7 @@ class UserSpec extends ApiTester
         $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
 
         $client->post('Users/Rename', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'      => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $this->rename($repository, $newUserName);
@@ -384,7 +384,7 @@ class UserSpec extends ApiTester
         $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
 
         $client->post('Users/Rename', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'      => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
         $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
@@ -419,7 +419,7 @@ class UserSpec extends ApiTester
         $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
 
         $client->post('Users/SetUserEmail', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'   => $this->getPrimaryKeyValue(),
             'newEmail' => $newEmail,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
@@ -433,7 +433,7 @@ class UserSpec extends ApiTester
         $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
 
         $client->post('Users/SetUserEmail', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'   => $this->getPrimaryKeyValue(),
             'newEmail' => $newEmail,
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
@@ -465,7 +465,7 @@ class UserSpec extends ApiTester
     {
         $newPassword = 'newPassword';
         $client->post('Users/SetUserPassword', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'      => $this->getPrimaryKeyValue(),
             'newPassword' => $newPassword,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
@@ -484,7 +484,7 @@ class UserSpec extends ApiTester
         $newPassword = 'newPassword';
 
         $client->post('Users/SetUserPassword', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'      => $this->getPrimaryKeyValue(),
             'newPassword' => $newPassword,
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
@@ -500,7 +500,7 @@ class UserSpec extends ApiTester
         $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
 
         $client->post('Users/SetUserGroup', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'       => $this->getPrimaryKeyValue(),
             'newUserGroup' => $newUserGroup,
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
@@ -523,7 +523,7 @@ class UserSpec extends ApiTester
         $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
 
         $client->post('Users/SetUserGroup', [
-            'userId' => $this->getPrimaryKeyValue(),
+            'userId'       => $this->getPrimaryKeyValue(),
             'newUserGroup' => $newUserGroup,
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
