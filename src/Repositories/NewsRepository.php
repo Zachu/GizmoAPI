@@ -1,6 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
-class NewsRepository
+class NewsRepository implements NewsRepositoryInterface
 {
 
 }

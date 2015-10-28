@@ -1,6 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
-interface HostRepositoryInterface
+interface HostRepositoryInterface extends BaseRepositoryInterface
 {
-	public function getByNumber($hostNumber);
+    public function getByNumber($hostNumber);
 }

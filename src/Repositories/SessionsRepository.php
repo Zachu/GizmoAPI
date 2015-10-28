@@ -1,6 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
-class SessionsRepository
+class SessionsRepository implements SessionsRepositoryInterface
 {
 
 }

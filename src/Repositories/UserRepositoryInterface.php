@@ -1,6 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
-interface UserRepositoryInterface
+interface UserRepositoryInterface extends BaseRepositoryInterface
 {
     public function hasLoginName($loginName);
     public function hasUserEmail($userEmail);
