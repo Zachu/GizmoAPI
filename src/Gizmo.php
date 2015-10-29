@@ -1,6 +1,7 @@
 <?php namespace Pisa\Api\Gizmo;
 
 use Exception;
+use Illuminate\Container\Container as ConcreteContainer;
 use Illuminate\Contracts\Container\Container;
 use Pisa\Api\Gizmo\Repositories\HostRepositoryInterface;
 use Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface;
@@ -18,10 +19,14 @@ class Gizmo
     protected $config;
     protected $ioc;
 
-    public function __construct(Container $ioc, array $config = array())
+    public function __construct(array $config = array(), Container $ioc = null)
     {
         $this->config = $config;
-        $this->ioc    = $ioc;
+        if ($ioc === null) {
+            $ioc = new ConcreteContainer;
+        }
+
+        $this->ioc = $ioc;
         $this->bootstrap();
     }
 

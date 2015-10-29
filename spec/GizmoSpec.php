@@ -9,7 +9,7 @@ class GizmoSpec extends ObjectBehavior
 {
     public function Let(Container $ioc)
     {
-        $this->beConstructedWith($ioc);
+        $this->beConstructedWith([], $ioc);
     }
 
     public function it_is_initializable()
@@ -45,20 +45,20 @@ class GizmoSpec extends ObjectBehavior
         $this->sessions->shouldBe($repository);
     }
 
-    public function it_should_throw_on_unknown_repository(Container $ioc)
+    public function it_should_throw_on_unknown_repository()
     {
         $repository = 'unknown';
         $this->hasRepository($repository)->shouldBe(false);
         $this->shouldThrow('\Exception')->duringGetRepository($repository);
     }
 
-    public function it_should_set_and_get_config_values(Container $ioc)
+    public function it_should_set_and_get_config_values()
     {
         $config     = ['setting1' => 'value1'];
         $key        = key($config);
         $newSetting = ['newSetting' => 'newValue'];
         $newKey     = key($newSetting);
-        $this->beConstructedWith($ioc, $config);
+        $this->beConstructedWith($config);
 
         $this->getConfig()->shouldBe($config);
         $this->getConfig($key)->shouldBe($config[$key]);
