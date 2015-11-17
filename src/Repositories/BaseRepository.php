@@ -1,10 +1,9 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
 use Exception;
-use Illuminate\Contracts\Container\Container;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
+use Pisa\Api\Gizmo\Contracts\Container;
 use Pisa\Api\Gizmo\Models\BaseModelInterface as BaseModel;
-use zachu\zioc\IoC;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {

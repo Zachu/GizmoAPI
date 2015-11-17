@@ -1,8 +1,8 @@
 <?php namespace Pisa\Api\Gizmo;
 
 use Exception;
-use Illuminate\Container\Container as ConcreteContainer;
-use Illuminate\Contracts\Container\Container;
+use Pisa\Api\Gizmo\Adapters\IlluminateContainerAdapter;
+use Pisa\Api\Gizmo\Contracts\Container;
 use Pisa\Api\Gizmo\Repositories\HostRepositoryInterface;
 use Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface;
 use Pisa\Api\Gizmo\Repositories\SessionsRepositoryInterface;
@@ -23,7 +23,7 @@ class Gizmo
     {
         $this->config = $config;
         if ($ioc === null) {
-            $ioc = new ConcreteContainer;
+            $ioc = new IlluminateContainerAdapter;
         }
 
         $this->ioc = $ioc;
@@ -32,10 +32,9 @@ class Gizmo
 
     private function bootstrap()
     {
-        $this->ioc->singleton(\Illuminate\Contracts\Container\Container::class, function ($c) {
-            return $c;
+        $this->ioc->singleton(\Pisa\Api\Gizmo\Contracts\Container::class, function ($c) {
+            return $this->ioc;
         });
-
         $this->ioc->singleton(\Pisa\Api\Gizmo\Adapters\HttpClientAdapter::class);
         $this->ioc->singleton(\GuzzleHttp\ClientInterface::class, function ($c) {
             $httpConfig = ($this->getConfig('http') !== null ? $this->getConfig('http') : []);

@@ -1,8 +1,8 @@
 <?php namespace spec\Pisa\Api\Gizmo\Repositories;
 
-use Illuminate\Contracts\Container\Container;
 use PhpSpec\ObjectBehavior;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter;
+use Pisa\Api\Gizmo\Contracts\Container;
 use Pisa\Api\Gizmo\Models\User;
 use spec\Pisa\Api\Gizmo\HttpResponses;
 

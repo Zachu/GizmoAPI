@@ -2,8 +2,8 @@
 
 namespace spec\Pisa\Api\Gizmo\Repositories;
 
-use Illuminate\Contracts\Container\Container;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter;
+use Pisa\Api\Gizmo\Contracts\Container;
 use Pisa\Api\Gizmo\Models\Host;
 use spec\Pisa\Api\Gizmo\ApiTester;
 use spec\Pisa\Api\Gizmo\HttpResponses;

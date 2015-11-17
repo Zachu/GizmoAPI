@@ -1,8 +1,8 @@
 <?php
 namespace spec\Pisa\Api\Gizmo;
 
-use Illuminate\Contracts\Container\Container;
 use PhpSpec\ObjectBehavior;
+use Pisa\Api\Gizmo\Contracts\Container;
 use Pisa\Api\Gizmo\Repositories;
 
 class GizmoSpec extends ObjectBehavior
