@@ -48,7 +48,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $array;
     }
 
-    protected function criteriaToFilter(array $criteria, $caseSensitive = false)
+    public static function criteriaToFilter(array $criteria, $caseSensitive = false)
     {
         $filter = [];
         foreach ($criteria as $key => $value) {
