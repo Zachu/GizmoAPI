@@ -35,6 +35,7 @@ class Gizmo
         $this->ioc->singleton(\Pisa\Api\Gizmo\Contracts\Container::class, function ($c) {
             return $this->ioc;
         });
+
         $this->ioc->singleton(\Pisa\Api\Gizmo\Adapters\HttpClientAdapter::class);
         $this->ioc->singleton(\GuzzleHttp\ClientInterface::class, function ($c) {
             $httpConfig = ($this->getConfig('http') !== null ? $this->getConfig('http') : []);

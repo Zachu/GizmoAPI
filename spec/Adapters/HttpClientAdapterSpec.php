@@ -1,6 +1,4 @@
-<?php
-
-namespace spec\Pisa\Api\Gizmo\Adapters;
+<?php namespace spec\Pisa\Api\Gizmo\Adapters;
 
 use GuzzleHttp\ClientInterface as HttpClient;
 use GuzzleHttp\Psr7\Response as HttpResponse;
