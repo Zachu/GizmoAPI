@@ -17,15 +17,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 $options['$orderby'] = $orderBy;
             }
 
-            $result = $this->client->get('Users/Get', $options)->getBody();
-            if (is_array($result)) {
-                $users = $this->makeArray($result);
-            } else {
-                throw new Exception("Requesting array of users, got " . gettype($result));
-                //@todo error handling
-            }
+            $result = $this->client->get('Users/Get', $options);
 
-            return $users;
+            $this->checkResponseArray($result);
+            $this->checkResponseStatusCodes($result, 200);
+
+            return $this->makeArray($result->getBody());
         } catch (Exception $e) {
             throw new Exception("Unable to get all users: " . $e->getMessage());
         }
@@ -51,86 +48,98 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $options['$orderby'] = $orderBy;
         }
 
-        $result = $this->client->get('Users/Get', $options);
-        //@todo error handling
-        //@todo check return values
+        try {
+            $result = $this->client->get('Users/Get', $options);
+            $this->checkResponseArray($result);
+            $this->checkResponseStatusCodes($result, 200);
 
-        return $this->makeArray($result);
+            return $this->makeArray($result->getBody());
+        } catch (Exception $e) {
+            throw new Exception("Finding users by parameters failed. " . $e->getMessage());
+        }
     }
 
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
-        $filter = $this->criteriaToFilter($criteria, $caseSensitive);
-        $result = $this->client->get('Users/Get', ['$filter' => $filter, '$top' => 1]);
-
-        if (!is_array($result)) {
-            throw new Exception("Requesting array of users, got " . gettype($result));
-            //@todo error handling
-        } elseif (empty($result)) {
+        $result = $this->findBy($criteria, $caseSensitive, 1);
+        if (empty($result)) {
             return false;
         } else {
-            return $this->make(reset($result));
+            return reset($result);
         }
     }
 
     public function get($id)
     {
-        $result = $this->client->get('Users/Get', ['$filter' => 'Id eq ' . $id])->getBody();
+        try {
+            $result = $this->client->get('Users/Get', ['$filter' => 'Id eq ' . $id]);
+            $this->checkResponseArray($result);
+            $this->checkResponseStatusCodes($result, 200);
 
-        if (is_array($result) && !isset($result[0])) {
-            return false;
-        } elseif (!is_array($result)) {
-            throw new Exception("Requesting array of users, got " . gettype($result));
-            //@todo error handling
+            $body = $result->getBody();
+            if (empty($body)) {
+                return false;
+            } else {
+                return $this->make(reset($body));
+            }
+        } catch (Exception $e) {
+            throw new Exception("Getting a user by id failed. " . $e->getMessage());
         }
-
-        return $this->make($result[0]);
     }
 
     public function has($id)
     {
-        $result = $this->client->get('Users/UserExist', ['userId' => $id]);
+        try {
+            $result = $this->client->get('Users/UserExist', ['userId' => $id]);
 
-        if (!is_bool($result)) {
-            throw new Exception("Requesting boolean, got " . gettype($result));
-            //@todo error handling
+            $this->checkResponseBoolean($result);
+            $this->checkResponseStatusCodes($result, 200);
+
+            return $result->getBody();
+        } catch (Exception $e) {
+            throw new Exception("Checking for user existance failed. " . $e->getMessage());
         }
-
-        return $result;
     }
 
     public function hasUserName($userName)
     {
-        $result = $this->client->get('Users/UserNameExist', ['userName' => $userName]);
+        try {
+            $result = $this->client->get('Users/UserNameExist', ['userName' => $userName]);
 
-        if (!is_bool($result)) {
-            throw new Exception("Requesting boolean, got " . gettype($result));
-            //@todo error handling
+            $this->checkResponseBoolean($result);
+            $this->checkResponseStatusCodes($result, 200);
+
+            return $result->getBody();
+        } catch (Exception $e) {
+            throw new Exception("Checking for username existance failed. " . $e->getMessage());
         }
-
-        return $result;
     }
     public function hasUserEmail($userEmail)
     {
-        $result = $this->client->get('Users/UserEmailExist', ['userEmail' => $userEmail]);
+        try {
+            $result = $this->client->get('Users/UserEmailExist', ['userEmail' => $userEmail]);
 
-        if (!is_bool($result)) {
-            throw new Exception("Requesting boolean, got " . gettype($result));
-            //@todo error handling
+            $this->checkResponseBoolean($result);
+            $this->checkResponseStatusCodes($result, 200);
+
+            return $result->getBody();
+        } catch (Exception $e) {
+            throw new Exception("Checking for user email existance failed. " . $e->getMessage());
         }
 
-        return $result;
     }
     public function hasLoginName($loginName)
     {
-        $result = $this->client->get('Users/LoginNameExist', ['loginName' => $loginName]);
+        try {
+            $result = $this->client->get('Users/LoginNameExist', ['loginName' => $loginName]);
+            $this->checkResponseBoolean($result);
+            $this->checkResponseStatusCodes($result, 200);
 
-        if (!is_bool($result)) {
-            throw new Exception("Requesting boolean, got " . gettype($result));
-            //@todo error handling
+            return $result->getBody();
+        } catch (Exception $e) {
+            throw new Exception("Checking for login name existance failed. " . $e->getMessage());
         }
 
-        return $result;
     }
 
     public function save(UserInterface $user)
@@ -138,14 +147,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         if ($user->exists()) {
             try {
                 $result = $this->client->post('Users/Update', $user->toArray());
-                if (empty($result)) {
-                    return true;
-                } else {
-                    throw new Exception("Didn't expect any results, got " . gettype($result));
-                    //@todo error handling
-                }
+
+                $this->checkResponseEmpty($result);
+                $this->checkResponseStatusCodes($result, 204);
+
+                return true;
             } catch (Exception $e) {
-                //@todo error handling
                 throw new Exception("Error while updating user. " . $e->getMessage());
             }
         } else {
@@ -153,12 +160,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             try {
                 $user->Registered = date('c');
                 $result           = $this->client->put('Users/Add', $user->toArray());
-                if (is_int($result)) {
-                    $user->Id = $result;
-                } else {
-                    throw new Exception("Expecting integer user id, got " . gettype($result));
-                    //@todo error handling
-                }
+
+                $this->checkResponseInteger($result);
+                $this->checkResponseStatusCodes($result, 200);
+                $user->Id = $result;
+
+                return true;
             } catch (Exception $e) {
                 throw new Exception("Error while creating new user. " . $e->getMessage());
                 //@todo error handling

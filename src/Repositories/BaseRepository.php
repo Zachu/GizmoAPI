@@ -2,6 +2,7 @@
 
 use Exception;
 use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
+use Pisa\Api\Gizmo\Adapters\HttpResponseAdapter;
 use Pisa\Api\Gizmo\Contracts\Container;
 use Pisa\Api\Gizmo\Models\BaseModelInterface as BaseModel;
 
@@ -46,6 +47,45 @@ abstract class BaseRepository implements BaseRepositoryInterface
         }
 
         return $array;
+    }
+
+    public static function checkResponseStatusCodes(HttpResponseAdapter $response, $statusCodes = [])
+    {
+        if (is_numeric($statusCodes)) {
+            $statusCodes = [(int) $statusCodes];
+        }
+
+        if (!in_array($response->getStatusCode(), $statusCodes)) {
+            throw new Exception("Unexpected HTTP Code " . $response->getStatusCode() . ". Expecting " . implode(',', $statusCodes));
+        }
+    }
+
+    public static function checkResponseBoolean(HttpResponseAdapter $response)
+    {
+        if (!is_bool($response->getBody())) {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting boolean");
+        }
+    }
+
+    public static function checkResponseArray(HttpResponseAdapter $response)
+    {
+        if (!is_array($response->getBody())) {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting array");
+        }
+    }
+
+    public static function checkResponseInteger(HttpResponseAdapter $response)
+    {
+        if (!is_int($response->getBody())) {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting integer");
+        }
+    }
+
+    public static function checkResponseEmpty(HttpResponseAdapter $response)
+    {
+        if ($response->getBody() != '') {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting none");
+        }
     }
 
     public static function criteriaToFilter(array $criteria, $caseSensitive = false)
