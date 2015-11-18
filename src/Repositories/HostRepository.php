@@ -120,8 +120,8 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
 
     /**
      * Check if host exists.
-     * @param  [type]  $id [description]
-     * @return boolean     [description]
+     * @param  integer $id Id of the host
+     * @return boolean
      * @uses   get         This is a wrapper for get to check user existance.
      */
     public function has($id)

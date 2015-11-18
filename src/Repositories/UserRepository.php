@@ -2,13 +2,18 @@
 
 use Exception;
 use Pisa\Api\Gizmo\GizmoClient as Client;
-use Pisa\Api\Gizmo\Models\UserInterface;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-
     protected $model = 'User';
 
+    /**
+     * Fetch list of all users
+     * @param  integer $limit   Limit the number of fetched entries. Defaults to 30
+     * @param  integer $skip    Skip number of entries (i.e. fetch the next page). Defaults to 0
+     * @param  string  $orderBy Column to order the results with
+     * @return array            Returns array of Users. Throws Exception on error.
+     */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
         try {
@@ -28,18 +33,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
-    public function delete(UserInterface $user)
-    {
-        try {
-            $result = $this->client->delete('Users/Delete', ['userId' => $user->Id]);
-            //@todo check return values
-            return true;
-        } catch (Exception $e) {
-            throw new Exception("Deleting user failed. " . $e->getMessage());
-            //@todo error handling
-        }
-    }
-
+    /**
+     * Finds users by parameters
+     * @param  array   $criteria      Array of criteria to search for
+     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
+     * @param  integer $limit         Limit the number of fetched entries. Defaults to 30
+     * @param  integer $skip          Skip number of entries (i.e. fetch the next page). Defaults to 0
+     * @param  string  $orderBy       Column to order the results with
+     * @return array                  Returns array of Users. Throws Exception on error.
+     */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -59,6 +61,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
+    /**
+     * Find one user by parameters
+     * @uses   findBy                 This is wrapper for findBy for searching just one user.
+     * @param  array   $criteria      Array of criteria to search for
+     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
+     * @return User|null              Returns first User found on current criteria. Returns null if none is found. Throws Exception on error.
+     */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
         $result = $this->findBy($criteria, $caseSensitive, 1);
@@ -69,6 +78,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
+    /**
+     * Get user by id
+     * @param  integer $id Id of the user
+     * @return User|null   Returns User. If no user is found, returns null. Throws Exception on error.
+     */
     public function get($id)
     {
         try {
@@ -87,6 +101,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
+    /**
+     * Check if user exists.
+     * @param  integer $id Id of the user
+     * @return boolean
+     */
     public function has($id)
     {
         try {
@@ -101,33 +120,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
-    public function hasUserName($userName)
-    {
-        try {
-            $result = $this->client->get('Users/UserNameExist', ['userName' => $userName]);
-
-            $this->checkResponseBoolean($result);
-            $this->checkResponseStatusCodes($result, 200);
-
-            return $result->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Checking for username existance failed. " . $e->getMessage());
-        }
-    }
-    public function hasUserEmail($userEmail)
-    {
-        try {
-            $result = $this->client->get('Users/UserEmailExist', ['userEmail' => $userEmail]);
-
-            $this->checkResponseBoolean($result);
-            $this->checkResponseStatusCodes($result, 200);
-
-            return $result->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Checking for user email existance failed. " . $e->getMessage());
-        }
-
-    }
+    /**
+     * Check if user LoginName exists.
+     * @param  string $loginName LoginName of the user
+     * @return boolean
+     */
     public function hasLoginName($loginName)
     {
         try {
@@ -142,34 +139,42 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     }
 
-    public function save(UserInterface $user)
+    /**
+     * Check if user email exists.
+     * @param  string $userEmail Email of the user
+     * @return boolean
+     */
+    public function hasUserEmail($userEmail)
     {
-        if ($user->exists()) {
-            try {
-                $result = $this->client->post('Users/Update', $user->toArray());
+        try {
+            $result = $this->client->get('Users/UserEmailExist', ['userEmail' => $userEmail]);
 
-                $this->checkResponseEmpty($result);
-                $this->checkResponseStatusCodes($result, 204);
+            $this->checkResponseBoolean($result);
+            $this->checkResponseStatusCodes($result, 200);
 
-                return true;
-            } catch (Exception $e) {
-                throw new Exception("Error while updating user. " . $e->getMessage());
-            }
-        } else {
-            // New user
-            try {
-                $user->Registered = date('c');
-                $result           = $this->client->put('Users/Add', $user->toArray());
+            return $result->getBody();
+        } catch (Exception $e) {
+            throw new Exception("Checking for user email existance failed. " . $e->getMessage());
+        }
 
-                $this->checkResponseInteger($result);
-                $this->checkResponseStatusCodes($result, 200);
-                $user->Id = $result;
+    }
 
-                return true;
-            } catch (Exception $e) {
-                throw new Exception("Error while creating new user. " . $e->getMessage());
-                //@todo error handling
-            }
+    /**
+     * Check if user username exists.
+     * @param  string $userName UserName of the user
+     * @return boolean
+     */
+    public function hasUserName($userName)
+    {
+        try {
+            $result = $this->client->get('Users/UserNameExist', ['userName' => $userName]);
+
+            $this->checkResponseBoolean($result);
+            $this->checkResponseStatusCodes($result, 200);
+
+            return $result->getBody();
+        } catch (Exception $e) {
+            throw new Exception("Checking for username existance failed. " . $e->getMessage());
         }
     }
 }
