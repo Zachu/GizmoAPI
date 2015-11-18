@@ -2,86 +2,128 @@
 
 use Exception;
 
-//@todo try catch all this shit. I think Models/Host.php looks like promising format
-
 class HostRepository extends BaseRepository implements HostRepositoryInterface
 {
     protected $model = 'Host';
 
+    /**
+     * Fetch list of all hosts.
+     * @param  integer $limit   Limit the number of fetched entries. Defaults to 30
+     * @param  integer $skip    Skip number of entries (i.e. fetch the next page). Defaults to 0
+     * @param  string  $orderBy Column to order the results with
+     * @return array            Returns array of hosts. Throws Exception on error.
+     */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
-        $options = ['$skip' => $skip, '$top' => $limit];
-        if ($orderBy !== null) {
-            $options['$orderby'] = $orderBy;
+        try {
+            $options = ['$skip' => $skip, '$top' => $limit];
+            if ($orderBy !== null) {
+                $options['$orderby'] = $orderBy;
+            }
+
+            $result = $this->client->get('Hosts/Get', $options);
+            $this->checkResponseArray($result);
+            $this->checkResponseStatusCodes($result, 200);
+
+            return $this->makeArray($result->getBody());
+        } catch (Exception $e) {
+            throw new Exception("Unable to get all hosts: " . $e->getMessage());
         }
-
-        $result = $this->client->get('Hosts/Get', $options)->getBody();
-
-        if (is_array($result)) {
-            $hosts = $this->makeArray($result);
-        } else {
-            throw new Exception("Requesting array of hosts, got " . gettype($result));
-            //@todo error handling
-        }
-
-        return $hosts;
     }
 
+    /**
+     * Finds hosts by parameters
+     * @param  array   $criteria      Array of criteria to search for
+     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
+     * @param  integer $limit         Limit the number of fetched entries. Defaults to 30
+     * @param  integer $skip          Skip number of entries (i.e. fetch the next page). Defaults to 0
+     * @param  string  $orderBy       Column to order the results with
+     * @return array                  Returns array of hosts. Throws Exception on error.
+     */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
-        $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
-        $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
-        if ($orderBy !== null) {
-            $options['$orderby'] = $orderBy;
+        try {
+            $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
+            $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
+            if ($orderBy !== null) {
+                $options['$orderby'] = $orderBy;
+            }
+
+            $result = $this->client->get('Hosts/Get', $options);
+            $this->checkResponseArray($result);
+            $this->checkResponseStatusCodes($result, 200);
+
+            return $this->makeArray($result->getBody());
+        } catch (Exception $e) {
+            throw new Exception("Unable to find hosts by parameters: " . $e->getMessage());
         }
-
-        $result = $this->client->get('Hosts/Get', $options)->getBody();
-        //@todo error handling
-        //@todo check return values
-
-        return $this->makeArray($result);
     }
 
+    /**
+     * Find one host by parameters
+     * @uses   findBy                 This is wrapper for findBy for searching just one host.
+     * @param  array   $criteria      Array of criteria to search for
+     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
+     * @return Host|null              Returns first Host found on current criteria. Returns null if none is found. Throws Exception on error.
+     */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
-        $filter = $this->criteriaToFilter($criteria, $caseSensitive);
-        $result = $this->client->get('Hosts/Get', ['$filter' => $filter, '$top' => 1])->getBody();
-
-        if (!is_array($result)) {
-            throw new Exception("Requesting array of hosts, got " . gettype($result));
-            //@todo error handling
-        } elseif (empty($result)) {
+        $host = $this->findBy($criteria, $caseSensitive, 1);
+        if (empty($host)) {
             return null;
         } else {
-            return $this->make(reset($result));
+            return reset($host);
         }
     }
 
+    /**
+     * Get host by id
+     * @param  integer $id Id of the host
+     * @return Host|null   Returns Host. If no host is found, returns null. Throws Exception on error.
+     */
     public function get($id)
     {
-        $result = $this->client->get('Hosts/Get/' . (int) $id)->getBody();
-        if ($result === null) {
-            return $result;
-        } elseif (!is_array($result)) {
-            throw new Exception("Requesting host model, got " . gettype($result));
-            //@todo error handling
-        }
+        try {
+            $result = $this->client->get('Hosts/Get/' . (int) $id);
+            $this->checkResponseStatusCodes($result, 200);
 
-        return $this->make($result);
+            $body = $result->getBody();
+            if ($body === null) {
+                return null;
+            } else {
+                $this->checkResponseArray($result);
+                return $this->make($body);
+            }
+        } catch (Exception $e) {
+            throw new Exception("Getting a host by id failed. " . $e->getMessage());
+        }
     }
 
+    /**
+     * Get all hosts by number
+     * @param  integer $hostNumber Number of hosts to search for
+     * @return array               Returns array of hosts. Throws Exception on error.
+     */
     public function getByNumber($hostNumber)
     {
-        $result = $this->client->get('Hosts/GetByNumber', ['hostNumber' => $hostNumber])->getBody();
+        try {
+            $result = $this->client->get('Hosts/GetByNumber', ['hostNumber' => $hostNumber]);
 
-        if (!is_array($result)) {
-            throw new Exception("Requesting array of hosts, got " . gettype($result));
-            //@todo error handling
+            $this->checkResponseStatusCodes($result, 200);
+            $this->checkResponseArray($result);
+
+            return $this->makeArray($result->getBody());
+        } catch (Exception $e) {
+            throw new Exception("Getting hosts by number failed. " . $e->getMessage());
         }
-
-        return $this->makeArray($result);
     }
 
+    /**
+     * Check if host exists.
+     * @param  [type]  $id [description]
+     * @return boolean     [description]
+     * @uses   get         This is a wrapper for get to check user existance.
+     */
     public function has($id)
     {
         return ($this->get($id) !== null ? true : false);
