@@ -123,6 +123,7 @@ class HostRepositorySpec extends ApiTester
     {
         $client->get('Hosts/Get', [
             '$filter' => "substringof('host',HostName)",
+            '$skip'   => 0,
             '$top'    => 1,
         ])->shouldBeCalled()->willReturn(HttpResponses::content([$this->fakeHost()]));
 
@@ -134,6 +135,7 @@ class HostRepositorySpec extends ApiTester
     {
         $client->get('Hosts/Get', [
             '$filter' => "substringof('host',HostName)",
+            '$skip'   => 0,
             '$top'    => 1,
         ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
 
@@ -145,6 +147,7 @@ class HostRepositorySpec extends ApiTester
     {
         $client->get('Hosts/Get', [
             '$filter' => "substringof('host',HostName)",
+            '$skip'   => 0,
             '$top'    => 1,
         ])->shouldBeCalled()->willReturn(HttpResponses::true());
 
