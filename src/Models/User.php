@@ -1,12 +1,10 @@
 <?php namespace Pisa\Api\Gizmo\Models;
 
 use Exception;
-use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
 use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
 
 class User extends BaseModel implements UserInterface
 {
-
     protected $fillable = [
         'FirstName',
         'LastName',
@@ -30,14 +28,11 @@ class User extends BaseModel implements UserInterface
         'Registered',
     ];
 
-    protected $client;
-
-    public function __construct(HttpClient $client, array $attributes = array())
-    {
-        $this->client = $client;
-        $this->load($attributes);
-    }
-
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     */
     protected function create()
     {
         try {
@@ -47,7 +42,7 @@ class User extends BaseModel implements UserInterface
                 $result = $this->client->post("Users/Create", $this->getAttributes());
 
                 if (is_object($result) && $result->getStatusCode() === 204) {
-                    return true;
+                    return $this;
                 } else {
                     throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
                 }
@@ -56,6 +51,12 @@ class User extends BaseModel implements UserInterface
             throw new Exception("Unable to create user: " . $e->getMessage());
         }
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     */
     protected function update()
     {
         try {
@@ -65,7 +66,7 @@ class User extends BaseModel implements UserInterface
                 $result = $this->client->post("Users/Update", $this->getAttributes());
 
                 if (is_object($result) && $result->getStatusCode() === 204) {
-                    return true;
+                    return $this;
                 } else {
                     throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
                 }
@@ -76,8 +77,10 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @param $repository UserRepository has to be provided when changing UserName or Email (for checking availability)
-     * Otherwise $repository is not needed.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @param $repository UserRepository has to be provided when changing UserName or Email (for checking availability). Otherwise the parameter is not needed
      */
     public function save(UserRepositoryInterface $repository = null)
     {
@@ -108,6 +111,11 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     */
     public function delete()
     {
         try {
@@ -123,7 +131,7 @@ class User extends BaseModel implements UserInterface
 
             if (is_object($result) && $result->getStatusCode() === 204) {
                 unset($this->Id);
-                return true;
+                return $this;
             } else {
                 throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result) . ":" . $result));
             }
@@ -134,6 +142,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function getLoggedInHostId()
     {
         try {
@@ -157,6 +171,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function isLoggedIn()
     {
         try {
@@ -178,6 +198,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function lastLoginTime()
     {
         try {
@@ -200,6 +226,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function lastLogoutTime()
     {
         try {
@@ -222,6 +254,11 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     */
     public function login(HostInterface $host)
     {
         try {
@@ -251,6 +288,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function logout()
     {
         try {
@@ -278,6 +321,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function rename(UserRepositoryInterface $repository, $newUserName)
     {
         try {
@@ -302,6 +351,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function setEmail(UserRepositoryInterface $repository, $newEmail)
     {
         try {
@@ -327,6 +382,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function setPassword($newPassword)
     {
         try {
@@ -349,6 +410,12 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function setUserGroup($groupId)
     {
         try {
@@ -374,6 +441,11 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * [setGroupIdAttribute description]
+     * @param [type] $group [description]
+     * @todo documentation
+     */
     protected function setGroupIdAttribute($group)
     {
         if (is_int($group) || (int) $group != 0) {
@@ -383,6 +455,11 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * [setBirthDateAttribute description]
+     * @param [type] $date [description]
+     * @todo documentation
+     */
     protected function setBirthDateAttribute($date)
     {
         if (is_int($date)) {
@@ -396,6 +473,11 @@ class User extends BaseModel implements UserInterface
         $this->attributes['BirthDate'] = $return;
     }
 
+    /**
+     * [getBirthDateAttribute description]
+     * @return [type] [description]
+     * @todo documentation
+     */
     protected function getBirthDateAttribute()
     {
         if (!isset($this->attributes['BirthDate'])) {
@@ -410,6 +492,11 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * [setSexAttribute description]
+     * @param [type] $sex [description]
+     * @todo documentation
+     */
     protected function setSexAttribute($sex)
     {
         $male   = ['1', 1, 'm', 'male'];
@@ -426,6 +513,11 @@ class User extends BaseModel implements UserInterface
         $this->attributes['Sex'] = $return;
     }
 
+    /**
+     * [getSexAttribute description]
+     * @return [type] [description]
+     * @todo documentation
+     */
     protected function getSexAttribute()
     {
         $male   = ['male', 'm', '1', 1];
@@ -445,6 +537,11 @@ class User extends BaseModel implements UserInterface
         }
     }
 
+    /**
+     * [setIsEnabledAttribute description]
+     * @param [type] $enabled [description]
+     * @todo documentation
+     */
     protected function setIsEnabledAttribute($enabled)
     {
         $this->attributes['IsEnabled'] = $this->toBool($enabled);

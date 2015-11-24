@@ -42,7 +42,7 @@ class UserSpec extends ApiTester
 
         $this->exists()->shouldBe(true);
         $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->delete()->shouldReturn(true);
+        $this->delete()->shouldReturn($this);
         $this->exists()->shouldBe(false);
     }
 
@@ -67,7 +67,7 @@ class UserSpec extends ApiTester
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
         $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
-        $this->delete()->shouldReturn(true);
+        $this->delete()->shouldReturn($this);
     }
 
     public function it_should_throw_on_delete_if_model_doesnt_exist(HttpClient $client)
@@ -85,7 +85,7 @@ class UserSpec extends ApiTester
         $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
 
         $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->save()->shouldReturn(true);
+        $this->save()->shouldReturn($this);
     }
 
     public function it_should_throw_on_create_if_got_unexpected_response(HttpClient $client)
@@ -100,7 +100,7 @@ class UserSpec extends ApiTester
     {
         $this->FirstName = 'Todd';
         $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->save()->shouldReturn(true);
+        $this->save()->shouldReturn($this);
     }
 
     public function it_should_throw_on_update_if_got_unexpected_response(HttpClient $client)
