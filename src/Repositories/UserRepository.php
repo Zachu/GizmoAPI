@@ -5,14 +5,14 @@ use Pisa\Api\Gizmo\GizmoClient as Client;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
+    /** {@inheritDoc} */
     protected $model = 'User';
 
     /**
-     * Fetch list of all users
-     * @param  integer $limit   Limit the number of fetched entries. Defaults to 30
-     * @param  integer $skip    Skip number of entries (i.e. fetch the next page). Defaults to 0
-     * @param  string  $orderBy Column to order the results with
-     * @return array            Returns array of Users. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -34,13 +34,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Finds users by parameters
-     * @param  array   $criteria      Array of criteria to search for
-     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
-     * @param  integer $limit         Limit the number of fetched entries. Defaults to 30
-     * @param  integer $skip          Skip number of entries (i.e. fetch the next page). Defaults to 0
-     * @param  string  $orderBy       Column to order the results with
-     * @return array                  Returns array of Users. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
@@ -62,11 +59,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Find one user by parameters
-     * @uses   findBy                 This is wrapper for findBy for searching just one user.
-     * @param  array   $criteria      Array of criteria to search for
-     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
-     * @return User|null              Returns first User found on current criteria. Returns null if none is found. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
+     * @uses  findBy
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
@@ -79,9 +76,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Get user by id
-     * @param  integer $id Id of the user
-     * @return User|null   Returns User. If no user is found, returns null. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function get($id)
     {
@@ -102,9 +100,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Check if user exists.
-     * @param  integer $id Id of the user
-     * @return boolean
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function has($id)
     {
@@ -121,9 +120,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Check if user LoginName exists.
-     * @param  string $loginName LoginName of the user
-     * @return boolean
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function hasLoginName($loginName)
     {
@@ -140,9 +140,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Check if user email exists.
-     * @param  string $userEmail Email of the user
-     * @return boolean
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function hasUserEmail($userEmail)
     {
@@ -160,9 +161,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Check if user username exists.
-     * @param  string $userName UserName of the user
-     * @return boolean
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function hasUserName($userName)
     {

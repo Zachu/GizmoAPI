@@ -2,10 +2,59 @@
 
 interface BaseRepositoryInterface
 {
-    public function all($limit, $skip, $orderBy);
-    public function findBy(array $criteria, $limit, $skip, $orderBy);
-    public function findOneBy(array $criteria, $caseSensitive);
+    /**
+     * Get all model entries from repository
+     *
+     * @param  integer $limit   Limit the number of fetched entries. Defaults to 30.
+     * @param  integer $skip    Skip number of entries (i.e. fetch the next page). Defaults to 0.
+     * @param  string  $orderBy Column to order the results with.
+     * @return array            Returns array of model entries.
+     */
+    public function all($limit = 30, $skip = 0, $orderBy = null);
+
+    /**
+     * Finds model entries by parameters
+     *
+     * @param  array   $criteria      Array of criteria to search for.
+     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false.
+     * @param  integer $limit         Limit the number of fetched entries. Defaults to 30.
+     * @param  integer $skip          Skip number of entries (i.e. fetch the next page). Defaults to 0.
+     * @param  string  $orderBy       Column to order the results with.
+     * @return array                  Returns array of model entries. Throws Exception on error.
+     */
+    public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null);
+
+    /**
+     * Find one model entry by parameters
+     *
+     * @param  array   $criteria      Array of criteria to search for
+     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
+     * @return Model|null             Returns the first model entry found on current criteria. Returns null if none is found. Throws Exception on error.
+     */
+    public function findOneBy(array $criteria, $caseSensitive = false);
+
+    /**
+     * Get model by id
+     *
+     * @param  integer $id Id of the model entry.
+     * @return Model|null   Returns model. If no model is found, returns null. Throws Exception on error.
+     */
     public function get($id);
+
+    /**
+     * Check if model entry exists.
+     *
+     * @param  integer $id Id of the model entry.
+     * @return boolean
+     */
     public function has($id);
+
+    /**
+     * Make a new model
+     *
+     * @param  array  $attributes Attributes for the model to be made
+     * @return Model              Returns model.
+     * @uses   BaseModel::load    For inputting the attributes
+     */
     public function make(array $attributes);
 }

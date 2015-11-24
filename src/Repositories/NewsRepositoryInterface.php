@@ -1,7 +1,5 @@
-<?php
+<?php namespace Pisa\Api\Gizmo\Repositories;
 
-namespace Pisa\Api\Gizmo\Repositories;
-
-interface NewsRepositoryInterface
+interface NewsRepositoryInterface extends BaseRepositoryInterface
 {
 }

@@ -4,14 +4,14 @@ use Exception;
 
 class HostRepository extends BaseRepository implements HostRepositoryInterface
 {
+    /** @inheritDoc */
     protected $model = 'Host';
 
     /**
-     * Fetch list of all hosts.
-     * @param  integer $limit   Limit the number of fetched entries. Defaults to 30
-     * @param  integer $skip    Skip number of entries (i.e. fetch the next page). Defaults to 0
-     * @param  string  $orderBy Column to order the results with
-     * @return array            Returns array of hosts. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -32,13 +32,10 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * Finds hosts by parameters
-     * @param  array   $criteria      Array of criteria to search for
-     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
-     * @param  integer $limit         Limit the number of fetched entries. Defaults to 30
-     * @param  integer $skip          Skip number of entries (i.e. fetch the next page). Defaults to 0
-     * @param  string  $orderBy       Column to order the results with
-     * @return array                  Returns array of hosts. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
@@ -60,11 +57,11 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * Find one host by parameters
-     * @uses   findBy                 This is wrapper for findBy for searching just one host.
-     * @param  array   $criteria      Array of criteria to search for
-     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false
-     * @return Host|null              Returns first Host found on current criteria. Returns null if none is found. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
+     * @uses   findBy for searching
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
@@ -77,9 +74,10 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * Get host by id
-     * @param  integer $id Id of the host
-     * @return Host|null   Returns Host. If no host is found, returns null. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function get($id)
     {
@@ -100,9 +98,10 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * Get all hosts by number
-     * @param  integer $hostNumber Number of hosts to search for
-     * @return array               Returns array of hosts. Throws Exception on error.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws Exception on error.
      */
     public function getByNumber($hostNumber)
     {
@@ -119,10 +118,10 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * Check if host exists.
-     * @param  integer $id Id of the host
-     * @return boolean
-     * @uses   get         This is a wrapper for get to check user existance.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @uses  get
      */
     public function has($id)
     {
