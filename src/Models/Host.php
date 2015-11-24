@@ -1,7 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Models;
 
 use Exception;
-use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
 
 class Host extends BaseModel implements HostInterface
 {
@@ -27,19 +26,36 @@ class Host extends BaseModel implements HostInterface
         'IsLocked',
     ];
 
+    protected $defaultNotifyParameters = [
+        'ShowDialog'     => 'false', //Otherwise the HTTP Request waits for user input
+        'StarupLocation' => 'Manual',
+        'Left'           => 0,
+        'Top'            => 0,
+        'Icon'           => 'Information',
+    ];
+
     protected $client;
 
-    public function __construct(HttpClient $client, array $attributes = array())
+    public function getDefaultNotifyParameters()
     {
-        $this->client = $client;
-        $this->load($attributes);
+        return $this->defaultNotifyParameters;
     }
 
+    /**
+     * This method cannot be used. Host is created by connecting new host client to the server service
+     * @throws Exception
+     */
     protected function create()
     {
         throw new Exception("New host cannot be created via API. Host is created by connecting new host client to the server service");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     protected function update()
     {
         try {
@@ -54,15 +70,28 @@ class Host extends BaseModel implements HostInterface
                     throw new Exception("Host attributes are only changeable from server service.");
                 }
             }
+
+            return $this;
         } catch (Exception $e) {
             throw new Exception("Unable to update host: " . $e->getMessage());
-        }}
+        }
+    }
 
+    /**
+     * This method cannot be used. Host is deleted via the server service
+     * @throws Exception
+     */
     public function delete()
     {
         throw new Exception("Host cannot be deleted via API. Host is deleted by via the server service");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function getProcesses()
     {
         try {
@@ -85,6 +114,12 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function getProcess($processId)
     {
         try {
@@ -109,6 +144,12 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function getProcessesByName($processName)
     {
         try {
@@ -133,6 +174,17 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Example:
+     * <code>
+     * $this->createProcess(['FileName' => 'C:\Start.bat']);
+     * </code>
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function createProcess($startInfo)
     {
         try {
@@ -161,6 +213,12 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function terminateProcess($killInfo)
     {
         try {
@@ -186,8 +244,11 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * @note: Renamed function to getLastUserLoginTime instead of GizmoAPI's GetLastUserLogin to better reflect
-     * what the method does.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     * @note Renamed function to getLastUserLoginTime instead of GizmoAPI's GetLastUserLogin to better reflect what the method does.
      */
     public function getLastUserLoginTime()
     {
@@ -211,8 +272,11 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * @note: Renamed function to getLastUserLogoutTime instead of GizmoAPI's GetLastUserLogout to better reflect
-     * what the method does.
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     * @note: Renamed function to getLastUserLogoutTime instead of GizmoAPI's GetLastUserLogout to better reflect what the method does.
      */
     public function getLastUserLogoutTime()
     {
@@ -235,6 +299,12 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function userLogout()
     {
         try {
@@ -256,21 +326,35 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @see $this->defaultParameters for parameters to modify
+     * @return boolean If ShowDialog is set to true, returns true if user clicks ok, false if user clicks cancel.
+     * @return boolean If ShowDialog is set to false, returns true when message is sent.
+     * @throws  Exception on error
+     */
     public function UINotify($message, $parameters = [])
     {
         try {
             if ($this->exists() === false) {
                 throw new Exception("Model does not exist");
             } else {
-                //@todo play with $parameters. No idea how to currently work with them.
-                //Parameters probably don't work currently. In fact, they don't.
-                $result = $this->client->post('Host/UINotify', [
-                    'hostId'     => $this->getPrimaryKeyValue(),
-                    'message'    => $message,
-                    'parameters' => implode($parameters),
-                ]);
+                $result = $this->client->post('Host/UINotify', array_merge($this->defaultNotifyParameters, $parameters, [
+                    'hostId'  => $this->getPrimaryKeyValue(),
+                    'message' => (string) $message,
+                ]));
 
-                //@todo Also no idea what's the reply about. Fiddle with this too!
+                /**
+                 *  @todo Fiddle with the responses
+                 *  Old code looks like this:
+                 *  if (is_int($result)) {
+                 *    return true;
+                 *  } else {
+                 *    return false;
+                 *  }
+                 */
                 if ($result->getStatusCode() === 204) {
                     return true;
                 } else {
@@ -282,6 +366,12 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function setLockState($isLocked)
     {
         try {
@@ -307,6 +397,12 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function setSecurityState($isEnabled)
     {
         try {
@@ -332,6 +428,12 @@ class Host extends BaseModel implements HostInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     */
     public function setOrderState($isOutOfOrder)
     {
         try {
@@ -358,8 +460,11 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * This should probably be in SessionModel or SessionsRepository based on how Gizmo API is built, but I think this is good addition here also
-     * @return boolean [description]
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     * @throws  Exception on error
+     * @note This should probably be in SessionModel or SessionsRepository based on how Gizmo API is built, but I think this is good addition here also
      */
     public function isFree()
     {

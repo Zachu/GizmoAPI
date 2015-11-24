@@ -363,12 +363,12 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_notify_ui(HttpClientAdapter $client)
     {
-        $message = 'Test';
-        $client->post("Host/UINotify", [
-            'hostId'     => $this->getPrimaryKeyValue(),
-            'message'    => $message,
-            'parameters' => '',
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $message    = 'Test';
+        $parameters = [];
+        $client->post("Host/UINotify", array_merge($this->getDefaultNotifyParameters()->getWrappedObject(), $parameters, [
+            'hostId'  => $this->getPrimaryKeyValue(),
+            'message' => $message,
+        ]))->shouldBeCalled()->willReturn(HttpResponses::noContent());
 
         $this->UINotify($message)->shouldBe(true);
     }
@@ -381,12 +381,13 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_throw_on_ui_notify_if_got_unexpected_response(HttpClientAdapter $client)
     {
-        $message = 'Test';
-        $client->post("Host/UINotify", [
-            'hostId'     => $this->getPrimaryKeyValue(),
-            'message'    => $message,
-            'parameters' => '',
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        $message    = 'Test';
+        $parameters = [];
+
+        $client->post("Host/UINotify", array_merge($this->getDefaultNotifyParameters()->getWrappedObject(), $parameters, [
+            'hostId'  => $this->getPrimaryKeyValue(),
+            'message' => $message,
+        ]))->shouldBeCalled()->willReturn(HttpResponses::true());
 
         $this->shouldThrow('\Exception')->duringUINotify($message);
     }
