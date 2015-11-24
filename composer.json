@@ -10,7 +10,9 @@
         }
     ],
     "require-dev": {
-        "phpspec/phpspec": "~2.0"
+        "phpspec/phpspec": "~2.0",
+        "phpdocumentor/phpdocumentor": "2.*",
+        "evert/phpdoc-md" : "~0.1.1"
     },
     
     "autoload": {
