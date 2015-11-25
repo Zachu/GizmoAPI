@@ -1,6 +1,6 @@
 <?php namespace Pisa\Api\Gizmo\Models;
 
-use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
+use Pisa\Api\Gizmo\Adapters\HttpClientAdapter;
 
 abstract class BaseModel implements BaseModelInterface
 {
@@ -32,11 +32,11 @@ abstract class BaseModel implements BaseModelInterface
     protected $client;
 
     /**
-     * [__construct description]
-     * @param HttpClient $client     [description]
-     * @param array      $attributes [description]
+     * Make a new model instance
+     * @param HttpClientAdapter $client     HTTP client
+     * @param array             $attributes Attributes to initialize
      */
-    public function __construct(HttpClient $client, array $attributes = array())
+    public function __construct(HttpClientAdapter $client, array $attributes = array())
     {
         $this->client = $client;
         $this->load($attributes);
