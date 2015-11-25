@@ -4,6 +4,7 @@ use Exception;
 
 class Host extends BaseModel implements HostInterface
 {
+    /** @{inheritDoc} */
     protected $guarded = [
         'Id',
         'OsInfo',
@@ -20,22 +21,93 @@ class Host extends BaseModel implements HostInterface
         'GroupId',
     ];
 
+    /** @{inheritDoc} */
     protected $fillable = [
         'IsSecurityEnabled',
         'IsOutOfOrder',
         'IsLocked',
     ];
 
+    /** @var array Default parameters for UINotify */
     protected $defaultNotifyParameters = [
-        'ShowDialog'     => 'false', //Otherwise the HTTP Request waits for user input
-        'StarupLocation' => 'Manual',
+        /** @var string Dialog title */
+        'Title'          => '',
+
+        /** @var int Dialog x-position */
         'Left'           => 0,
+
+        /** @var int Dialog y-position */
         'Top'            => 0,
+
+        /** @var bool Does the request wait for user input */
+        'ShowDialog'     => 'false',
+
+        /** @var bool Start the dialog on top of everything */
+        'TopMost'        => 'true',
+
+        /** @var int Dialog width in px */
+        'Width'          => 0,
+
+        /** @var int Dialog height in px */
+        'Height'         => 0,
+
+        /** @var int ProcessID of the owner process  */
+        'Owner'          => '',
+
+        /** @var bool Allow dragging the dialog */
+        'AllowDrag'      => 'true',
+
+        /** @var bool Remove dialog buttons */
+        'NoButtons'      => 'false',
+
+        /** @var bool Allow closing of the dialog */
+        'AllowClosing'   => 'true',
+
+        /**
+         * @var string Startup location of the dialog
+         *
+         * Note that this really is StarupLocation, not StartupLocation
+         *
+         * Possible values: Manual, CenterOwner, CenterScreen
+         * @see https://msdn.microsoft.com/en-us/library/system.windows.windowstartuplocation(v=vs.110).aspx
+         */
+        'StarupLocation' => 'Manual',
+
+        /**
+         * @var string How to stretch the dialog size
+         *
+         * Possible values: Height, Manual, Width, WidthAndHeight
+         * @see https://msdn.microsoft.com/en-us/library/system.windows.sizetocontent(v=vs.110).aspx
+         */
+        'SizeToContent'  => 'WidthAndHeight',
+
+        /**
+         * @var string Icon to be showed in the window
+         *
+         * Possible values: Asterisk, Error, Exclamation, Hand, Information, None, Question, Stop, Warning
+         * @see https://msdn.microsoft.com/en-us/library/system.windows.messageboximage(v=vs.110).aspx
+         */
         'Icon'           => 'Information',
+
+        /**
+         * @var string Which buttons should be added
+         *
+         * Possible values: OK, OKCancel, YesNo, YesNoCancel
+         * @see https://msdn.microsoft.com/en-us/library/system.windows.messageboxbutton(v=vs.110).aspx
+         */
+        'Buttons'        => 'OK',
+
+        /** @var bool Show dialog activated */
+        'ShowActivated'  => 'false',
+
+        /** @var int Max width of the dialog */
+        'MaxWidth'       => 0,
+
+        /** @var int Max height of the dialog */
+        'MaxHeight'      => 0,
     ];
 
-    protected $client;
-
+    /** @internal Basically for testing */
     public function getDefaultNotifyParameters()
     {
         return $this->defaultNotifyParameters;
@@ -79,6 +151,7 @@ class Host extends BaseModel implements HostInterface
 
     /**
      * This method cannot be used. Host is deleted via the server service
+     * @return void
      * @throws Exception
      */
     public function delete()
