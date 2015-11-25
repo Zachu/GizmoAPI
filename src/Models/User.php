@@ -29,9 +29,10 @@ class User extends BaseModel implements UserInterface
     ];
 
     /**
-     * {@inheritDoc}
+     * Create a new user instance.
      *
-     * {@inheritDoc}
+     * @internal  Use $this->save() for really creating a new user.
+     * @return User Return $this for chaining.
      */
     protected function create()
     {
@@ -53,9 +54,10 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Update the host instance.
      *
-     * {@inheritDoc}
+     * @internal Use $this->save() for really update a user
+     * @return Host Return $this for chaining.
      */
     protected function update()
     {
@@ -442,9 +444,9 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * [setGroupIdAttribute description]
-     * @param [type] $group [description]
-     * @todo documentation
+     * Convert GroupID to integer
+     * @param int $group User GroupID
+     * @internal Used to automatically check that attributes are in a similar shape
      */
     protected function setGroupIdAttribute($group)
     {
@@ -456,9 +458,9 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * [setBirthDateAttribute description]
-     * @param [type] $date [description]
-     * @todo documentation
+     * Convert BirthDate to ISO 8601 format
+     * @param int|string Unix Timestamp or datetime that strtotime understands
+     * @internal Used to automatically check that attributes are in a similar shape
      */
     protected function setBirthDateAttribute($date)
     {
@@ -474,9 +476,8 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * [getBirthDateAttribute description]
-     * @return [type] [description]
-     * @todo documentation
+     * Returns BirthDate as int in all internal usage
+     * @internal Used to automatically check that attributes are in a similar shape
      */
     protected function getBirthDateAttribute()
     {
@@ -493,9 +494,9 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * [setSexAttribute description]
-     * @param [type] $sex [description]
-     * @todo documentation
+     * Convert Sex so that male is '1' and female is '2'
+     * @param int|string Representation of sex
+     * @internal Used to automatically check that attributes are in a similar shape
      */
     protected function setSexAttribute($sex)
     {
@@ -514,9 +515,8 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * [getSexAttribute description]
-     * @return [type] [description]
-     * @todo documentation
+     * Returns birthdate in 'male' and 'female' format in internal usage.
+     * @internal Used to automatically check that attributes are in a similar shape
      */
     protected function getSexAttribute()
     {
@@ -538,9 +538,9 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * [setIsEnabledAttribute description]
-     * @param [type] $enabled [description]
-     * @todo documentation
+     * Sets IsEnabled to boolean
+     * @param mixed Some representation of boolean
+     * @internal Used to automatically check that attributes are in a similar shape
      */
     protected function setIsEnabledAttribute($enabled)
     {

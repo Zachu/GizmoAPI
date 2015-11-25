@@ -53,7 +53,7 @@ abstract class BaseModel implements BaseModelInterface
     /**
      * Update the model instance.
      *
-     * @internal  Use $this->save() for really creating a new model.
+     * @internal  Use $this->save() for really updating a new model.
      * @return BaseModel Return $this for chaining.
      */
     abstract protected function update();

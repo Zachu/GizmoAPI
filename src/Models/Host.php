@@ -115,6 +115,7 @@ class Host extends BaseModel implements HostInterface
 
     /**
      * This method cannot be used. Host is created by connecting new host client to the server service
+     * @internal Use $this->save() for really create a host.
      * @throws Exception
      */
     protected function create()
@@ -123,10 +124,9 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     * @throws  Exception on error
+     * Update the host instance.
+     * @internal Use $this->save() for really update a host.
+     * @return Host Return $this for chaining.
      */
     protected function update()
     {
