@@ -65,7 +65,7 @@ abstract class AbstractAttributable implements Attributable
      */
     public function toArray()
     {
-        return $this->attributes;
+        return $this->getAttributes();
     }
 
     /** @ignore */

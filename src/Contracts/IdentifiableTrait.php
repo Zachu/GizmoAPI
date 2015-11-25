@@ -2,8 +2,16 @@
 
 trait IdentifiableTrait
 {
+    /**
+     * Primary key column
+     * @var string
+     */
     protected $primaryKey = 'Id';
 
+    /**
+     * Gets the value of the primary key
+     * @return mixed
+     */
     public function getPrimaryKeyValue()
     {
         if (isset($this->{$this->primaryKey})) {
@@ -13,6 +21,10 @@ trait IdentifiableTrait
         }
     }
 
+    /**
+     * Gets the primary key
+     * @return string
+     */
     public function getPrimaryKey()
     {
         return $this->primaryKey;

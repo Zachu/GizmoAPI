@@ -3,35 +3,34 @@
 interface Attributable
 {
     /**
-     * @todo
-     * @param  array  $attributes [description]
-     * @return [type]             [description]
+     * Set all attributes. Use AttributeMutators if presented.
+     * @param  array  $attributes
+     * @return void
      */
     public function fill(array $attributes);
 
     /**
-     * @todo
-     * @param  [type] $key [description]
-     * @return [type]      [description]
+     * Get a single attribute
+     * @param  string $key
+     * @return mixed Attribute value
      */
     public function getAttribute($key);
 
     /**
-     * @todo
-     * @return [type] [description]
+     * Get all attributes
+     * @return array
      */
     public function getAttributes();
 
     /**
-     * @todo
-     * @param [type] $key   [description]
-     * @param [type] $value [description]
+     * Set a single attribute. Use mutator if presented
+     * @param string $key
+     * @param mixed  $value
      */
     public function setAttribute($key, $value);
 
     /**
-     * @todo
-     * @return [type] [description]
+     * Alias for getAttributes
      */
     public function toArray();
 }

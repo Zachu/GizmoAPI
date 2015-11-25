@@ -2,12 +2,16 @@
 
 trait AttributableTrait
 {
+    /**
+     * Attributes as a KeyValue array.
+     * @var array
+     */
     protected $attributes = [];
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * Set all attributes. Use AttributeMutators if presented.
+     * @param  array  $attributes
+     * @return void
      */
     public function fill(array $attributes)
     {
@@ -17,9 +21,8 @@ trait AttributableTrait
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * Get all attributes
+     * @return array
      */
     public function getAttributes()
     {
@@ -27,9 +30,9 @@ trait AttributableTrait
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * Get a single attribute
+     * @param  string $key
+     * @return mixed Attribute value
      */
     public function getAttribute($key)
     {
@@ -44,9 +47,9 @@ trait AttributableTrait
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * Set a single attribute. Use mutator if presented
+     * @param string $key
+     * @param mixed  $value
      */
     public function setAttribute($key, $value)
     {
@@ -59,13 +62,12 @@ trait AttributableTrait
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * Alias for getAttributes
+     * @uses getAttributes
      */
     public function toArray()
     {
-        return $this->attributes;
+        return $this->getAttributes();
     }
 
     /** @ignore */
