@@ -122,6 +122,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  int|array           $statusCodes Array of status codes to be expected. Can be a single status code too.
      * @return void
      * @throws Exception                        if the status code was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
      */
     protected static function checkResponseStatusCodes(HttpResponseAdapter $response, $statusCodes = [])
     {
@@ -139,6 +140,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  HttpResponseAdapter $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
      */
     protected static function checkResponseBoolean(HttpResponseAdapter $response)
     {
@@ -152,6 +154,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  HttpResponseAdapter $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
      */
     protected static function checkResponseArray(HttpResponseAdapter $response)
     {
@@ -165,6 +168,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  HttpResponseAdapter $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
      */
     protected static function checkResponseInteger(HttpResponseAdapter $response)
     {
@@ -178,6 +182,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  HttpResponseAdapter $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
      */
     protected static function checkResponseEmpty(HttpResponseAdapter $response)
     {
