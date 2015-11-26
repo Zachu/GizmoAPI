@@ -9,6 +9,7 @@ use Pisa\Api\Gizmo\Contracts\Container;
  */
 class IlluminateContainerAdapter implements Container
 {
+    /** @var IlluminateContainer */
     protected $container;
 
     public function __construct(IlluminateContainer $container = null)
@@ -21,23 +22,9 @@ class IlluminateContainerAdapter implements Container
     }
 
     /**
-     * Register a shared binding in the container.
+     * {@inheritDoc}
      *
-     * @param  string|array  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @return void
-     */
-    public function singleton($abstract, $concrete = null)
-    {
-        $this->container->singleton($abstract, $concrete);
-    }
-
-    /**
-     * Register a binding with the container
-     * @param  string|array  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @param  bool  $shared
-     * @return void
+     * {@inheritDoc}
      */
     public function bind($abstract, $concrete = null, $shared = false)
     {
@@ -45,14 +32,22 @@ class IlluminateContainerAdapter implements Container
     }
 
     /**
-     * Resolve the given type from the container.
+     * {@inheritDoc}
      *
-     * @param  string  $abstract
-     * @param  array   $parameters
-     * @return mixed
+     * {@inheritDoc}
      */
     public function make($abstract, array $parameters = [])
     {
         return $this->container->make($abstract, $parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
+     */
+    public function singleton($abstract, $concrete = null)
+    {
+        $this->container->singleton($abstract, $concrete);
     }
 }
