@@ -7,6 +7,9 @@ abstract class BaseModel implements BaseModelInterface
     use \Pisa\Api\Gizmo\Contracts\AttributableTrait;
     use \Pisa\Api\Gizmo\Contracts\IdentifiableTrait;
 
+    /** @ignore */
+    protected $client;
+
     /**
      * Let these attributes be filled any time
      * @var array
@@ -28,9 +31,6 @@ abstract class BaseModel implements BaseModelInterface
      */
     protected $savedAttributes = [];
 
-    /** @ignore */
-    protected $client;
-
     /**
      * Make a new model instance
      * @param HttpClientAdapter $client     HTTP client
@@ -43,46 +43,10 @@ abstract class BaseModel implements BaseModelInterface
     }
 
     /**
-     * Create a new model instance.
-     *
-     * @internal  Use $this->save() for really creating a new model.
-     * @return BaseModel Return $this for chaining.
-     */
-    abstract protected function create();
-
-    /**
-     * Update the model instance.
-     *
-     * @internal  Use $this->save() for really updating a new model.
-     * @return BaseModel Return $this for chaining.
-     */
-    abstract protected function update();
-
-    /**
      * Delete the model instance
      * @return BaseModel Return $this for chaining.
      */
     abstract public function delete();
-
-    /**
-     * Load model attributes and mark them as saved.
-     * @param  array  $attributes Attributes to be loaded
-     * @return void
-     */
-    public function load(array $attributes)
-    {
-        $this->fill($attributes);
-        $this->savedAttributes = $this->attributes;
-    }
-
-    /**
-     * Check which attributes are changed but not saved
-     * @return array Array of chanced attributes
-     */
-    protected function changed()
-    {
-        return array_diff_assoc($this->attributes, $this->savedAttributes);
-    }
 
     /**
      * Check if model exists.
@@ -108,6 +72,17 @@ abstract class BaseModel implements BaseModelInterface
     }
 
     /**
+     * Load model attributes and mark them as saved.
+     * @param  array  $attributes Attributes to be loaded
+     * @return void
+     */
+    public function load(array $attributes)
+    {
+        $this->fill($attributes);
+        $this->savedAttributes = $this->attributes;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * {@inheritDoc}
@@ -129,6 +104,23 @@ abstract class BaseModel implements BaseModelInterface
 
         return $return;
     }
+
+    /**
+     * Check which attributes are changed but not saved
+     * @return array Array of chanced attributes
+     */
+    protected function changed()
+    {
+        return array_diff_assoc($this->attributes, $this->savedAttributes);
+    }
+
+    /**
+     * Create a new model instance.
+     *
+     * @internal  Use $this->save() for really creating a new model.
+     * @return BaseModel Return $this for chaining.
+     */
+    abstract protected function create();
 
     /**
      * Check if key is fillable
@@ -167,4 +159,12 @@ abstract class BaseModel implements BaseModelInterface
                 return false;
         }
     }
+
+    /**
+     * Update the model instance.
+     *
+     * @internal  Use $this->save() for really updating a new model.
+     * @return BaseModel Return $this for chaining.
+     */
+    abstract protected function update();
 }

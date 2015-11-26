@@ -8,10 +8,11 @@ use Pisa\Api\Gizmo\Models\BaseModelInterface as BaseModel;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
-    /**
-     * @ignore
-     */
+    /** @ignore */
     protected $client;
+
+    /** @ignore */
+    protected $ioc;
 
     /**
      * Model that the repository represents
@@ -24,11 +25,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @var string
      */
     protected $modelNamespace = 'Pisa\\Api\\Gizmo\\Models\\';
-
-    /**
-     * @ignore
-     */
-    protected $ioc;
 
     public function __construct(Container $ioc, HttpClient $client)
     {
@@ -48,6 +44,29 @@ abstract class BaseRepository implements BaseRepositoryInterface
     abstract public function all($limit = 30, $skip = 0, $orderBy = null);
 
     /**
+     * Turn array of criteria into an OData filter
+     * @param  array   $criteria      Array of criteria
+     * @param  boolean $caseSensitive Is the search supposed to be case sensitive. Defaults to false.
+     * @return string                 Returns string to be put on the OData $filter
+     */
+    public static function criteriaToFilter(array $criteria, $caseSensitive = false)
+    {
+        $filter = [];
+        foreach ($criteria as $key => $value) {
+            if (!$caseSensitive) {
+                $value    = strtolower($value);
+                $filter[] = "substringof('{$value}',tolower($key)) eq true";
+            } else {
+                $filter[] = "substringof('{$value}',$key)";
+            }
+
+        }
+        $filter = implode(' or ', $filter);
+
+        return $filter;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * {@inheritDoc}
@@ -60,6 +79,15 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * {@inheritDoc}
      */
     abstract public function findOneBy(array $criteria, $caseSensitive = false);
+
+    /**
+     * Return the fully qualified model name.
+     * @return string Fully qualified name
+     */
+    public function fqnModel()
+    {
+        return rtrim($this->modelNamespace, '\\') . '\\' . $this->model;
+    }
 
     /**
      * {@inheritDoc}
@@ -92,28 +120,59 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Return the fully qualified model name.
-     * @return string Fully qualified name
+     * Check that http response body was an array.
+     * @param  HttpResponseAdapter $response    Http response that was got
+     * @return void
+     * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
      */
-    public function fqnModel()
+    protected static function checkResponseArray(HttpResponseAdapter $response)
     {
-        return rtrim($this->modelNamespace, '\\') . '\\' . $this->model;
+        if (!is_array($response->getBody())) {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting array");
+        }
     }
 
     /**
-     * Makes multiple model entries
-     * @param  array  $data Array of attributes
-     * @return array        Array of made models
-     * @uses   self::make   for making a single instance
+     * Check that http response body was a boolean.
+     * @param  HttpResponseAdapter $response    Http response that was got
+     * @return void
+     * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
      */
-    protected function makeArray(array $data)
+    protected static function checkResponseBoolean(HttpResponseAdapter $response)
     {
-        $array = [];
-        foreach ($data as $row) {
-            $array[] = $this->make($row);
+        if (!is_bool($response->getBody())) {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting boolean");
         }
+    }
 
-        return $array;
+    /**
+     * Check that http response body was empty.
+     * @param  HttpResponseAdapter $response    Http response that was got
+     * @return void
+     * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
+     */
+    protected static function checkResponseEmpty(HttpResponseAdapter $response)
+    {
+        if ($response->getBody() != '') {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting none");
+        }
+    }
+
+    /**
+     * Check that http response body was an integer.
+     * @param  HttpResponseAdapter $response    Http response that was got
+     * @return void
+     * @throws Exception                        if the body was unexpected
+     * @internal                                Intended to use with repositories to validate the responses
+     */
+    protected static function checkResponseInteger(HttpResponseAdapter $response)
+    {
+        if (!is_int($response->getBody())) {
+            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting integer");
+        }
     }
 
     /**
@@ -136,81 +195,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Check that http response body was a boolean.
-     * @param  HttpResponseAdapter $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
+     * Makes multiple model entries
+     * @param  array  $data Array of attributes
+     * @return array        Array of made models
+     * @uses   self::make   for making a single instance
      */
-    protected static function checkResponseBoolean(HttpResponseAdapter $response)
+    protected function makeArray(array $data)
     {
-        if (!is_bool($response->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting boolean");
+        $array = [];
+        foreach ($data as $row) {
+            $array[] = $this->make($row);
         }
-    }
 
-    /**
-     * Check that http response body was an array.
-     * @param  HttpResponseAdapter $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseArray(HttpResponseAdapter $response)
-    {
-        if (!is_array($response->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting array");
-        }
-    }
-
-    /**
-     * Check that http response body was an integer.
-     * @param  HttpResponseAdapter $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseInteger(HttpResponseAdapter $response)
-    {
-        if (!is_int($response->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting integer");
-        }
-    }
-
-    /**
-     * Check that http response body was empty.
-     * @param  HttpResponseAdapter $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseEmpty(HttpResponseAdapter $response)
-    {
-        if ($response->getBody() != '') {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting none");
-        }
-    }
-
-    /**
-     * Turn array of criteria into an OData filter
-     * @param  array   $criteria      Array of criteria
-     * @param  boolean $caseSensitive Is the search supposed to be case sensitive. Defaults to false.
-     * @return string                 Returns string to be put on the OData $filter
-     */
-    public static function criteriaToFilter(array $criteria, $caseSensitive = false)
-    {
-        $filter = [];
-        foreach ($criteria as $key => $value) {
-            if (!$caseSensitive) {
-                $value    = strtolower($value);
-                $filter[] = "substringof('{$value}',tolower($key)) eq true";
-            } else {
-                $filter[] = "substringof('{$value}',$key)";
-            }
-
-        }
-        $filter = implode(' or ', $filter);
-
-        return $filter;
+        return $array;
     }
 }

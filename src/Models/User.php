@@ -29,91 +29,6 @@ class User extends BaseModel implements UserInterface
     ];
 
     /**
-     * Create a new user instance.
-     *
-     * @internal  Use $this->save() for really creating a new user.
-     * @return User Return $this for chaining.
-     */
-    protected function create()
-    {
-        try {
-            if ($this->exists()) {
-                throw new Exception("User already exist. Maybe try update?");
-            } else {
-                $result = $this->client->post("Users/Create", $this->getAttributes());
-
-                if (is_object($result) && $result->getStatusCode() === 204) {
-                    return $this;
-                } else {
-                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
-                }
-            }
-        } catch (Exception $e) {
-            throw new Exception("Unable to create user: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Update the host instance.
-     *
-     * @internal Use $this->save() for really update a user
-     * @return Host Return $this for chaining.
-     */
-    protected function update()
-    {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exists. Maybe try create first?");
-            } else {
-                $result = $this->client->post("Users/Update", $this->getAttributes());
-
-                if (is_object($result) && $result->getStatusCode() === 204) {
-                    return $this;
-                } else {
-                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
-                }
-            }
-        } catch (Exception $e) {
-            throw new Exception("Unable to update user: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     * @param $repository UserRepository has to be provided when changing UserName or Email (for checking availability). Otherwise the parameter is not needed
-     */
-    public function save(UserRepositoryInterface $repository = null)
-    {
-        try {
-            if ($this->exists()) {
-                foreach ($this->changed() as $key => $newValue) {
-                    if ($key == 'UserName') {
-                        if ($repository !== null) {
-                            $this->rename($repository, $newValue);
-                        } else {
-                            throw new Exception("UserRepository not provided when renaming");
-                        }
-                    } elseif ($key == 'Email') {
-                        if ($repository !== null) {
-                            $this->setEmail($repository, $newValue);
-                        } else {
-                            throw new Exception("UserRepository not provided when changing email");
-                        }
-                    } elseif ($key == 'GroupId') {
-                        $this->setUserGroup($newValue);
-                    }
-                }
-            }
-
-            return parent::save();
-        } catch (Exception $e) {
-            throw new Exception("Unable to save user: " . $e->getMessage());
-        }
-    }
-
-    /**
      * {@inheritDoc}
      *
      * {@inheritDoc}
@@ -357,6 +272,41 @@ class User extends BaseModel implements UserInterface
      * {@inheritDoc}
      *
      * {@inheritDoc}
+     * @param $repository UserRepository has to be provided when changing UserName or Email (for checking availability). Otherwise the parameter is not needed
+     */
+    public function save(UserRepositoryInterface $repository = null)
+    {
+        try {
+            if ($this->exists()) {
+                foreach ($this->changed() as $key => $newValue) {
+                    if ($key == 'UserName') {
+                        if ($repository !== null) {
+                            $this->rename($repository, $newValue);
+                        } else {
+                            throw new Exception("UserRepository not provided when renaming");
+                        }
+                    } elseif ($key == 'Email') {
+                        if ($repository !== null) {
+                            $this->setEmail($repository, $newValue);
+                        } else {
+                            throw new Exception("UserRepository not provided when changing email");
+                        }
+                    } elseif ($key == 'GroupId') {
+                        $this->setUserGroup($newValue);
+                    }
+                }
+            }
+
+            return parent::save();
+        } catch (Exception $e) {
+            throw new Exception("Unable to save user: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * {@inheritDoc}
      * @throws  Exception on error
      */
     public function setEmail(UserRepositoryInterface $repository, $newEmail)
@@ -444,35 +394,28 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * Convert GroupID to integer
-     * @param int $group User GroupID
-     * @internal Used to automatically check that attributes are in a similar shape
+     * Create a new user instance.
+     *
+     * @internal  Use $this->save() for really creating a new user.
+     * @return User Return $this for chaining.
      */
-    protected function setGroupIdAttribute($group)
+    protected function create()
     {
-        if (is_int($group) || (int) $group != 0) {
-            $this->attributes['GroupId'] = (int) $group;
-        } else {
-            throw new Exception("Could not parse usergroup id from {$group}");
-        }
-    }
+        try {
+            if ($this->exists()) {
+                throw new Exception("User already exist. Maybe try update?");
+            } else {
+                $result = $this->client->post("Users/Create", $this->getAttributes());
 
-    /**
-     * Convert BirthDate to ISO 8601 format
-     * @param int|string Unix Timestamp or datetime that strtotime understands
-     * @internal Used to automatically check that attributes are in a similar shape
-     */
-    protected function setBirthDateAttribute($date)
-    {
-        if (is_int($date)) {
-            $return = date('c', $date);
-        } elseif (is_string($date) && strtotime($date) !== false) {
-            $return = date('c', strtotime($date));
-        } else {
-            throw new Exception("Could not parse date from {$date}");
+                if (is_object($result) && $result->getStatusCode() === 204) {
+                    return $this;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                }
+            }
+        } catch (Exception $e) {
+            throw new Exception("Unable to create user: " . $e->getMessage());
         }
-
-        $this->attributes['BirthDate'] = $return;
     }
 
     /**
@@ -491,27 +434,6 @@ class User extends BaseModel implements UserInterface
         } else {
             return $date;
         }
-    }
-
-    /**
-     * Convert Sex so that male is '1' and female is '2'
-     * @param int|string Representation of sex
-     * @internal Used to automatically check that attributes are in a similar shape
-     */
-    protected function setSexAttribute($sex)
-    {
-        $male   = ['1', 1, 'm', 'male'];
-        $female = ['2', 2, 'f', 'female'];
-
-        if (in_array(strtolower($sex), $male)) {
-            $return = reset($male); //Assume the first one in the list is the default
-        } elseif (in_array(strtolower($sex), $female)) {
-            $return = reset($female); //Assume the first one in the list is the default
-        } else {
-            throw new Exception("Could not parse sex from {$sex}");
-        }
-
-        $this->attributes['Sex'] = $return;
     }
 
     /**
@@ -538,6 +460,38 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
+     * Convert BirthDate to ISO 8601 format
+     * @param int|string Unix Timestamp or datetime that strtotime understands
+     * @internal Used to automatically check that attributes are in a similar shape
+     */
+    protected function setBirthDateAttribute($date)
+    {
+        if (is_int($date)) {
+            $return = date('c', $date);
+        } elseif (is_string($date) && strtotime($date) !== false) {
+            $return = date('c', strtotime($date));
+        } else {
+            throw new Exception("Could not parse date from {$date}");
+        }
+
+        $this->attributes['BirthDate'] = $return;
+    }
+
+    /**
+     * Convert GroupID to integer
+     * @param int $group User GroupID
+     * @internal Used to automatically check that attributes are in a similar shape
+     */
+    protected function setGroupIdAttribute($group)
+    {
+        if (is_int($group) || (int) $group != 0) {
+            $this->attributes['GroupId'] = (int) $group;
+        } else {
+            throw new Exception("Could not parse usergroup id from {$group}");
+        }
+    }
+
+    /**
      * Sets IsEnabled to boolean
      * @param mixed Some representation of boolean
      * @internal Used to automatically check that attributes are in a similar shape
@@ -545,5 +499,51 @@ class User extends BaseModel implements UserInterface
     protected function setIsEnabledAttribute($enabled)
     {
         $this->attributes['IsEnabled'] = $this->toBool($enabled);
+    }
+
+    /**
+     * Convert Sex so that male is '1' and female is '2'
+     * @param int|string Representation of sex
+     * @internal Used to automatically check that attributes are in a similar shape
+     */
+    protected function setSexAttribute($sex)
+    {
+        $male   = ['1', 1, 'm', 'male'];
+        $female = ['2', 2, 'f', 'female'];
+
+        if (in_array(strtolower($sex), $male)) {
+            $return = reset($male); //Assume the first one in the list is the default
+        } elseif (in_array(strtolower($sex), $female)) {
+            $return = reset($female); //Assume the first one in the list is the default
+        } else {
+            throw new Exception("Could not parse sex from {$sex}");
+        }
+
+        $this->attributes['Sex'] = $return;
+    }
+
+    /**
+     * Update the host instance.
+     *
+     * @internal Use $this->save() for really update a user
+     * @return Host Return $this for chaining.
+     */
+    protected function update()
+    {
+        try {
+            if (!$this->exists()) {
+                throw new Exception("User doesn't exists. Maybe try create first?");
+            } else {
+                $result = $this->client->post("Users/Update", $this->getAttributes());
+
+                if (is_object($result) && $result->getStatusCode() === 204) {
+                    return $this;
+                } else {
+                    throw new Exception("Unexpected response: " . (is_object($result) ? $result->getStatusCode() . " " . $result->getReasonPhrase() : gettype($result)));
+                }
+            }
+        } catch (Exception $e) {
+            throw new Exception("Unable to update user: " . $e->getMessage());
+        }
     }
 }
