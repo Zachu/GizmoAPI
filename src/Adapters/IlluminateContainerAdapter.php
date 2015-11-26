@@ -12,6 +12,10 @@ class IlluminateContainerAdapter implements Container
     /** @var IlluminateContainer */
     protected $container;
 
+    /**
+     * Create a container
+     * @param IlluminateContainer|null $container If no container is given, one is created automatically
+     */
     public function __construct(IlluminateContainer $container = null)
     {
         if ($container === null) {
