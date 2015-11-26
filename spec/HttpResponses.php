@@ -1,7 +1,7 @@
 <?php namespace spec\Pisa\Api\Gizmo;
 
 use GuzzleHttp\Psr7\Response as HttpResponse;
-use Pisa\Api\Gizmo\Adapters\HttpResponseAdapter as HttpResponseAdapter;
+use Pisa\Api\Gizmo\Adapters\GuzzleResponseAdapter as HttpResponseAdapter;
 
 class HttpResponses
 {

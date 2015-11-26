@@ -1,6 +1,6 @@
 <?php namespace spec\Pisa\Api\Gizmo\Models;
 
-use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
+use Pisa\Api\Gizmo\Contracts\HttpClient;
 use Pisa\Api\Gizmo\Models\HostInterface;
 use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
 use spec\Pisa\Api\Gizmo\ApiTester;

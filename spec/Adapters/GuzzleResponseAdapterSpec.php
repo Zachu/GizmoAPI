@@ -3,7 +3,7 @@
 use GuzzleHttp\Psr7\Response as HttpResponse;
 use PhpSpec\ObjectBehavior;
 
-class HttpResponseAdapterSpec extends ObjectBehavior
+class GuzzleResponseAdapterSpec extends ObjectBehavior
 {
     public function let(HttpResponse $response)
     {
@@ -12,7 +12,7 @@ class HttpResponseAdapterSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Adapters\HttpResponseAdapter');
+        $this->shouldHaveType('Pisa\Api\Gizmo\Adapters\GuzzleResponseAdapter');
     }
 
     public function it_should_show_body()

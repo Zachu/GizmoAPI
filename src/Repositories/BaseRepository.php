@@ -1,9 +1,9 @@
 <?php namespace Pisa\Api\Gizmo\Repositories;
 
 use Exception;
-use Pisa\Api\Gizmo\Adapters\HttpClientAdapter as HttpClient;
-use Pisa\Api\Gizmo\Adapters\HttpResponseAdapter;
 use Pisa\Api\Gizmo\Contracts\Container;
+use Pisa\Api\Gizmo\Contracts\HttpClient;
+use Pisa\Api\Gizmo\Contracts\HttpResponse;
 use Pisa\Api\Gizmo\Models\BaseModelInterface as BaseModel;
 
 abstract class BaseRepository implements BaseRepositoryInterface
@@ -121,12 +121,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Check that http response body was an array.
-     * @param  HttpResponseAdapter $response    Http response that was got
+     * @param  HttpResponse $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
      * @internal                                Intended to use with repositories to validate the responses
      */
-    protected static function checkResponseArray(HttpResponseAdapter $response)
+    protected static function checkResponseArray(HttpResponse $response)
     {
         if (!is_array($response->getBody())) {
             throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting array");
@@ -135,12 +135,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Check that http response body was a boolean.
-     * @param  HttpResponseAdapter $response    Http response that was got
+     * @param  HttpResponse $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
      * @internal                                Intended to use with repositories to validate the responses
      */
-    protected static function checkResponseBoolean(HttpResponseAdapter $response)
+    protected static function checkResponseBoolean(HttpResponse $response)
     {
         if (!is_bool($response->getBody())) {
             throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting boolean");
@@ -149,12 +149,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Check that http response body was empty.
-     * @param  HttpResponseAdapter $response    Http response that was got
+     * @param  HttpResponse $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
      * @internal                                Intended to use with repositories to validate the responses
      */
-    protected static function checkResponseEmpty(HttpResponseAdapter $response)
+    protected static function checkResponseEmpty(HttpResponse $response)
     {
         if ($response->getBody() != '') {
             throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting none");
@@ -163,12 +163,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Check that http response body was an integer.
-     * @param  HttpResponseAdapter $response    Http response that was got
+     * @param  HttpResponse $response    Http response that was got
      * @return void
      * @throws Exception                        if the body was unexpected
      * @internal                                Intended to use with repositories to validate the responses
      */
-    protected static function checkResponseInteger(HttpResponseAdapter $response)
+    protected static function checkResponseInteger(HttpResponse $response)
     {
         if (!is_int($response->getBody())) {
             throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting integer");
@@ -177,13 +177,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Check that http response status codes match the codes we are expecting for.
-     * @param  HttpResponseAdapter $response    Http response that was got
+     * @param  HttpResponse $response    Http response that was got
      * @param  int|array           $statusCodes Array of status codes to be expected. Can be a single status code too.
      * @return void
      * @throws Exception                        if the status code was unexpected
      * @internal                                Intended to use with repositories to validate the responses
      */
-    protected static function checkResponseStatusCodes(HttpResponseAdapter $response, $statusCodes = [])
+    protected static function checkResponseStatusCodes(HttpResponse $response, $statusCodes = [])
     {
         if (is_numeric($statusCodes)) {
             $statusCodes = [(int) $statusCodes];

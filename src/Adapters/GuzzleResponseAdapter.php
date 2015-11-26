@@ -1,14 +1,20 @@
 <?php namespace Pisa\Api\Gizmo\Adapters;
 
 use Exception;
-use GuzzleHttp\Psr7\Response as HttpResponse;
+use GuzzleHttp\Psr7\Response;
+use Pisa\Api\Gizmo\Contracts\HttpResponse;
 
-class HttpResponseAdapter
+class GuzzleResponseAdapter implements HttpResponse
 {
     protected $response;
-    public function __construct(HttpResponse $response)
+    public function __construct(Response $response)
     {
         $this->response = $response;
+    }
+
+    public function getHeaders()
+    {
+        return $this->response->getHeaders();
     }
 
     public function getBody($autodetect = true)
@@ -20,9 +26,14 @@ class HttpResponseAdapter
             if ($contentType === 'application/json') {
                 return $this->getJson();
             } else {
-                return (string) $this->response->getBody();
+                return $this->getString();
             }
         }
+    }
+
+    public function getString()
+    {
+        return (string) $this->response->getBody();
     }
 
     public function getJson()
@@ -52,6 +63,6 @@ class HttpResponseAdapter
 
     public function __toString()
     {
-        return $this->getBody(false);
+        return $this->getString();
     }
 }

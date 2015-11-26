@@ -1,14 +1,14 @@
 <?php namespace spec\Pisa\Api\Gizmo\Models;
 
 use PhpSpec\ObjectBehavior;
-use Pisa\Api\Gizmo\Adapters\HttpClientAdapter;
+use Pisa\Api\Gizmo\Contracts\HttpClient;
 use spec\Pisa\Api\Gizmo\HttpResponses;
 
 class HostSpec extends ObjectBehavior
 {
     protected static $id = 1;
 
-    public function let(HttpClientAdapter $client)
+    public function let(HttpClient $client)
     {
         $this->beConstructedWith($client, ['Id' => self::$id]);
     }
@@ -26,7 +26,7 @@ class HostSpec extends ObjectBehavior
     // Save
     //
 
-    public function it_should_throw_on_create(HttpClientAdapter $client)
+    public function it_should_throw_on_create(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
 
@@ -53,7 +53,7 @@ class HostSpec extends ObjectBehavior
     // Get processes
     //
 
-    public function it_should_get_processes(HttpClientAdapter $client)
+    public function it_should_get_processes(HttpClient $client)
     {
         $client->get("Host/GetProcesses", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -73,13 +73,13 @@ class HostSpec extends ObjectBehavior
         $this->getProcesses()->shouldHaveCount(2);
     }
 
-    public function it_should_throw_on_get_prorcesses_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_get_prorcesses_if_model_doesnt_exist(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringGetProcesses();
     }
 
-    public function it_should_throw_on_get_processes_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_get_processes_if_got_unexpected_response(HttpClient $client)
     {
         $client->get("Host/GetProcesses", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -91,7 +91,7 @@ class HostSpec extends ObjectBehavior
     // Get a process
     //
 
-    public function it_should_get_a_process(HttpClientAdapter $client)
+    public function it_should_get_a_process(HttpClient $client)
     {
         $pid = 1;
         $client->get("Host/GetProcess", [
@@ -103,14 +103,14 @@ class HostSpec extends ObjectBehavior
         $this->getProcess($pid)->shouldHaveCount(0);
     }
 
-    public function it_should_throw_on_get_process_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_get_process_if_model_doesnt_exist(HttpClient $client)
     {
         $pid = 1;
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringGetProcess($pid);
     }
 
-    public function it_should_throw_on_get_process_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_get_process_if_got_unexpected_response(HttpClient $client)
     {
         $pid = 1;
         $client->get("Host/GetProcess", [
@@ -124,7 +124,7 @@ class HostSpec extends ObjectBehavior
     // Get processes by name
     //
 
-    public function it_should_get_processes_by_name(HttpClientAdapter $client)
+    public function it_should_get_processes_by_name(HttpClient $client)
     {
         $pname = 'process';
         $client->get("Host/GetProcesses", [
@@ -146,14 +146,14 @@ class HostSpec extends ObjectBehavior
         $this->getProcessesByName($pname)->shouldHaveCount(2);
     }
 
-    public function it_should_throw_on_get_processes_by_name_if_given_other_than_string(HttpClientAdapter $client)
+    public function it_should_throw_on_get_processes_by_name_if_given_other_than_string(HttpClient $client)
     {
         $pname = ['process'];
 
         $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
     }
 
-    public function it_should_throw_on_get_processes_by_name_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_get_processes_by_name_if_model_doesnt_exist(HttpClient $client)
     {
         $pname = 'process';
         $this->beConstructedWith($client, []);
@@ -161,7 +161,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
     }
 
-    public function it_should_throw_on_get_processes_by_name_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_get_processes_by_name_if_got_unexpected_response(HttpClient $client)
     {
         $pname = 'process';
         $client->get("Host/GetProcesses", [
@@ -176,7 +176,7 @@ class HostSpec extends ObjectBehavior
     // Create process
     //
 
-    public function it_should_create_processes(HttpClientAdapter $client)
+    public function it_should_create_processes(HttpClient $client)
     {
         $startInfo = [
             'FileName' => 'foo',
@@ -189,7 +189,7 @@ class HostSpec extends ObjectBehavior
         $this->CreateProcess($startInfo)->shouldBeInteger();
     }
 
-    public function it_should_return_false_on_create_process_when_response_500(HttpClientAdapter $client)
+    public function it_should_return_false_on_create_process_when_response_500(HttpClient $client)
     {
         $startInfo = [
             'FileName' => 'foo',
@@ -202,7 +202,7 @@ class HostSpec extends ObjectBehavior
         $this->CreateProcess($startInfo)->shouldBe(false);
     }
 
-    public function it_should_throw_on_create_process_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_create_process_if_model_doesnt_exist(HttpClient $client)
     {
         $startInfo = [
             'FileName' => 'foo',
@@ -211,7 +211,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
     }
 
-    public function it_should_throw_on_create_process_on_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_create_process_on_unexpected_response(HttpClient $client)
     {
         $startInfo = [
             'FileName' => 'foo',
@@ -233,7 +233,7 @@ class HostSpec extends ObjectBehavior
     // Terminate process
     //
 
-    public function it_should_terminate_processes(HttpClientAdapter $client)
+    public function it_should_terminate_processes(HttpClient $client)
     {
         $killInfo = [
             'FileName' => 'foo',
@@ -246,7 +246,7 @@ class HostSpec extends ObjectBehavior
         $this->terminateProcess($killInfo)->shouldBe(true);
     }
 
-    public function it_should_throw_on_terminate_process_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_terminate_process_if_model_doesnt_exist(HttpClient $client)
     {
         $killInfo = [
             'FileName' => 'foo',
@@ -255,7 +255,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringTerminateProcess($killInfo);
     }
 
-    public function it_should_throw_on_terminate_process_on_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_terminate_process_on_unexpected_response(HttpClient $client)
     {
         $killInfo = [
             'FileName' => 'foo',
@@ -277,7 +277,7 @@ class HostSpec extends ObjectBehavior
     // Get last user login time
     //
 
-    public function it_should_get_last_user_login_time(HttpClientAdapter $client)
+    public function it_should_get_last_user_login_time(HttpClient $client)
     {
         $client->get("Host/GetLastUserLogin", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -286,13 +286,13 @@ class HostSpec extends ObjectBehavior
         $this->getLastUserLoginTime()->shouldBeInteger();
     }
 
-    public function it_should_throw_on_get_last_user_login_time_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_get_last_user_login_time_if_model_doesnt_exist(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringGetLastUserLoginTime();
     }
 
-    public function it_should_throw_on_get_last_user_login_time_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_get_last_user_login_time_if_got_unexpected_response(HttpClient $client)
     {
         $client->get("Host/GetLastUserLogin", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -305,7 +305,7 @@ class HostSpec extends ObjectBehavior
     // Get last user logout time
     //
 
-    public function it_should_get_last_user_logout_time(HttpClientAdapter $client)
+    public function it_should_get_last_user_logout_time(HttpClient $client)
     {
         $client->get("Host/GetLastUserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -314,13 +314,13 @@ class HostSpec extends ObjectBehavior
         $this->getLastUserLogoutTime()->shouldBeInteger();
     }
 
-    public function it_should_throw_on_get_last_user_logout_time_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_get_last_user_logout_time_if_model_doesnt_exist(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringGetLastUserLogoutTime();
     }
 
-    public function it_should_throw_on_get_last_user_logout_time_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_get_last_user_logout_time_if_got_unexpected_response(HttpClient $client)
     {
         $client->get("Host/GetLastUserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -333,7 +333,7 @@ class HostSpec extends ObjectBehavior
     // Logout user
     //
 
-    public function it_should_logout_user(HttpClientAdapter $client)
+    public function it_should_logout_user(HttpClient $client)
     {
         $client->post("Host/UserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -342,13 +342,13 @@ class HostSpec extends ObjectBehavior
         $this->userLogout()->shouldBe(true);
     }
 
-    public function it_should_throw_on_logout_user_if_model_doesnt_exists(HttpClientAdapter $client)
+    public function it_should_throw_on_logout_user_if_model_doesnt_exists(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringUserLogout();
     }
 
-    public function it_should_throw_on_logout_user_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_logout_user_if_got_unexpected_response(HttpClient $client)
     {
         $client->post("Host/UserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -361,7 +361,7 @@ class HostSpec extends ObjectBehavior
     // Notify UI
     //
 
-    public function it_should_notify_ui(HttpClientAdapter $client)
+    public function it_should_notify_ui(HttpClient $client)
     {
         $message    = 'Test';
         $parameters = [];
@@ -373,13 +373,13 @@ class HostSpec extends ObjectBehavior
         $this->UINotify($message)->shouldBe(true);
     }
 
-    public function it_should_throw_on_ui_notify_if_model_doesnt_exists(HttpClientAdapter $client)
+    public function it_should_throw_on_ui_notify_if_model_doesnt_exists(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringUINotify('Test');
     }
 
-    public function it_should_throw_on_ui_notify_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_ui_notify_if_got_unexpected_response(HttpClient $client)
     {
         $message    = 'Test';
         $parameters = [];
@@ -396,7 +396,7 @@ class HostSpec extends ObjectBehavior
     // Set lock state
     //
 
-    public function it_should_set_lock_state_to_false(HttpClientAdapter $client)
+    public function it_should_set_lock_state_to_false(HttpClient $client)
     {
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -408,7 +408,7 @@ class HostSpec extends ObjectBehavior
         $this->IsLocked->shouldBe(false);
     }
 
-    public function it_should_set_lock_state_to_true(HttpClientAdapter $client)
+    public function it_should_set_lock_state_to_true(HttpClient $client)
     {
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -425,7 +425,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetLockState("Invalid");
     }
 
-    public function it_should_throw_on_lock_state_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_lock_state_if_got_unexpected_response(HttpClient $client)
     {
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
@@ -435,7 +435,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetLockState(true);
     }
 
-    public function it_should_throw_on_lock_state_if_model_doesnt_exists(HttpClientAdapter $client)
+    public function it_should_throw_on_lock_state_if_model_doesnt_exists(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringSetLockState(true);
@@ -445,7 +445,7 @@ class HostSpec extends ObjectBehavior
     // Set security state
     //
 
-    public function it_should_set_security_state_to_false(HttpClientAdapter $client)
+    public function it_should_set_security_state_to_false(HttpClient $client)
     {
         $client->post("Host/SetSecurityState", [
             'hostId'  => $this->getPrimaryKeyValue(),
@@ -457,7 +457,7 @@ class HostSpec extends ObjectBehavior
         $this->IsSecurityEnabled->shouldBe(false);
     }
 
-    public function it_should_set_security_state_to_true(HttpClientAdapter $client)
+    public function it_should_set_security_state_to_true(HttpClient $client)
     {
         $client->post("Host/SetSecurityState", [
             'hostId'  => $this->getPrimaryKeyValue(),
@@ -474,7 +474,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetSecurityState("Invalid");
     }
 
-    public function it_should_throw_on_security_state_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_security_state_if_got_unexpected_response(HttpClient $client)
     {
         $client->post("Host/SetSecurityState", [
             'hostId'  => $this->getPrimaryKeyValue(),
@@ -484,7 +484,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetSecurityState(true);
     }
 
-    public function it_should_throw_security_state_if_model_doesnt_exists(HttpClientAdapter $client)
+    public function it_should_throw_security_state_if_model_doesnt_exists(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringSetSecurityState(true);
@@ -494,7 +494,7 @@ class HostSpec extends ObjectBehavior
     // Set order state
     //
 
-    public function it_should_set_out_of_order_to_false(HttpClientAdapter $client)
+    public function it_should_set_out_of_order_to_false(HttpClient $client)
     {
         $client->post("Host/SetOrderState", [
             'hostId'  => $this->getPrimaryKeyValue(),
@@ -506,7 +506,7 @@ class HostSpec extends ObjectBehavior
         $this->IsOutOfOrder->shouldBe(false);
     }
 
-    public function it_should_set_out_of_order_to_true(HttpClientAdapter $client)
+    public function it_should_set_out_of_order_to_true(HttpClient $client)
     {
         $client->post("Host/SetOrderState", [
             'hostId'  => $this->getPrimaryKeyValue(),
@@ -523,7 +523,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetOrderState("Invalid");
     }
 
-    public function it_should_throw_on_out_of_order_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_out_of_order_if_got_unexpected_response(HttpClient $client)
     {
         $client->post("Host/SetOrderState", [
             'hostId'  => $this->getPrimaryKeyValue(),
@@ -533,7 +533,7 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetOrderState(true);
     }
 
-    public function it_should_throw_on_out_of_order_if_model_doesnt_exists(HttpClientAdapter $client)
+    public function it_should_throw_on_out_of_order_if_model_doesnt_exists(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringSetOrderState(true);
@@ -543,7 +543,7 @@ class HostSpec extends ObjectBehavior
     // Get free state
     //
 
-    public function it_should_get_free_state(HttpClientAdapter $client)
+    public function it_should_get_free_state(HttpClient $client)
     {
         $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(HttpResponses::content([
             ['HostId' => $this->getPrimaryKeyValue()->getWrappedObject()],
@@ -555,13 +555,13 @@ class HostSpec extends ObjectBehavior
 
     }
 
-    public function it_should_throw_on_get_free_state_if_model_doesnt_exist(HttpClientAdapter $client)
+    public function it_should_throw_on_get_free_state_if_model_doesnt_exist(HttpClient $client)
     {
         $this->beConstructedWith($client, []);
         $this->shouldThrow('\Exception')->duringIsFree();
     }
 
-    public function it_should_throw_on_get_free_state_if_got_unexpected_response(HttpClientAdapter $client)
+    public function it_should_throw_on_get_free_state_if_got_unexpected_response(HttpClient $client)
     {
         $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(HttpResponses::true());
         $this->shouldThrow('\Exception')->duringIsFree();
