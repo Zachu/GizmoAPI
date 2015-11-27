@@ -1,4 +1,4 @@
-<?php namespace spec\Pisa\Api\Gizmo;
+<?php namespace spec\Pisa\GizmoAPI;
 
 use Faker\Factory as Faker;
 use PhpSpec\ObjectBehavior;

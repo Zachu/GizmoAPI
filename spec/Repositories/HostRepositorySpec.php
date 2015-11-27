@@ -1,12 +1,12 @@
 <?php
 
-namespace spec\Pisa\Api\Gizmo\Repositories;
+namespace spec\Pisa\GizmoAPI\Repositories;
 
-use Pisa\Api\Gizmo\Contracts\Container;
-use Pisa\Api\Gizmo\Contracts\HttpClient;
-use Pisa\Api\Gizmo\Models\Host;
-use spec\Pisa\Api\Gizmo\ApiTester;
-use spec\Pisa\Api\Gizmo\HttpResponses;
+use Pisa\GizmoAPI\Contracts\Container;
+use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Models\Host;
+use spec\Pisa\GizmoAPI\ApiTester;
+use spec\Pisa\GizmoAPI\HttpResponses;
 
 class HostRepositorySpec extends ApiTester
 {
@@ -25,7 +25,7 @@ class HostRepositorySpec extends ApiTester
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Repositories\HostRepository');
+        $this->shouldHaveType('Pisa\GizmoAPI\Repositories\HostRepository');
     }
 
     //

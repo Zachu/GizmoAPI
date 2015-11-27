@@ -1,10 +1,10 @@
-<?php namespace spec\Pisa\Api\Gizmo\Models;
+<?php namespace spec\Pisa\GizmoAPI\Models;
 
-use Pisa\Api\Gizmo\Contracts\HttpClient;
-use Pisa\Api\Gizmo\Models\HostInterface;
-use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
-use spec\Pisa\Api\Gizmo\ApiTester;
-use spec\Pisa\Api\Gizmo\HttpResponses;
+use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Models\HostInterface;
+use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
+use spec\Pisa\GizmoAPI\ApiTester;
+use spec\Pisa\GizmoAPI\HttpResponses;
 
 class UserSpec extends ApiTester
 {
@@ -22,7 +22,7 @@ class UserSpec extends ApiTester
 
     public function it_is_initializable(HttpClient $client)
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Models\User');
+        $this->shouldHaveType('Pisa\GizmoAPI\Models\User');
 
         $this->Id->shouldBe(self::$user['Id']);
         $this->UserName->shouldBe(self::$user['UserName']);

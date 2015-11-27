@@ -1,6 +1,6 @@
-<?php namespace Pisa\Api\Gizmo\Models;
+<?php namespace Pisa\GizmoAPI\Models;
 
-use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
 interface UserInterface extends BaseModelInterface
 {

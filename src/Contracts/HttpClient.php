@@ -1,4 +1,4 @@
-<?php namespace Pisa\Api\Gizmo\Contracts;
+<?php namespace Pisa\GizmoAPI\Contracts;
 
 interface HttpClient
 {
@@ -7,7 +7,7 @@ interface HttpClient
      * @param  string                                 $url        URL
      * @param  array                                  $parameters Parameters to append to the request
      * @param  array                                  $options    Options for the underlying HTTP Client
-     * @return \Pisa\Api\Gizmo\Contracts\HttpResponse Http response
+     * @return \Pisa\GizmoAPI\Contracts\HttpResponse Http response
      */
     public function delete($url, array $parameters = [], array $options = []);
 
@@ -16,7 +16,7 @@ interface HttpClient
      * @param  string                                 $url        URL
      * @param  array                                  $parameters Parameters to append to the request
      * @param  array                                  $options    Options for the underlying HTTP Client
-     * @return \Pisa\Api\Gizmo\Contracts\HttpResponse Http response
+     * @return \Pisa\GizmoAPI\Contracts\HttpResponse Http response
      */
     public function get($url, array $parameters = [], array $options = []);
 
@@ -25,7 +25,7 @@ interface HttpClient
      * @param  string                                 $url        URL
      * @param  array                                  $parameters Parameters to append to the request
      * @param  array                                  $options    Options for the underlying HTTP Client
-     * @return \Pisa\Api\Gizmo\Contracts\HttpResponse Http response
+     * @return \Pisa\GizmoAPI\Contracts\HttpResponse Http response
      */
     public function post($url, array $parameters = [], array $options = []);
 
@@ -34,7 +34,7 @@ interface HttpClient
      * @param  string                                 $url        URL
      * @param  array                                  $parameters Parameters to append to the request
      * @param  array                                  $options    Options for the underlying HTTP Client
-     * @return \Pisa\Api\Gizmo\Contracts\HttpResponse Http response
+     * @return \Pisa\GizmoAPI\Contracts\HttpResponse Http response
      */
     public function put($url, array $parameters = [], array $options = []);
 
@@ -44,7 +44,7 @@ interface HttpClient
      * @param  string                                 $url        URL
      * @param  array                                  $parameters Parameters to append to the request
      * @param  array                                  $options    Options for the underlying HTTP Client
-     * @return \Pisa\Api\Gizmo\Contracts\HttpResponse Http response
+     * @return \Pisa\GizmoAPI\Contracts\HttpResponse Http response
      */
     public function request($method, $url, array $parameters = [], array $options = []);
 }

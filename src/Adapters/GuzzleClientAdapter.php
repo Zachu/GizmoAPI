@@ -1,9 +1,9 @@
-<?php namespace Pisa\Api\Gizmo\Adapters;
+<?php namespace Pisa\GizmoAPI\Adapters;
 
 use GuzzleHttp\Client as ConcreteClient;
 use GuzzleHttp\ClientInterface;
-use Pisa\Api\Gizmo\Adapters\GuzzleResponseAdapter as HttpResponse;
-use Pisa\Api\Gizmo\Contracts\HttpClient;
+use Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter as HttpResponse;
+use Pisa\GizmoAPI\Contracts\HttpClient;
 
 class GuzzleClientAdapter implements HttpClient
 {

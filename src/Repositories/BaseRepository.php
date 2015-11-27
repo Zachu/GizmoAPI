@@ -1,10 +1,10 @@
-<?php namespace Pisa\Api\Gizmo\Repositories;
+<?php namespace Pisa\GizmoAPI\Repositories;
 
 use Exception;
-use Pisa\Api\Gizmo\Contracts\Container;
-use Pisa\Api\Gizmo\Contracts\HttpClient;
-use Pisa\Api\Gizmo\Contracts\HttpResponse;
-use Pisa\Api\Gizmo\Models\BaseModelInterface as BaseModel;
+use Pisa\GizmoAPI\Contracts\Container;
+use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Contracts\HttpResponse;
+use Pisa\GizmoAPI\Models\BaseModelInterface as BaseModel;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
@@ -24,7 +24,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * Namespace of the model that the repository represents
      * @var string
      */
-    protected $modelNamespace = 'Pisa\\Api\\Gizmo\\Models\\';
+    protected $modelNamespace = 'Pisa\\GizmoAPI\\Models\\';
 
     public function __construct(Container $ioc, HttpClient $client)
     {

@@ -1,9 +1,9 @@
-<?php namespace spec\Pisa\Api\Gizmo\Adapters;
+<?php namespace spec\Pisa\GizmoAPI\Adapters;
 
 use GuzzleHttp\ClientInterface as HttpClient;
 use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
-use Pisa\Api\Gizmo\Adapters\GuzzleResponseAdapter;
+use Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter;
 
 class GuzzleClientAdapterSpec extends ObjectBehavior
 {
@@ -14,7 +14,7 @@ class GuzzleClientAdapterSpec extends ObjectBehavior
 
     public function it_is_initializable(HttpClient $client)
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Adapters\GuzzleClientAdapter');
+        $this->shouldHaveType('Pisa\GizmoAPI\Adapters\GuzzleClientAdapter');
     }
 
     public function it_should_send_get_requests(HttpClient $client, Response $response)

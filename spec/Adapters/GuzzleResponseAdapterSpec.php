@@ -1,4 +1,4 @@
-<?php namespace spec\Pisa\Api\Gizmo\Adapters;
+<?php namespace spec\Pisa\GizmoAPI\Adapters;
 
 use GuzzleHttp\Psr7\Response as HttpResponse;
 use PhpSpec\ObjectBehavior;
@@ -12,7 +12,7 @@ class GuzzleResponseAdapterSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Adapters\GuzzleResponseAdapter');
+        $this->shouldHaveType('Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter');
     }
 
     public function it_should_show_body()

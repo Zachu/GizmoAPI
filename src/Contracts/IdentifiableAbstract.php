@@ -1,4 +1,4 @@
-<?php namespace Pisa\Api\Gizmo\Contracts;
+<?php namespace Pisa\GizmoAPI\Contracts;
 
 abstract class IdentifiableAbstract implements Identifiable
 {

@@ -1,7 +1,7 @@
-<?php namespace Pisa\Api\Gizmo\Repositories;
+<?php namespace Pisa\GizmoAPI\Repositories;
 
 use Exception;
-use Pisa\Api\Gizmo\GizmoClient as Client;
+use Pisa\GizmoAPI\GizmoClient as Client;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {

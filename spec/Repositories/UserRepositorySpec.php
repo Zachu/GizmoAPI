@@ -1,10 +1,10 @@
-<?php namespace spec\Pisa\Api\Gizmo\Repositories;
+<?php namespace spec\Pisa\GizmoAPI\Repositories;
 
 use PhpSpec\ObjectBehavior;
-use Pisa\Api\Gizmo\Contracts\Container;
-use Pisa\Api\Gizmo\Contracts\HttpClient;
-use Pisa\Api\Gizmo\Models\User;
-use spec\Pisa\Api\Gizmo\HttpResponses;
+use Pisa\GizmoAPI\Contracts\Container;
+use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Models\User;
+use spec\Pisa\GizmoAPI\HttpResponses;
 
 class UserRepositorySpec extends ObjectBehavior
 {
@@ -15,12 +15,12 @@ class UserRepositorySpec extends ObjectBehavior
     public function Let(HttpClient $client, Container $ioc)
     {
         $this->beConstructedWith($ioc, $client);
-        $this->shouldHaveType('Pisa\Api\Gizmo\Repositories\UserRepository');
+        $this->shouldHaveType('Pisa\GizmoAPI\Repositories\UserRepository');
     }
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Repositories\UserRepository');
+        $this->shouldHaveType('Pisa\GizmoAPI\Repositories\UserRepository');
     }
 
     public function it_should_get_all_users(HttpClient $client, Container $ioc, User $user)

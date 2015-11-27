@@ -1,12 +1,12 @@
-<?php namespace Pisa\Api\Gizmo;
+<?php namespace Pisa\GizmoAPI;
 
 use Exception;
-use Pisa\Api\Gizmo\Adapters\IlluminateContainerAdapter;
-use Pisa\Api\Gizmo\Contracts\Container;
-use Pisa\Api\Gizmo\Repositories\HostRepositoryInterface;
-use Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface;
-use Pisa\Api\Gizmo\Repositories\SessionsRepositoryInterface;
-use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
+use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
+use Pisa\GizmoAPI\Contracts\Container;
+use Pisa\GizmoAPI\Repositories\HostRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\NewsRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\SessionsRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
 class Gizmo
 {
@@ -32,18 +32,18 @@ class Gizmo
 
     private function bootstrap()
     {
-        $this->ioc->singleton(\Pisa\Api\Gizmo\Contracts\Container::class, function ($c) {
+        $this->ioc->singleton(\Pisa\GizmoAPI\Contracts\Container::class, function ($c) {
             return $this->ioc;
         });
 
         $this->ioc->singleton(
-            \Pisa\Api\Gizmo\Contracts\HttpClient::class,
-            \Pisa\Api\Gizmo\Adapters\GuzzleClientAdapter::class
+            \Pisa\GizmoAPI\Contracts\HttpClient::class,
+            \Pisa\GizmoAPI\Adapters\GuzzleClientAdapter::class
         );
 
         $this->ioc->bind(
-            \Pisa\Api\Gizmo\Contracts\HttpResonse::class,
-            \Pisa\Api\Gizmo\Adapters\GuzzleResponseAdapter::class
+            \Pisa\GizmoAPI\Contracts\HttpResonse::class,
+            \Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter::class
         );
 
         $this->ioc->singleton(\GuzzleHttp\ClientInterface::class, function ($c) {
@@ -51,10 +51,10 @@ class Gizmo
             return new \GuzzleHttp\Client($httpConfig);
         });
 
-        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\UserRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\UserRepository::class);
-        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\HostRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\HostRepository::class);
-        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\SessionRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\SessionsRepository::class);
-        $this->ioc->bind(\Pisa\Api\Gizmo\Repositories\NewsRepositoryInterface::class, \Pisa\Api\Gizmo\Repositories\NewsRepository::class);
+        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\UserRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\UserRepository::class);
+        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\HostRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\HostRepository::class);
+        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\SessionsRepository::class);
+        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\NewsRepository::class);
     }
 
     public function getConfig($name = null)

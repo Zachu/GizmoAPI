@@ -1,4 +1,4 @@
-<?php namespace Pisa\Api\Gizmo\Models;
+<?php namespace Pisa\GizmoAPI\Models;
 
 use Exception;
 

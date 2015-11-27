@@ -1,8 +1,8 @@
-<?php namespace spec\Pisa\Api\Gizmo\Models;
+<?php namespace spec\Pisa\GizmoAPI\Models;
 
 use PhpSpec\ObjectBehavior;
-use Pisa\Api\Gizmo\Contracts\HttpClient;
-use spec\Pisa\Api\Gizmo\HttpResponses;
+use Pisa\GizmoAPI\Contracts\HttpClient;
+use spec\Pisa\GizmoAPI\HttpResponses;
 
 class HostSpec extends ObjectBehavior
 {
@@ -19,7 +19,7 @@ class HostSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Models\Host');
+        $this->shouldHaveType('Pisa\GizmoAPI\Models\Host');
     }
 
     //

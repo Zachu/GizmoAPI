@@ -1,11 +1,11 @@
-<?php namespace Pisa\Api\Gizmo\Models;
+<?php namespace Pisa\GizmoAPI\Models;
 
-use Pisa\Api\Gizmo\Contracts\HttpClient;
+use Pisa\GizmoAPI\Contracts\HttpClient;
 
 abstract class BaseModel implements BaseModelInterface
 {
-    use \Pisa\Api\Gizmo\Contracts\AttributableTrait;
-    use \Pisa\Api\Gizmo\Contracts\IdentifiableTrait;
+    use \Pisa\GizmoAPI\Contracts\AttributableTrait;
+    use \Pisa\GizmoAPI\Contracts\IdentifiableTrait;
 
     /** @ignore */
     protected $client;

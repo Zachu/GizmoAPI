@@ -1,7 +1,7 @@
-<?php namespace Pisa\Api\Gizmo\Models;
+<?php namespace Pisa\GizmoAPI\Models;
 
-use Pisa\Api\Gizmo\Contracts\Attributable;
-use Pisa\Api\Gizmo\Contracts\Identifiable;
+use Pisa\GizmoAPI\Contracts\Attributable;
+use Pisa\GizmoAPI\Contracts\Identifiable;
 
 interface BaseModelInterface extends Identifiable, Attributable
 {

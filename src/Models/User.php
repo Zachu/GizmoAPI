@@ -1,7 +1,7 @@
-<?php namespace Pisa\Api\Gizmo\Models;
+<?php namespace Pisa\GizmoAPI\Models;
 
 use Exception;
-use Pisa\Api\Gizmo\Repositories\UserRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
 class User extends BaseModel implements UserInterface
 {

@@ -1,8 +1,8 @@
-<?php namespace Pisa\Api\Gizmo\Adapters;
+<?php namespace Pisa\GizmoAPI\Adapters;
 
 use Exception;
 use GuzzleHttp\Psr7\Response;
-use Pisa\Api\Gizmo\Contracts\HttpResponse;
+use Pisa\GizmoAPI\Contracts\HttpResponse;
 
 class GuzzleResponseAdapter implements HttpResponse
 {

@@ -1,4 +1,4 @@
-<?php namespace Pisa\Api\Gizmo\Repositories;
+<?php namespace Pisa\GizmoAPI\Repositories;
 
 interface SessionsRepositoryInterface extends BaseRepositoryInterface
 {

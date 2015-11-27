@@ -1,9 +1,9 @@
 <?php
-namespace spec\Pisa\Api\Gizmo;
+namespace spec\Pisa\GizmoAPI;
 
 use PhpSpec\ObjectBehavior;
-use Pisa\Api\Gizmo\Contracts\Container;
-use Pisa\Api\Gizmo\Repositories;
+use Pisa\GizmoAPI\Contracts\Container;
+use Pisa\GizmoAPI\Repositories;
 
 class GizmoSpec extends ObjectBehavior
 {
@@ -14,7 +14,7 @@ class GizmoSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Pisa\Api\Gizmo\Gizmo');
+        $this->shouldHaveType('Pisa\GizmoAPI\Gizmo');
     }
 
     public function it_should_return_users_repository(Container $ioc, Repositories\UserRepositoryInterface $repository)
