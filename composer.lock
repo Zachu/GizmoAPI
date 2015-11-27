@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a63edea9f359595ed81ae2accb24161b",
-    "content-hash": "b8a9a0707ac43159eed01aeb9496230c",
+    "hash": "4a5609c1628220d848ba38d99462994a",
+    "content-hash": "311ab26649943d4f1d315d8e51e8f8bd",
     "packages": [
         {
             "name": "fzaninotto/faker",
@@ -61,37 +61,37 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.0.1",
+            "version": "6.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "f992b7b487a816c957d317442bed4966409873e0"
+                "reference": "c6851d6e48f63b69357cbfa55bca116448140e0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/f992b7b487a816c957d317442bed4966409873e0",
-                "reference": "f992b7b487a816c957d317442bed4966409873e0",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/c6851d6e48f63b69357cbfa55bca116448140e0c",
+                "reference": "c6851d6e48f63b69357cbfa55bca116448140e0c",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/promises": "^1.0.0",
-                "guzzlehttp/psr7": "^1.0.0",
+                "guzzlehttp/promises": "~1.0",
+                "guzzlehttp/psr7": "~1.1",
                 "php": ">=5.5.0"
             },
             "require-dev": {
                 "ext-curl": "*",
-                "phpunit/phpunit": "^4.0",
-                "psr/log": "^1.0"
+                "phpunit/phpunit": "~4.0",
+                "psr/log": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.0-dev"
+                    "dev-master": "6.1-dev"
                 }
             },
             "autoload": {
                 "files": [
-                    "src/functions.php"
+                    "src/functions_include.php"
                 ],
                 "psr-4": {
                     "GuzzleHttp\\": "src/"
@@ -119,7 +119,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2015-05-27 16:57:51"
+            "time": "2015-11-23 00:47:50"
         },
         {
             "name": "guzzlehttp/promises",
@@ -174,7 +174,7 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "dev-master",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
@@ -550,6 +550,63 @@
             "time": "2014-12-30 15:22:37"
         },
         {
+            "name": "cvuorinen/phpdoc-md",
+            "version": "0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cvuorinen/phpdoc-md.git",
+                "reference": "4a9662134624a37eab2cfb570ed519af44e1a923"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cvuorinen/phpdoc-md/zipball/4a9662134624a37eab2cfb570ed519af44e1a923",
+                "reference": "4a9662134624a37eab2cfb570ed519af44e1a923",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.1",
+                "twig/twig": "~1.18.0"
+            },
+            "require-dev": {
+                "phpdocumentor/phpdocumentor": "~2.8.0"
+            },
+            "bin": [
+                "bin/phpdocmd"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPDocMD\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Evert Pot",
+                    "email": "evert@rooftopsolutions.nl",
+                    "homepage": "http://www.rooftopsolutions.nl/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Carl Vuorinen",
+                    "email": "carl.vuorinen@gmail.com",
+                    "homepage": "http://cvuorinen.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP documentation generator, with markdown output",
+            "homepage": "https://github.com/cvuorinen/phpdoc-md",
+            "keywords": [
+                "markdown",
+                "php",
+                "phpdoc"
+            ],
+            "time": "2015-11-12 20:16:05"
+        },
+        {
             "name": "doctrine/annotations",
             "version": "v1.2.7",
             "source": {
@@ -763,57 +820,6 @@
                 "parser"
             ],
             "time": "2015-10-04 16:44:32"
-        },
-        {
-            "name": "evert/phpdoc-md",
-            "version": "0.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/evert/phpdoc-md.git",
-                "reference": "aefe4644cb672def0043e7625d9c2bda04b310d8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/evert/phpdoc-md/zipball/aefe4644cb672def0043e7625d9c2bda04b310d8",
-                "reference": "aefe4644cb672def0043e7625d9c2bda04b310d8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.1",
-                "twig/twig": "~1.18.0"
-            },
-            "require-dev": {
-                "phpdocumentor/phpdocumentor": "~2.8.0"
-            },
-            "bin": [
-                "bin/phpdocmd"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PHPDocMD\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Evert Pot",
-                    "email": "evert@rooftopsolutions.nl",
-                    "homepage": "http://www.rooftopsolutions.nl/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "PHP documentation generator, with markdown output",
-            "homepage": "https://github.com/evert/phpdoc-md",
-            "keywords": [
-                "markdown",
-                "php",
-                "phpdoc"
-            ],
-            "time": "2015-03-26 23:24:48"
         },
         {
             "name": "herrera-io/json",
@@ -3527,9 +3533,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "guzzlehttp/psr7": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

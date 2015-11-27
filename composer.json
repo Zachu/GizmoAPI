@@ -12,7 +12,7 @@
     "require-dev": {
         "phpspec/phpspec": "~2.0",
         "phpdocumentor/phpdocumentor": "2.*",
-        "evert/phpdoc-md" : "~0.1.1"
+        "cvuorinen/phpdoc-md" : "~0.1.1"
     },
     
     "autoload": {
@@ -23,7 +23,7 @@
     },
     "require": {
         "guzzlehttp/guzzle": "~6.0",
-        "guzzlehttp/psr7": "dev-master",
+        "guzzlehttp/psr7": "~1.2.0",
         "illuminate/container": "^5.1",
         "psr/log": "1.0.*",
         "fzaninotto/faker": "^1.5"
