@@ -22,12 +22,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 $options['$orderby'] = $orderBy;
             }
 
-            $result = $this->client->get('Users/Get', $options);
+            $response = $this->client->get('Users/Get', $options);
 
-            $this->checkResponseArray($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response->assertArray();
+            $response->assertStatusCodes(200);
 
-            return $this->makeArray($result->getBody());
+            return $this->makeArray($response->getBody());
         } catch (Exception $e) {
             throw new Exception("Unable to get all users: " . $e->getMessage());
         }
@@ -48,11 +48,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
 
         try {
-            $result = $this->client->get('Users/Get', $options);
-            $this->checkResponseArray($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('Users/Get', $options);
+            $response->assertArray();
+            $response->assertStatusCodes(200);
 
-            return $this->makeArray($result->getBody());
+            return $this->makeArray($response->getBody());
         } catch (Exception $e) {
             throw new Exception("Finding users by parameters failed. " . $e->getMessage());
         }
@@ -67,11 +67,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
-        $result = $this->findBy($criteria, $caseSensitive, 1);
-        if (empty($result)) {
+        $response = $this->findBy($criteria, $caseSensitive, 1);
+        if (empty($response)) {
             return false;
         } else {
-            return reset($result);
+            return reset($response);
         }
     }
 
@@ -84,11 +84,17 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function get($id)
     {
         try {
-            $result = $this->client->get('Users/Get', ['$filter' => 'Id eq ' . $id]);
-            $this->checkResponseArray($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('Users/Get', ['$filter' => 'Id eq ' . $id]);
 
-            $body = $result->getBody();
+            // TODO: Do I need to put these everywhere?
+            if ($response === null) {
+                throw new Exception("Response failed");
+            }
+
+            $response->assertArray();
+            $response->assertStatusCodes(200);
+
+            $body = $response->getBody();
             if (empty($body)) {
                 return false;
             } else {
@@ -108,12 +114,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function has($id)
     {
         try {
-            $result = $this->client->get('Users/UserExist', ['userId' => $id]);
+            $response = $this->client->get('Users/UserExist', ['userId' => $id]);
 
-            $this->checkResponseBoolean($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response->assertBoolean($response);
+            $response->assertStatusCodes(200);
 
-            return $result->getBody();
+            return $response->getBody();
         } catch (Exception $e) {
             throw new Exception("Checking for user existance failed. " . $e->getMessage());
         }
@@ -128,11 +134,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function hasLoginName($loginName)
     {
         try {
-            $result = $this->client->get('Users/LoginNameExist', ['loginName' => $loginName]);
-            $this->checkResponseBoolean($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('Users/LoginNameExist', ['loginName' => $loginName]);
+            $response->assertBoolean($response);
+            $response->assertStatusCodes(200);
 
-            return $result->getBody();
+            return $response->getBody();
         } catch (Exception $e) {
             throw new Exception("Checking for login name existance failed. " . $e->getMessage());
         }
@@ -148,12 +154,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function hasUserEmail($userEmail)
     {
         try {
-            $result = $this->client->get('Users/UserEmailExist', ['userEmail' => $userEmail]);
+            $response = $this->client->get('Users/UserEmailExist', ['userEmail' => $userEmail]);
 
-            $this->checkResponseBoolean($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response->assertBoolean($response);
+            $response->assertStatusCodes(200);
 
-            return $result->getBody();
+            return $response->getBody();
         } catch (Exception $e) {
             throw new Exception("Checking for user email existance failed. " . $e->getMessage());
         }
@@ -169,12 +175,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function hasUserName($userName)
     {
         try {
-            $result = $this->client->get('Users/UserNameExist', ['userName' => $userName]);
+            $response = $this->client->get('Users/UserNameExist', ['userName' => $userName]);
 
-            $this->checkResponseBoolean($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response->assertBoolean($response);
+            $response->assertStatusCodes(200);
 
-            return $result->getBody();
+            return $response->getBody();
         } catch (Exception $e) {
             throw new Exception("Checking for username existance failed. " . $e->getMessage());
         }

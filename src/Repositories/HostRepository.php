@@ -21,11 +21,11 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
                 $options['$orderby'] = $orderBy;
             }
 
-            $result = $this->client->get('Hosts/Get', $options);
-            $this->checkResponseArray($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('Hosts/Get', $options);
+            $response->assertArray();
+            $response->assertStatusCodes(200);
 
-            return $this->makeArray($result->getBody());
+            return $this->makeArray($response->getBody());
         } catch (Exception $e) {
             throw new Exception("Unable to get all hosts: " . $e->getMessage());
         }
@@ -46,11 +46,11 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
                 $options['$orderby'] = $orderBy;
             }
 
-            $result = $this->client->get('Hosts/Get', $options);
-            $this->checkResponseArray($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('Hosts/Get', $options);
+            $response->assertArray();
+            $response->assertStatusCodes(200);
 
-            return $this->makeArray($result->getBody());
+            return $this->makeArray($response->getBody());
         } catch (Exception $e) {
             throw new Exception("Unable to find hosts by parameters: " . $e->getMessage());
         }
@@ -82,14 +82,14 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     public function get($id)
     {
         try {
-            $result = $this->client->get('Hosts/Get/' . (int) $id);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('Hosts/Get/' . (int) $id);
+            $response->assertStatusCodes(200);
 
-            $body = $result->getBody();
+            $body = $response->getBody();
             if ($body === null) {
                 return null;
             } else {
-                $this->checkResponseArray($result);
+                $response->assertArray();
                 return $this->make($body);
             }
         } catch (Exception $e) {
@@ -106,12 +106,12 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     public function getByNumber($hostNumber)
     {
         try {
-            $result = $this->client->get('Hosts/GetByNumber', ['hostNumber' => $hostNumber]);
+            $response = $this->client->get('Hosts/GetByNumber', ['hostNumber' => $hostNumber]);
 
-            $this->checkResponseStatusCodes($result, 200);
-            $this->checkResponseArray($result);
+            $response->assertStatusCodes(200);
+            $response->assertArray();
 
-            return $this->makeArray($result->getBody());
+            return $this->makeArray($response->getBody());
         } catch (Exception $e) {
             throw new Exception("Getting hosts by number failed. " . $e->getMessage());
         }

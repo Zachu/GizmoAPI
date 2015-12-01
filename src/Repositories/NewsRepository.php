@@ -16,11 +16,11 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
                 $options['$orderby'] = $orderBy;
             }
 
-            $result = $this->client->get('News/Get', $options);
-            $this->checkResponseArray($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('News/Get', $options);
+            $response->assertArray();
+            $response->assertStatusCodes(200);
 
-            return $this->makeArray($result->getBody());
+            return $this->makeArray($response->getBody());
         } catch (Exception $e) {
             throw new Exception("Unable to get all news: " . $e->getMessage());
         }
@@ -42,11 +42,11 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
                 $options['$orderby'] = $orderBy;
             }
 
-            $result = $this->client->get('News/Get', $options);
-            $this->checkResponseArray($result);
-            $this->checkResponseStatusCodes($result, 200);
+            $response = $this->client->get('News/Get', $options);
+            $response->assertArray();
+            $response->assertStatusCodes(200);
 
-            return $this->makeArray($result->getBody());
+            return $this->makeArray($response->getBody());
         } catch (EXception $e) {
             throw new Exception("Unable to find hosts by parameters: " . $e->getMessage());
         }

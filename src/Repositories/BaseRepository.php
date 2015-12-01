@@ -3,7 +3,6 @@
 use Exception;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Contracts\HttpClient;
-use Pisa\GizmoAPI\Contracts\HttpResponse;
 use Pisa\GizmoAPI\Models\BaseModelInterface as BaseModel;
 
 abstract class BaseRepository implements BaseRepositoryInterface
@@ -117,81 +116,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
         }
 
         return $model;
-    }
-
-    /**
-     * Check that http response body was an array.
-     * @param  HttpResponse $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseArray(HttpResponse $response)
-    {
-        if (!is_array($response->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting array");
-        }
-    }
-
-    /**
-     * Check that http response body was a boolean.
-     * @param  HttpResponse $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseBoolean(HttpResponse $response)
-    {
-        if (!is_bool($response->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting boolean");
-        }
-    }
-
-    /**
-     * Check that http response body was empty.
-     * @param  HttpResponse $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseEmpty(HttpResponse $response)
-    {
-        if ($response->getBody() != '') {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting none");
-        }
-    }
-
-    /**
-     * Check that http response body was an integer.
-     * @param  HttpResponse $response    Http response that was got
-     * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseInteger(HttpResponse $response)
-    {
-        if (!is_int($response->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($response->getBody()) . ". Expecting integer");
-        }
-    }
-
-    /**
-     * Check that http response status codes match the codes we are expecting for.
-     * @param  HttpResponse $response    Http response that was got
-     * @param  int|array           $statusCodes Array of status codes to be expected. Can be a single status code too.
-     * @return void
-     * @throws Exception                        if the status code was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
-     */
-    protected static function checkResponseStatusCodes(HttpResponse $response, $statusCodes = [])
-    {
-        if (is_numeric($statusCodes)) {
-            $statusCodes = [(int) $statusCodes];
-        }
-
-        if (!in_array($response->getStatusCode(), $statusCodes)) {
-            throw new Exception("Unexpected HTTP Code " . $response->getStatusCode() . ". Expecting " . implode(',', $statusCodes));
-        }
     }
 
     /**
