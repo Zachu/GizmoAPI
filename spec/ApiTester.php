@@ -64,4 +64,16 @@ class ApiTester extends ObjectBehavior
         ], $fields);
     }
 
+    public function fakeNews(array $fields = [])
+    {
+        return array_merge([
+            'Data'      => $this->faker->paragraph(),
+            'Title'     => $this->faker->sentence(),
+            'Date'      => $this->faker->iso8601(),
+            'StartDate' => $this->faker->iso8601(),
+            'EndDate'   => $this->faker->iso8601(),
+            'Url'       => $this->faker->url(),
+            'Id'        => $this->faker->randomDigitNotNull(),
+        ], $fields);
+    }
 }

@@ -30,4 +30,11 @@ interface BaseModelInterface extends Identifiable, Attributable
      * @throws Exception on error.
      */
     public function save();
+
+    /**
+     * Fill instance with
+     * @param  array  $attributes [description]
+     * @return [type]             [description]
+     */
+    public function load(array $attributes);
 }
