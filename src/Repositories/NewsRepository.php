@@ -10,13 +10,17 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
+        $options = ['$skip' => $skip, '$top' => $limit];
+        if ($orderBy !== null) {
+            $options['$orderby'] = $orderBy;
+        }
+
         try {
-            $options = ['$skip' => $skip, '$top' => $limit];
-            if ($orderBy !== null) {
-                $options['$orderby'] = $orderBy;
+            $response = $this->client->get('News/Get', $options);
+            if ($response === null) {
+                throw new Exception("Response failed");
             }
 
-            $response = $this->client->get('News/Get', $options);
             $response->assertArray();
             $response->assertStatusCodes(200);
 
@@ -32,17 +36,21 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
      */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
+        $options = [
+            '$filter' => $this->criteriaToFilter($criteria, $caseSensitive),
+            '$skip'   => $skip,
+            '$top'    => $limit,
+        ];
+        if ($orderBy !== null) {
+            $options['$orderby'] = $orderBy;
+        }
+
         try {
-            $options = [
-                '$filter' => $this->criteriaToFilter($criteria, $caseSensitive),
-                '$skip'   => $skip,
-                '$top'    => $limit,
-            ];
-            if ($orderBy !== null) {
-                $options['$orderby'] = $orderBy;
+            $response = $this->client->get('News/Get', $options);
+            if ($response === null) {
+                throw new Exception("Response failed");
             }
 
-            $response = $this->client->get('News/Get', $options);
             $response->assertArray();
             $response->assertStatusCodes(200);
 

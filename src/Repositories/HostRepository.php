@@ -4,24 +4,24 @@ use Exception;
 
 class HostRepository extends BaseRepository implements HostRepositoryInterface
 {
-    /** @inheritDoc */
     protected $model = 'Host';
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
+        $options = ['$skip' => $skip, '$top' => $limit];
+        if ($orderBy !== null) {
+            $options['$orderby'] = $orderBy;
+        }
+
         try {
-            $options = ['$skip' => $skip, '$top' => $limit];
-            if ($orderBy !== null) {
-                $options['$orderby'] = $orderBy;
+            $response = $this->client->get('Hosts/Get', $options);
+            if ($response === null) {
+                throw new Exception("Response failed");
             }
 
-            $response = $this->client->get('Hosts/Get', $options);
             $response->assertArray();
             $response->assertStatusCodes(200);
 
@@ -32,21 +32,22 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
+        $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
+        $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
+        if ($orderBy !== null) {
+            $options['$orderby'] = $orderBy;
+        }
+
         try {
-            $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
-            $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
-            if ($orderBy !== null) {
-                $options['$orderby'] = $orderBy;
+            $response = $this->client->get('Hosts/Get', $options);
+            if ($response === null) {
+                throw new Exception("Response failed");
             }
 
-            $response = $this->client->get('Hosts/Get', $options);
             $response->assertArray();
             $response->assertStatusCodes(200);
 
@@ -57,9 +58,6 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      * @uses   findBy for searching
      */
@@ -74,15 +72,16 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function get($id)
     {
         try {
             $response = $this->client->get('Hosts/Get/' . (int) $id);
+            if ($response === null) {
+                throw new Exception("Response failed");
+            }
+
             $response->assertStatusCodes(200);
 
             $body = $response->getBody();
@@ -98,15 +97,15 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function getByNumber($hostNumber)
     {
         try {
             $response = $this->client->get('Hosts/GetByNumber', ['hostNumber' => $hostNumber]);
+            if ($response === null) {
+                throw new Exception("Response failed");
+            }
 
             $response->assertStatusCodes(200);
             $response->assertArray();
@@ -118,9 +117,6 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @uses  get
      */
     public function has($id)
