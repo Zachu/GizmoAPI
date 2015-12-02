@@ -5,6 +5,7 @@ use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Repositories\HostRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\NewsRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\SessionsRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
@@ -15,6 +16,7 @@ class Gizmo
         'hosts'    => null,
         'news'     => null,
         'sessions' => null,
+        'service'  => null,
     ];
     protected $config;
     protected $ioc;
@@ -55,6 +57,7 @@ class Gizmo
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\HostRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\HostRepository::class);
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\SessionsRepository::class);
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\NewsRepository::class);
+        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\ServiceRepository::class);
     }
 
     public function getConfig($name = null)
@@ -123,6 +126,9 @@ class Gizmo
                 break;
             case 'sessions':
                 $repository = $this->ioc->make(SessionsRepositoryInterface::class);
+                break;
+            case 'service':
+                $repository = $this->ioc->make(ServiceRepositoryInterface::class);
                 break;
         }
 
