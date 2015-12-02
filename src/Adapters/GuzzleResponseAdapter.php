@@ -66,11 +66,6 @@ class GuzzleResponseAdapter implements HttpResponse
         return $this->getString();
     }
 
-    /**
-     * Check that http response body was an array.
-     * @return void
-     * @throws Exception if the body was unexpected
-     */
     public function assertArray()
     {
         if (!is_array($this->getBody())) {
@@ -78,11 +73,6 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
-    /**
-     * Check that http response body was a boolean.
-     * @return void
-     * @throws Exception if the body was unexpected
-     */
     public function assertBoolean()
     {
         if (!is_bool($this->getBody())) {
@@ -90,11 +80,6 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
-    /**
-     * Check that http response body was empty.
-     * @return void
-     * @throws Exception if the body was unexpected
-     */
     public function assertEmpty()
     {
         if ($this->getBody() != '') {
@@ -102,11 +87,6 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
-    /**
-     * Check that http response body was an integer.
-     * @return void
-     * @throws Exception if the body was unexpected
-     */
     public function assertInteger()
     {
         if (!is_int($this->getBody())) {
@@ -114,11 +94,6 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
-    /**
-     * Check that http response body is a time
-     * @return void
-     * @throws Exception if the body was unexpected
-     */
     public function assertTime()
     {
         $body = $this->getBody();
@@ -131,12 +106,13 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
-    /**
-     * Check that http response status codes match the codes we are expecting for.
-     * @param  int|array           $statusCodes Array of status codes to be expected. Can be a single status code too.
-     * @return void
-     * @throws Exception                        if the status code was unexpected
-     */
+    public function assertString()
+    {
+        if (!is_string($this->getBody())) {
+            throw new Exception("Unexpected response body " . gettype($body) . ". Expecting string");
+        }
+    }
+
     public function assertStatusCodes($statusCodes = [])
     {
         if (is_numeric($statusCodes)) {
@@ -147,5 +123,4 @@ class GuzzleResponseAdapter implements HttpResponse
             throw new Exception("Unexpected HTTP Code " . $this->getStatusCode() . ". Expecting " . implode(',', $statusCodes));
         }
     }
-
 }

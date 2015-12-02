@@ -45,4 +45,54 @@ interface HttpResponse
      * @return string
      */
     public function getType();
+
+    /**
+     * Check that http response body was an array.
+     * @return void
+     * @throws Exception if the body was unexpected
+     */
+    public function assertArray();
+
+    /**
+     * Check that http response body was string.
+     * @return void
+     * @throws Exception if the body was unexpected
+     */
+    public function assertString();
+
+    /**
+     * Check that http response body was a boolean.
+     * @return void
+     * @throws Exception if the body was unexpected
+     */
+    public function assertBoolean();
+
+    /**
+     * Check that http response body was empty.
+     * @return void
+     * @throws Exception if the body was unexpected
+     */
+    public function assertEmpty();
+
+    /**
+     * Check that http response body was an integer.
+     * @return void
+     * @throws Exception if the body was unexpected
+     */
+    public function assertInteger();
+
+    /**
+     * Check that http response body is a time
+     * @return void
+     * @throws Exception if the body was unexpected
+     */
+    public function assertTime();
+
+    /**
+     * Check that http response status codes match the codes we are expecting for.
+     * @param  int|array           $statusCodes Array of status codes to be expected. Can be a single status code too.
+     * @return void
+     * @throws Exception                        if the status code was unexpected
+     */
+    public function assertStatusCodes($statusCodes = []);
 }
