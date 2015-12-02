@@ -69,8 +69,7 @@ class GuzzleResponseAdapter implements HttpResponse
     /**
      * Check that http response body was an array.
      * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
+     * @throws Exception if the body was unexpected
      */
     public function assertArray()
     {
@@ -82,8 +81,7 @@ class GuzzleResponseAdapter implements HttpResponse
     /**
      * Check that http response body was a boolean.
      * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
+     * @throws Exception if the body was unexpected
      */
     public function assertBoolean()
     {
@@ -95,8 +93,7 @@ class GuzzleResponseAdapter implements HttpResponse
     /**
      * Check that http response body was empty.
      * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
+     * @throws Exception if the body was unexpected
      */
     public function assertEmpty()
     {
@@ -108,8 +105,7 @@ class GuzzleResponseAdapter implements HttpResponse
     /**
      * Check that http response body was an integer.
      * @return void
-     * @throws Exception                        if the body was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
+     * @throws Exception if the body was unexpected
      */
     public function assertInteger()
     {
@@ -119,11 +115,27 @@ class GuzzleResponseAdapter implements HttpResponse
     }
 
     /**
+     * Check that http response body is a time
+     * @return void
+     * @throws Exception if the body was unexpected
+     */
+    public function assertTime()
+    {
+        $body = $this->getBody();
+        if (is_int($body) && $body < 0) {
+            throw new Exception("Unexpected response body negative integer. Expecting time (positive integer or strtotime parseable string)");
+        } elseif (is_string($body) && strtotime($body) === false) {
+            throw new Exception("Unexpected response body unparseable string. Expecting time (positive integer or strtotime parseable string)");
+        } elseif (!is_int($body) && !is_string($body)) {
+            throw new Exception("Unexpected response body " . gettype($body) . ". Expecting time (positive integer or strtotime parseable string)");
+        }
+    }
+
+    /**
      * Check that http response status codes match the codes we are expecting for.
      * @param  int|array           $statusCodes Array of status codes to be expected. Can be a single status code too.
      * @return void
      * @throws Exception                        if the status code was unexpected
-     * @internal                                Intended to use with repositories to validate the responses
      */
     public function assertStatusCodes($statusCodes = [])
     {
