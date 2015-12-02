@@ -36,7 +36,7 @@ class ServiceRepositorySpec extends ObjectBehavior
     public function it_should_stop_service(HttpClient $client)
     {
         $client->get('Service/Stop')->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->stop()->shouldReturn(true);
+        $this->stop();
     }
 
     public function it_should_throw_on_stop_if_got_unexpected_response(HttpClient $client)
@@ -51,7 +51,7 @@ class ServiceRepositorySpec extends ObjectBehavior
     public function it_should_restart_service(HttpClient $client)
     {
         $client->get('Service/Restart')->shouldBeCalled()->willReturn(HttpResponses::noContent());
-        $this->restart()->shouldReturn(true);
+        $this->restart();
     }
 
     public function it_should_throw_on_restart_if_got_unexpected_response(HttpClient $client)

@@ -10,6 +10,9 @@ class ServiceRepository implements ServiceRepositoryInterface
         $this->client = $client;
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getTime()
     {
         try {
@@ -26,6 +29,9 @@ class ServiceRepository implements ServiceRepositoryInterface
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function stop()
     {
         try {
@@ -39,13 +45,14 @@ class ServiceRepository implements ServiceRepositoryInterface
              */
             $response->assertEmpty();
             $response->assertStatusCodes(204);
-
-            return true;
         } catch (Exception $e) {
             throw new Exception("Could not stop service: " . $e->getMessage());
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function restart()
     {
         try {
@@ -59,13 +66,14 @@ class ServiceRepository implements ServiceRepositoryInterface
              */
             $response->assertEmpty();
             $response->assertStatusCodes(204);
-
-            return true;
         } catch (Exception $e) {
             throw new Exception("Could not restart service: " . $e->getMessage());
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getStatus()
     {
         try {
@@ -83,6 +91,9 @@ class ServiceRepository implements ServiceRepositoryInterface
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getVersion()
     {
         try {
@@ -100,6 +111,9 @@ class ServiceRepository implements ServiceRepositoryInterface
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getModule()
     {
         try {
@@ -117,6 +131,9 @@ class ServiceRepository implements ServiceRepositoryInterface
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getLicense()
     {
         try {
@@ -134,6 +151,9 @@ class ServiceRepository implements ServiceRepositoryInterface
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getHardwareId()
     {
         try {
@@ -152,6 +172,9 @@ class ServiceRepository implements ServiceRepositoryInterface
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getSettings()
     {
         try {
