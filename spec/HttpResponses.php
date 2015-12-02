@@ -19,6 +19,31 @@ class HttpResponses
         ));
     }
 
+    public static function randomArray()
+    {
+        $arr = [];
+        $len = rand(1, 10);
+        for ($i = 0; $i < $len; $i++) {
+            $key       = str_shuffle(uniqid());
+            $arr[$key] = md5($key);
+        }
+
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode($arr)
+        ));
+    }
+
+    public static function randomString()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode(str_shuffle(uniqid()))
+        ));
+    }
+
     public static function content($content)
     {
         return new HttpResponseAdapter(new HttpResponse(
