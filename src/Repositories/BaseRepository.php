@@ -52,13 +52,16 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         $filter = [];
         foreach ($criteria as $key => $value) {
-            if (!$caseSensitive) {
-                $value    = strtolower($value);
-                $filter[] = "substringof('{$value}',tolower($key)) eq true";
-            } else {
-                $filter[] = "substringof('{$value}',$key)";
+            if (is_string($value)) {
+                if (!$caseSensitive) {
+                    $value    = strtolower($value);
+                    $filter[] = "substringof('{$value}',tolower($key)) eq true";
+                } else {
+                    $filter[] = "substringof('{$value}',$key)";
+                }
+            } elseif (is_int($value)) {
+                $filter[] = "{$key} eq {$value}";
             }
-
         }
         $filter = implode(' or ', $filter);
 
