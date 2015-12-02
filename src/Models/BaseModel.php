@@ -61,9 +61,6 @@ abstract class BaseModel implements BaseModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @todo How the created/uncreated should be handled?
      */
     public function isSaved()
@@ -71,22 +68,12 @@ abstract class BaseModel implements BaseModelInterface
         return (empty($this->changed()) && $this->exists());
     }
 
-    /**
-     * Load model attributes and mark them as saved.
-     * @param  array  $attributes Attributes to be loaded
-     * @return void
-     */
     public function load(array $attributes)
     {
         $this->fill($attributes);
         $this->savedAttributes = $this->attributes;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function save()
     {
         $return = null;

@@ -24,9 +24,6 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @uses request This is a wrapper for request()
      */
     public function delete($url, array $parameters = [], array $options = [])
@@ -35,9 +32,6 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @uses request This is a wrapper for request()
      */
     public function get($url, array $parameters = [], array $options = [])
@@ -46,9 +40,6 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @uses request This is a wrapper for request()
      */
     public function post($url, array $parameters = [], array $options = [])
@@ -57,9 +48,6 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @uses request This is a wrapper for request()
      */
     public function put($url, array $parameters = [], array $options = [])
@@ -68,9 +56,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * @return HttpResponse
      */
     public function request($method, $url, array $parameters = [], array $options = [])
     {

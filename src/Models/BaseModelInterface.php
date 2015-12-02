@@ -32,9 +32,9 @@ interface BaseModelInterface extends Identifiable, Attributable
     public function save();
 
     /**
-     * Fill instance with
-     * @param  array  $attributes [description]
-     * @return [type]             [description]
+     * Load model attributes and mark them as saved.
+     * @param  array  $attributes Attributes to be loaded
+     * @return void
      */
     public function load(array $attributes);
 }
