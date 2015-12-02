@@ -6,7 +6,7 @@ use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Repositories\HostRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\NewsRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface;
-use Pisa\GizmoAPI\Repositories\SessionsRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\SessionRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
 class Gizmo
@@ -55,7 +55,7 @@ class Gizmo
 
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\UserRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\UserRepository::class);
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\HostRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\HostRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\SessionsRepository::class);
+        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\SessionRepository::class);
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\NewsRepository::class);
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\ServiceRepository::class);
     }
@@ -125,7 +125,7 @@ class Gizmo
                 $repository = $this->ioc->make(NewsRepositoryInterface::class);
                 break;
             case 'sessions':
-                $repository = $this->ioc->make(SessionsRepositoryInterface::class);
+                $repository = $this->ioc->make(SessionRepositoryInterface::class);
                 break;
             case 'service':
                 $repository = $this->ioc->make(ServiceRepositoryInterface::class);

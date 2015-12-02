@@ -38,10 +38,10 @@ class GizmoSpec extends ObjectBehavior
         $this->news->shouldBe($repository);
     }
 
-    public function it_should_return_sessions_repository(Container $ioc, Repositories\SessionsRepositoryInterface $repository)
+    public function it_should_return_session_repository(Container $ioc, Repositories\SessionRepositoryInterface $repository)
     {
         $this->hasRepository('sessions')->shouldBe(true);
-        $ioc->make(Repositories\SessionsRepositoryInterface::class)->willReturn($repository);
+        $ioc->make(Repositories\SessionRepositoryInterface::class)->willReturn($repository);
         $this->sessions->shouldBe($repository);
     }
 
