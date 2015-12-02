@@ -61,6 +61,7 @@ class ApiTester extends ObjectBehavior
             'Role'        => 1,
             'IsEnabled'   => $this->faker->boolean(),
             'GroupID'     => $this->faker->randomDigitNotNull(),
+            'Registered'  => $this->faker->iso8601(),
         ], $fields);
     }
 
