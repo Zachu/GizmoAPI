@@ -77,4 +77,23 @@ class ApiTester extends ObjectBehavior
             'Id'        => $this->faker->randomDigitNotNull(),
         ], $fields);
     }
+
+    public function fakeSession(array $fields = [])
+    {
+        return array_merge([
+            'Id'               => $this->faker->randomDigitNotNull(),
+            'UserId'           => $this->faker->randomDigitNotNull(),
+            'HostId'           => $this->faker->randomDigitNotNull(),
+            'CreationTime'     => $this->faker->iso8601(),
+            'DestructionTime'  => $this->faker->iso8601(),
+            'Span'             => $this->faker->time(),
+            'SpanFromCreation' => $this->faker->time(),
+            'State'            => $this->faker->randomDigitNotNull(),
+            'IsActive'         => $this->faker->boolean(),
+            'IsPending'        => $this->faker->boolean(),
+            'IsPaused'         => $this->faker->boolean(),
+            'PendTime'         => $this->faker->iso8601(),
+            'SpanFromPend'     => $this->faker->time(),
+        ], $fields);
+    }
 }
