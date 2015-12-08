@@ -6,7 +6,7 @@ use Pisa\GizmoAPI\GizmoClient as Client;
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     /** {@inheritDoc} */
-    protected $model = 'User';
+    protected $model = 'UserInterface';
 
     /**
      * {@inheritDoc}

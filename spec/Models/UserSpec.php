@@ -1,8 +1,11 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
+use Illuminate\Contracts\Validation\Factory;
+use Illuminate\Contracts\Validation\Validator;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Models\HostInterface;
 use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
+use Prophecy\Argument;
 use spec\Pisa\GizmoAPI\ApiTester;
 use spec\Pisa\GizmoAPI\HttpResponses;
 
@@ -10,10 +13,12 @@ class UserSpec extends ApiTester
 {
     protected static $user;
 
-    public function let(HttpClient $client)
+    public function let(HttpClient $client, Factory $factory, Validator $validator)
     {
         self::$user = $this->fakeUser();
-        $this->beConstructedWith($client, self::$user);
+        $this->beConstructedWith($client, $factory, self::$user);
+        $factory->make(Argument::any(), Argument::any())->willReturn($validator);
+        $validator->fails()->willReturn(false);
     }
 
     //
@@ -30,7 +35,7 @@ class UserSpec extends ApiTester
         $this->LastName->shouldBe(self::$user['LastName']);
     }
 
-    //
+//
     // Delete
     //
 
@@ -70,27 +75,28 @@ class UserSpec extends ApiTester
         $this->delete()->shouldReturn($this);
     }
 
-    public function it_should_throw_on_delete_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_delete_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringDelete();
     }
 
-    //
+//
     // Save
     //
 
-    public function it_should_create_new_user_on_save(HttpClient $client)
+    public function it_should_create_new_user_on_save(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
 
         $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
+
         $this->save()->shouldReturn($this);
     }
 
-    public function it_should_throw_on_create_if_got_unexpected_response(HttpClient $client)
+    public function it_should_throw_on_create_if_got_unexpected_response(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
 
         $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::true());
         $this->shouldThrow('\Exception')->duringSave();
@@ -106,7 +112,9 @@ class UserSpec extends ApiTester
     public function it_should_throw_on_update_if_got_unexpected_response(HttpClient $client)
     {
         $this->FirstName = 'Todd';
+
         $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::true());
+
         $this->shouldThrow('\Exception')->duringSave();
     }
 
@@ -141,7 +149,7 @@ class UserSpec extends ApiTester
         $this->shouldThrow('\Exception')->duringSave($repository);
     }
 
-    //
+//
     // Get logged in host id
     //
 
@@ -172,13 +180,13 @@ class UserSpec extends ApiTester
         $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
     }
 
-    public function it_should_throw_on_get_logged_in_host_id_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_get_logged_in_host_id_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
     }
 
-    //
+//
     // Is logged in
     //
 
@@ -203,13 +211,13 @@ class UserSpec extends ApiTester
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
     }
 
-    public function it_should_throw_on_is_logged_in_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_is_logged_in_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
     }
 
-    //
+//
     // Get last login time
     //
 
@@ -231,9 +239,9 @@ class UserSpec extends ApiTester
         $this->shouldThrow('\Exception')->duringLastLoginTime();
     }
 
-    public function it_should_throw_on_get_last_login_time_if_model_does_not_exists(HttpClient $client)
+    public function it_should_throw_on_get_last_login_time_if_model_does_not_exists(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringLastLoginTime();
     }
 
@@ -259,9 +267,9 @@ class UserSpec extends ApiTester
         $this->shouldThrow('\Exception')->duringLastLogoutTime();
     }
 
-    public function it_should_throw_on_get_last_logout_time_if_model_does_not_exist(HttpClient $client)
+    public function it_should_throw_on_get_last_logout_time_if_model_does_not_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringLastLogoutTime();
     }
 
@@ -308,9 +316,9 @@ class UserSpec extends ApiTester
         $this->shouldThrow('\Exception')->duringLogin($host);
     }
 
-    public function it_should_throw_on_login_if_model_doesnt_exist(HttpClient $client, HostInterface $host)
+    public function it_should_throw_on_login_if_model_doesnt_exist(HttpClient $client, HostInterface $host, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $host->isFree()->willReturn(true);
         $host->getPrimaryKeyValue()->willReturn(1);
 
@@ -355,9 +363,9 @@ class UserSpec extends ApiTester
         $this->shouldThrow('\Exception')->duringLogout();
     }
 
-    public function it_should_throw_on_logout_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_logout_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $this->shouldThrow('\Exception')->duringLogout();
     }
 
@@ -400,10 +408,10 @@ class UserSpec extends ApiTester
         $this->UserName->shouldNotBe($newUserName);
     }
 
-    public function it_should_throw_on_rename_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
+    public function it_should_throw_on_rename_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository, Factory $factory)
     {
         $newUserName = 'NewName';
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
 
         $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
         $this->UserName->shouldNotBe($newUserName);
@@ -449,9 +457,9 @@ class UserSpec extends ApiTester
         $this->Email->shouldNotBe($newEmail);
     }
 
-    public function it_should_throw_on_set_email_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository)
+    public function it_should_throw_on_set_email_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $newEmail = 'test@example.com';
         $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
         $this->Email->shouldNotBe($newEmail);
@@ -472,9 +480,9 @@ class UserSpec extends ApiTester
         $this->setPassword($newPassword)->shouldReturn(true);
     }
 
-    public function it_should_throw_on_set_password_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_set_password_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $this->fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $this->fakeUser(['Id' => null]));
         $newPassword = 'newPassword';
         $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
     }
@@ -508,10 +516,10 @@ class UserSpec extends ApiTester
         $this->GroupId->shouldBe($newUserGroup);
     }
 
-    public function it_should_throw_on_set_user_group_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_set_user_group_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
         $fakeUser = $this->fakeUser(['Id' => null]);
-        $this->beConstructedWith($client, $fakeUser);
+        $this->beConstructedWith($client, $factory, $fakeUser);
         $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
 
         $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);

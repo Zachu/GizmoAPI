@@ -37,4 +37,42 @@ interface BaseModelInterface extends Identifiable, Attributable
      * @return void
      */
     public function load(array $attributes);
+
+    /**
+     * Return attributes that doesn't pass the validator
+     * @return array
+     */
+    public function getInvalid();
+
+    /**
+     * Return the validator instance
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    public function getValidator();
+
+    /**
+     * Check that the model passes validation rules
+     * @return boolean
+     */
+    public function isValid();
+
+    /**
+     * Set the validation rules
+     * @param array $rules \Illuminate\Validation\Factory rules
+     * @return void
+     */
+    public function setRules(array $rules);
+
+    /**
+     * Returns the current validation rules
+     * @return array of \Illuminate\Validation\Factory rules
+     */
+    public function getRules();
+
+    /**
+     * Merge new rules to the current validation rules
+     * @param array $rules \Illuminate\Validation\Factory rules
+     * @return void
+     */
+    public function mergeRules(array $rules);
 }

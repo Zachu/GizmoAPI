@@ -54,16 +54,20 @@ class GizmoSpec extends ObjectBehavior
 
     public function it_should_set_and_get_config_values()
     {
-        $config     = ['setting1' => 'value1'];
-        $key        = key($config);
+        $config = ['setting1' => 'value1'];
+        $key    = key($config);
+        $value  = $config[$key];
+
         $newSetting = ['newSetting' => 'newValue'];
         $newKey     = key($newSetting);
+        $newValue   = $newSetting[$newKey];
         $this->beConstructedWith($config);
 
-        $this->getConfig()->shouldBe($config);
-        $this->getConfig($key)->shouldBe($config[$key]);
+        $this->getConfig()->shouldHaveKeyWithValue($key, $value);
+        $this->getConfig($key)->shouldBe($value);
 
-        $this->setConfig($newKey, $newSetting[$newKey]);
-        $this->getConfig($newKey)->shouldBe($newSetting[$newKey]);
+        $this->setConfig($newKey, $newValue);
+        $this->getConfig()->shouldHaveKeyWithValue($newKey, $newValue);
+        $this->getConfig($newKey)->shouldBe($newValue);
     }
 }

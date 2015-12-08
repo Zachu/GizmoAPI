@@ -28,6 +28,11 @@ class User extends BaseModel implements UserInterface
         'Registered',
     ];
 
+    protected $rules = [
+        'BirthDate'  => 'date',
+        'Registered' => 'date',
+    ];
+
     /**
      * @throws  Exception on error
      */
@@ -456,7 +461,7 @@ class User extends BaseModel implements UserInterface
         } elseif (is_string($date) && strtotime($date) !== false) {
             $return = date('c', strtotime($date));
         } else {
-            throw new Exception("Could not parse date from {$date}");
+            $return = null;
         }
 
         $this->attributes['BirthDate'] = $return;
@@ -472,7 +477,7 @@ class User extends BaseModel implements UserInterface
         if (is_int($group) || (int) $group != 0) {
             $this->attributes['GroupId'] = (int) $group;
         } else {
-            throw new Exception("Could not parse usergroup id from {$group}");
+            $this->attributes['GroupId'] = null;
         }
     }
 

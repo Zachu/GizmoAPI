@@ -23,7 +23,13 @@ class Gizmo
 
     public function __construct(array $config = array(), Container $ioc = null)
     {
-        $this->config = $config;
+        $this->config = array_merge([
+            'http'       => [],
+            'user.rules' => [],
+            'host.rules' => [],
+            'news.rules' => [],
+        ], $config);
+
         if ($ioc === null) {
             $ioc = new IlluminateContainerAdapter;
         }
@@ -58,6 +64,32 @@ class Gizmo
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\SessionRepository::class);
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\NewsRepository::class);
         $this->ioc->bind(\Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\ServiceRepository::class);
+
+        $this->ioc->bind(\Pisa\GizmoAPI\Models\UserInterface::class, function ($c) {
+            $user = $c->make(\Pisa\GizmoAPI\Models\User::class);
+            $user->mergeRules($this->getConfig('user.rules'));
+
+            return $user;
+        });
+
+        $this->ioc->bind(\Pisa\GizmoAPI\Models\HostInterface::class, function ($c) {
+            $user = $c->make(\Pisa\GizmoAPI\Models\Host::class);
+            $user->mergeRules($this->getConfig('host.rules'));
+
+            return $user;
+        });
+
+        $this->ioc->bind(\Pisa\GizmoAPI\Models\NewsInterface::class, function ($c) {
+            $user = $c->make(\Pisa\GizmoAPI\Models\News::class);
+            $user->mergeRules($this->getConfig('news.rules'));
+
+            return $user;
+        });
+
+        $this->ioc->bind(\Illuminate\Contracts\Validation\Factory::class, \Illuminate\Validation\Factory::class);
+        $this->ioc->bind(\Symfony\Component\Translation\TranslatorInterface::class, function ($c) {
+            return new \Symfony\Component\Translation\Translator('en');
+        });
     }
 
     public function getConfig($name = null)

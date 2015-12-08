@@ -1,5 +1,7 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
+use Exception;
+use Illuminate\Contracts\Validation\Factory as Validator;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 
 abstract class BaseModel implements BaseModelInterface
@@ -25,21 +27,36 @@ abstract class BaseModel implements BaseModelInterface
     protected $guarded = [];
 
     /**
+     * Rules to validate the model instance by
+     * @var array
+     */
+    protected $rules = [];
+
+    /**
      * Attributes that are already sent to the service
      * @var array
      * @internal
      */
     protected $savedAttributes = [];
 
+    /** @ignore */
+    protected $validator;
+
+    /** @ignore */
+    protected $validatorFactory;
+
     /**
      * Make a new model instance
      * @param HttpClient $client     HTTP client
-     * @param array             $attributes Attributes to initialize
+     * @param Validator  $validator  Model validator
+     * @param array      $attributes Attributes to initialize
      */
-    public function __construct(HttpClient $client, array $attributes = array())
+    public function __construct(HttpClient $client, Validator $validatorFactory, array $attributes = array())
     {
         $this->client = $client;
         $this->load($attributes);
+
+        $this->validatorFactory = $validatorFactory;
     }
 
     /**
@@ -60,12 +77,59 @@ abstract class BaseModel implements BaseModelInterface
         return (isset($this->{$this->primaryKey}) && $this->{$this->primaryKey});
     }
 
+    public function getInvalid()
+    {
+        $this->validate();
+        return $this->validator->failed();
+    }
+
+    public function getValidator()
+    {
+        $this->validate();
+        return $this->validator;
+    }
+
+    public function getRules()
+    {
+        return $this->rules;
+    }
+
+    public function setRules(array $rules)
+    {
+        $this->rules = $rules;
+    }
+
+    public function mergeRules(array $rules)
+    {
+        $this->rules = array_merge($this->rules, $rules);
+    }
+
     /**
-     * @todo How the created/uncreated should be handled?
+     * @todo How the created/uncreated should begul handled?
      */
     public function isSaved()
     {
         return (empty($this->changed()) && $this->exists());
+    }
+
+    public function validate()
+    {
+        try {
+            $this->validator = $this->validatorFactory->make($this->getAttributes(), $this->rules);
+            if (!$this->validator instanceof \Illuminate\Contracts\Validation\Validator) {
+                throw new Exception("Validator factory failed to make validator");
+            }
+
+            return $this->validator->fails();
+        } catch (Exception $e) {
+            var_dump($e->getMessage());
+            throw new Exception("Unable to validate: " . $e->getMessage());
+        }
+    }
+
+    public function isValid()
+    {
+        return !$this->validate();
     }
 
     public function load(array $attributes)
@@ -76,6 +140,13 @@ abstract class BaseModel implements BaseModelInterface
 
     public function save()
     {
+        if ($this->isValid() === false) {
+            throw new Exception(
+                'Unable to save model: Model instance has invalid fields (' .
+                implode(', ', array_keys($this->getInvalid())) .
+                ')');
+        }
+
         $return = null;
         if ($this->exists()) {
             $return = $this->update();
@@ -84,11 +155,6 @@ abstract class BaseModel implements BaseModelInterface
         }
 
         $this->savedAttributes = $this->attributes;
-
-        if ($this instanceof Cacheable) {
-            $this->saveCached($this->cacheTime);
-        }
-
         return $return;
     }
 

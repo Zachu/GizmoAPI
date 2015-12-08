@@ -1,16 +1,21 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
+use Illuminate\Contracts\Validation\Factory;
+use Illuminate\Contracts\Validation\Validator;
 use PhpSpec\ObjectBehavior;
 use Pisa\GizmoAPI\Contracts\HttpClient;
+use Prophecy\Argument;
 use spec\Pisa\GizmoAPI\HttpResponses;
 
 class HostSpec extends ObjectBehavior
 {
     protected static $id = 1;
 
-    public function let(HttpClient $client)
+    public function let(HttpClient $client, Factory $factory, Validator $validator)
     {
-        $this->beConstructedWith($client, ['Id' => self::$id]);
+        $this->beConstructedWith($client, $factory, ['Id' => self::$id]);
+        $factory->make(Argument::any(), Argument::any())->willReturn($validator);
+        $validator->fails()->willReturn(false);
     }
 
     //
@@ -26,14 +31,14 @@ class HostSpec extends ObjectBehavior
     // Save
     //
 
-    public function it_should_throw_on_create(HttpClient $client)
+    public function it_should_throw_on_create(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
 
         $this->shouldThrow('\Exception')->duringSave();
     }
 
-    public function it_should_throw_on_update()
+    public function it_should_throw_on_update(Factory $factory)
     {
         $this->HostName = 'Test';
 
@@ -73,9 +78,9 @@ class HostSpec extends ObjectBehavior
         $this->getProcesses()->shouldHaveCount(2);
     }
 
-    public function it_should_throw_on_get_prorcesses_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_get_prorcesses_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringGetProcesses();
     }
 
@@ -103,10 +108,10 @@ class HostSpec extends ObjectBehavior
         $this->getProcess($pid)->shouldHaveCount(0);
     }
 
-    public function it_should_throw_on_get_process_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_get_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
         $pid = 1;
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringGetProcess($pid);
     }
 
@@ -153,10 +158,10 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
     }
 
-    public function it_should_throw_on_get_processes_by_name_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_get_processes_by_name_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
         $pname = 'process';
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
 
         $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
     }
@@ -202,12 +207,12 @@ class HostSpec extends ObjectBehavior
         $this->CreateProcess($startInfo)->shouldBe(false);
     }
 
-    public function it_should_throw_on_create_process_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_create_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
         $startInfo = [
             'FileName' => 'foo',
         ];
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
     }
 
@@ -246,12 +251,12 @@ class HostSpec extends ObjectBehavior
         $this->terminateProcess($killInfo)->shouldBe(true);
     }
 
-    public function it_should_throw_on_terminate_process_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_terminate_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
         $killInfo = [
             'FileName' => 'foo',
         ];
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringTerminateProcess($killInfo);
     }
 
@@ -286,9 +291,9 @@ class HostSpec extends ObjectBehavior
         $this->getLastUserLoginTime()->shouldBeInteger();
     }
 
-    public function it_should_throw_on_get_last_user_login_time_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_get_last_user_login_time_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringGetLastUserLoginTime();
     }
 
@@ -314,9 +319,9 @@ class HostSpec extends ObjectBehavior
         $this->getLastUserLogoutTime()->shouldBeInteger();
     }
 
-    public function it_should_throw_on_get_last_user_logout_time_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_get_last_user_logout_time_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringGetLastUserLogoutTime();
     }
 
@@ -342,9 +347,9 @@ class HostSpec extends ObjectBehavior
         $this->userLogout()->shouldBe(true);
     }
 
-    public function it_should_throw_on_logout_user_if_model_doesnt_exists(HttpClient $client)
+    public function it_should_throw_on_logout_user_if_model_doesnt_exists(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringUserLogout();
     }
 
@@ -373,9 +378,9 @@ class HostSpec extends ObjectBehavior
         $this->UINotify($message)->shouldBe(true);
     }
 
-    public function it_should_throw_on_ui_notify_if_model_doesnt_exists(HttpClient $client)
+    public function it_should_throw_on_ui_notify_if_model_doesnt_exists(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringUINotify('Test');
     }
 
@@ -396,12 +401,13 @@ class HostSpec extends ObjectBehavior
     // Set lock state
     //
 
-    public function it_should_set_lock_state_to_false(HttpClient $client)
+    public function it_should_set_lock_state_to_false(HttpClient $client, Factory $factory)
     {
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "false",
         ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+//        $factory->make($this->getAttributes(), $this->getRules())->willReturn($validator);
 
         $this->IsLocked = false;
         $this->save();
@@ -410,6 +416,7 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_set_lock_state_to_true(HttpClient $client)
     {
+        echo "FOO?";
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "true",
@@ -435,9 +442,9 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetLockState(true);
     }
 
-    public function it_should_throw_on_lock_state_if_model_doesnt_exists(HttpClient $client)
+    public function it_should_throw_on_lock_state_if_model_doesnt_exists(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringSetLockState(true);
     }
 
@@ -484,9 +491,9 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetSecurityState(true);
     }
 
-    public function it_should_throw_security_state_if_model_doesnt_exists(HttpClient $client)
+    public function it_should_throw_security_state_if_model_doesnt_exists(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringSetSecurityState(true);
     }
 
@@ -533,9 +540,9 @@ class HostSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetOrderState(true);
     }
 
-    public function it_should_throw_on_out_of_order_if_model_doesnt_exists(HttpClient $client)
+    public function it_should_throw_on_out_of_order_if_model_doesnt_exists(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringSetOrderState(true);
     }
 
@@ -555,9 +562,9 @@ class HostSpec extends ObjectBehavior
 
     }
 
-    public function it_should_throw_on_get_free_state_if_model_doesnt_exist(HttpClient $client)
+    public function it_should_throw_on_get_free_state_if_model_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, []);
+        $this->beConstructedWith($client, $factory, []);
         $this->shouldThrow('\Exception')->duringIsFree();
     }
 

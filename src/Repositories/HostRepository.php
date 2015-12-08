@@ -4,7 +4,7 @@ use Exception;
 
 class HostRepository extends BaseRepository implements HostRepositoryInterface
 {
-    protected $model = 'Host';
+    protected $model = 'HostInterface';
 
     /**
      * @throws Exception on error.

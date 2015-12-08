@@ -2,7 +2,7 @@
 
 class NewsRepository extends BaseRepository implements NewsRepositoryInterface
 {
-    protected $model = 'News';
+    protected $model = 'NewsInterface';
 
     /**
      * @throws Exception on error
