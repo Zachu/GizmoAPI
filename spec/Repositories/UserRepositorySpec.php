@@ -4,7 +4,7 @@ use PhpSpec\ObjectBehavior;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Models\User;
-use spec\Pisa\GizmoAPI\HttpResponses;
+use spec\Pisa\GizmoAPI\Helper;
 
 class UserRepositorySpec extends ObjectBehavior
 {
@@ -29,7 +29,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['Id' => 1],
             ['Id' => 2],
         ]));
@@ -47,7 +47,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
 
@@ -61,7 +61,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
 
@@ -69,7 +69,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
     }
@@ -85,7 +85,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['Id' => 1],
             ['Id' => 2],
         ]));
@@ -108,7 +108,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['Id' => 1],
             ['Id' => 2],
         ]));
@@ -131,7 +131,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
 
@@ -140,7 +140,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
     }
@@ -156,7 +156,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
 
         $result = $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
@@ -174,7 +174,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$filter' => $filter,
             '$skip'   => 0,
             '$top'    => 1,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['Id' => 2],
         ]));
 
@@ -193,7 +193,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$filter' => $filter,
             '$skip'   => 0,
             '$top'    => 1,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['Id' => 2],
         ]));
 
@@ -212,7 +212,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$filter' => $filter,
             '$skip'   => 0,
             '$top'    => 1,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringFindOneBy($criteria, $caseSensitive);
 
@@ -220,7 +220,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$filter' => $filter,
             '$skip'   => 0,
             '$top'    => 1,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringFindOneBy($criteria, $caseSensitive);
     }
@@ -235,7 +235,7 @@ class UserRepositorySpec extends ObjectBehavior
             '$filter' => $filter,
             '$skip'   => 0,
             '$top'    => 1,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->findOneBy($criteria, $caseSensitive)->shouldBe(false);
@@ -246,7 +246,7 @@ class UserRepositorySpec extends ObjectBehavior
         $id = 2;
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['Id' => $id],
         ]));
 
@@ -260,7 +260,7 @@ class UserRepositorySpec extends ObjectBehavior
 
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->get($id)->shouldBe(false);
@@ -272,13 +272,13 @@ class UserRepositorySpec extends ObjectBehavior
 
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringGet($id);
 
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringGet($id);
     }
@@ -293,12 +293,12 @@ class UserRepositorySpec extends ObjectBehavior
         $id = 2;
         $client->get('Users/UserExist', [
             'userId' => $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->has($id)->shouldBe(true);
 
         $client->get('Users/UserExist', [
             'userId' => $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::false());
+        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
         $this->has($id)->shouldBe(false);
     }
 
@@ -308,12 +308,12 @@ class UserRepositorySpec extends ObjectBehavior
 
         $client->get('Users/UserExist', [
             'userId' => $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->shouldThrow('\Exception')->duringHas($id);
 
         $client->get('Users/UserExist', [
             'userId' => $id,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringHas($id);
     }
     public function it_should_check_if_username_exists(HttpClient $client)
@@ -321,12 +321,12 @@ class UserRepositorySpec extends ObjectBehavior
         $userName = 'Tester';
         $client->get('Users/UserNameExist', [
             'userName' => $userName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->hasUserName($userName)->shouldReturn(true);
 
         $client->get('Users/UserNameExist', [
             'userName' => $userName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::false());
+        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
         $this->hasUserName($userName)->shouldReturn(false);
     }
 
@@ -335,12 +335,12 @@ class UserRepositorySpec extends ObjectBehavior
         $userName = 'Tester';
         $client->get('Users/UserNameExist', [
             'userName' => $userName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->shouldThrow('\Exception')->duringHasUserName($userName);
 
         $client->get('Users/UserNameExist', [
             'userName' => $userName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringHasUserName($userName);
     }
     public function it_should_check_if_email_exists(HttpClient $client)
@@ -348,12 +348,12 @@ class UserRepositorySpec extends ObjectBehavior
         $email = 'test@example.com';
         $client->get('Users/UserEmailExist', [
             'userEmail' => $email,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->hasUserEmail($email)->shouldReturn(true);
 
         $client->get('Users/UserEmailExist', [
             'userEmail' => $email,
-        ])->shouldBeCalled()->willReturn(HttpResponses::false());
+        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
         $this->hasUserEmail($email)->shouldReturn(false);
     }
 
@@ -363,12 +363,12 @@ class UserRepositorySpec extends ObjectBehavior
 
         $client->get('Users/UserEmailExist', [
             'userEmail' => $email,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->shouldThrow('\Exception')->duringHasUserEmail($email);
 
         $client->get('Users/UserEmailExist', [
             'userEmail' => $email,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringHasUserEmail($email);
     }
 
@@ -377,12 +377,12 @@ class UserRepositorySpec extends ObjectBehavior
         $loginName = 'test@example.com';
         $client->get('Users/LoginNameExist', [
             'loginName' => $loginName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->hasLoginName($loginName)->shouldReturn(true);
 
         $client->get('Users/LoginNameExist', [
             'loginName' => $loginName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::false());
+        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
         $this->hasLoginName($loginName)->shouldReturn(false);
 
     }
@@ -393,12 +393,12 @@ class UserRepositorySpec extends ObjectBehavior
 
         $client->get('Users/LoginNameExist', [
             'loginName' => $loginName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->shouldThrow('\Exception')->duringhasLoginName($loginName);
 
         $client->get('Users/LoginNameExist', [
             'loginName' => $loginName,
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringhasLoginName($loginName);
 
     }

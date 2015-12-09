@@ -17,8 +17,7 @@
     
     "autoload": {
         "psr-4": {
-            "Pisa\\GizmoAPI\\": "src/",
-            "spec\\Pisa\\GizmoAPI\\": "spec/"
+            "Pisa\\GizmoAPI\\": "src/"
         }
     },
     "require": {

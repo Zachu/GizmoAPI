@@ -3,3 +3,4 @@ suites:
         namespace: Pisa\GizmoAPI
         psr4_prefix: Pisa\GizmoAPI
         src_path: src
+bootstrap: spec/bootstrap.php

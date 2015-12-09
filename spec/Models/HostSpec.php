@@ -5,7 +5,7 @@ use Illuminate\Contracts\Validation\Validator;
 use PhpSpec\ObjectBehavior;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Prophecy\Argument;
-use spec\Pisa\GizmoAPI\HttpResponses;
+use spec\Pisa\GizmoAPI\Helper;
 
 class HostSpec extends ObjectBehavior
 {
@@ -62,14 +62,14 @@ class HostSpec extends ObjectBehavior
     {
         $client->get("Host/GetProcesses", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $this->getProcesses()->shouldBeArray();
         $this->getProcesses()->shouldHaveCount(0);
 
         $client->get("Host/GetProcesses", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             'process1',
             'process2',
         ]));
@@ -88,7 +88,7 @@ class HostSpec extends ObjectBehavior
     {
         $client->get("Host/GetProcesses", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringGetProcesses();
     }
 
@@ -102,7 +102,7 @@ class HostSpec extends ObjectBehavior
         $client->get("Host/GetProcess", [
             'hostId'    => $this->getPrimaryKeyValue(),
             'processId' => $pid,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $this->getProcess($pid)->shouldBeArray();
         $this->getProcess($pid)->shouldHaveCount(0);
@@ -121,7 +121,7 @@ class HostSpec extends ObjectBehavior
         $client->get("Host/GetProcess", [
             'hostId'    => $this->getPrimaryKeyValue(),
             'processId' => $pid,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringGetProcess($pid);
     }
 
@@ -135,7 +135,7 @@ class HostSpec extends ObjectBehavior
         $client->get("Host/GetProcesses", [
             'hostId'      => $this->getPrimaryKeyValue(),
             'processName' => $pname,
-        ])->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $this->getProcessesByName($pname)->shouldBeArray();
         $this->getProcessesByName($pname)->shouldHaveCount(0);
@@ -143,7 +143,7 @@ class HostSpec extends ObjectBehavior
         $client->get("Host/GetProcesses", [
             'hostId'      => $this->getPrimaryKeyValue(),
             'processName' => $pname,
-        ])->shouldBeCalled()->willReturn(HttpResponses::content([
+        ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             'process1',
             'process2',
         ]));
@@ -172,7 +172,7 @@ class HostSpec extends ObjectBehavior
         $client->get("Host/GetProcesses", [
             'hostId'      => $this->getPrimaryKeyValue(),
             'processName' => $pname,
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
     }
@@ -189,7 +189,7 @@ class HostSpec extends ObjectBehavior
 
         $client->post("Host/CreateProcess", array_merge($startInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
-        ]))->shouldBeCalled()->willReturn(HttpResponses::one());
+        ]))->shouldBeCalled()->willReturn(Helper::oneResponse());
 
         $this->CreateProcess($startInfo)->shouldBeInteger();
     }
@@ -202,7 +202,7 @@ class HostSpec extends ObjectBehavior
 
         $client->post("Host/CreateProcess", array_merge($startInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
-        ]))->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ]))->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
 
         $this->CreateProcess($startInfo)->shouldBe(false);
     }
@@ -224,7 +224,7 @@ class HostSpec extends ObjectBehavior
 
         $client->post("Host/CreateProcess", array_merge($startInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
-        ]))->shouldBeCalled()->willReturn(HttpResponses::true());
+        ]))->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
     }
@@ -246,7 +246,7 @@ class HostSpec extends ObjectBehavior
 
         $client->post("Host/TerminateProcess", array_merge($killInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
-        ]))->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ]))->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->terminateProcess($killInfo)->shouldBe(true);
     }
@@ -268,7 +268,7 @@ class HostSpec extends ObjectBehavior
 
         $client->post("Host/TerminateProcess", array_merge($killInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
-        ]))->shouldBeCalled()->willReturn(HttpResponses::true());
+        ]))->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringTerminateProcess($killInfo);
     }
@@ -286,7 +286,7 @@ class HostSpec extends ObjectBehavior
     {
         $client->get("Host/GetLastUserLogin", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::time());
+        ])->shouldBeCalled()->willReturn(Helper::timeResponse());
 
         $this->getLastUserLoginTime()->shouldBeInteger();
     }
@@ -301,7 +301,7 @@ class HostSpec extends ObjectBehavior
     {
         $client->get("Host/GetLastUserLogin", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringGetLastUserLoginTime();
     }
@@ -314,7 +314,7 @@ class HostSpec extends ObjectBehavior
     {
         $client->get("Host/GetLastUserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::time());
+        ])->shouldBeCalled()->willReturn(Helper::timeResponse());
 
         $this->getLastUserLogoutTime()->shouldBeInteger();
     }
@@ -329,7 +329,7 @@ class HostSpec extends ObjectBehavior
     {
         $client->get("Host/GetLastUserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringGetLastUserLogoutTime();
     }
@@ -342,7 +342,7 @@ class HostSpec extends ObjectBehavior
     {
         $client->post("Host/UserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->userLogout()->shouldBe(true);
     }
@@ -357,7 +357,7 @@ class HostSpec extends ObjectBehavior
     {
         $client->post("Host/UserLogout", [
             'hostId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringUserLogout();
     }
@@ -373,7 +373,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/UINotify", array_merge($this->getDefaultNotifyParameters()->getWrappedObject(), $parameters, [
             'hostId'  => $this->getPrimaryKeyValue(),
             'message' => $message,
-        ]))->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ]))->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->UINotify($message)->shouldBe(true);
     }
@@ -392,7 +392,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/UINotify", array_merge($this->getDefaultNotifyParameters()->getWrappedObject(), $parameters, [
             'hostId'  => $this->getPrimaryKeyValue(),
             'message' => $message,
-        ]))->shouldBeCalled()->willReturn(HttpResponses::true());
+        ]))->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringUINotify($message);
     }
@@ -406,7 +406,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "false",
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 //        $factory->make($this->getAttributes(), $this->getRules())->willReturn($validator);
 
         $this->IsLocked = false;
@@ -420,7 +420,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "true",
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->IsLocked = true;
         $this->save();
@@ -437,7 +437,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "true",
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringSetLockState(true);
     }
@@ -457,7 +457,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetSecurityState", [
             'hostId'  => $this->getPrimaryKeyValue(),
             'enabled' => "false",
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->IsSecurityEnabled = false;
         $this->save();
@@ -469,7 +469,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetSecurityState", [
             'hostId'  => $this->getPrimaryKeyValue(),
             'enabled' => "true",
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->IsSecurityEnabled = true;
         $this->save();
@@ -486,7 +486,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetSecurityState", [
             'hostId'  => $this->getPrimaryKeyValue(),
             'enabled' => "true",
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringSetSecurityState(true);
     }
@@ -506,7 +506,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetOrderState", [
             'hostId'  => $this->getPrimaryKeyValue(),
             'inOrder' => "true",
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->IsOutOfOrder = false;
         $this->save();
@@ -518,7 +518,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetOrderState", [
             'hostId'  => $this->getPrimaryKeyValue(),
             'inOrder' => "false",
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->IsOutOfOrder = true;
         $this->save();
@@ -535,7 +535,7 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/SetOrderState", [
             'hostId'  => $this->getPrimaryKeyValue(),
             'inOrder' => "false",
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
         $this->shouldThrow('\Exception')->duringSetOrderState(true);
     }
@@ -552,12 +552,12 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_get_free_state(HttpClient $client)
     {
-        $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(HttpResponses::content([
+        $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['HostId' => $this->getPrimaryKeyValue()->getWrappedObject()],
         ]));
         $this->isFree()->shouldReturn(false);
 
-        $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->isFree()->shouldReturn(true);
 
     }
@@ -570,7 +570,7 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_throw_on_get_free_state_if_got_unexpected_response(HttpClient $client)
     {
-        $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringIsFree();
     }
 }

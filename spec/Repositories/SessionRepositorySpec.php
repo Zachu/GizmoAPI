@@ -1,12 +1,10 @@
-<?php
+<?php namespace spec\Pisa\GizmoAPI\Repositories;
 
-namespace spec\Pisa\GizmoAPI\Repositories;
-
+use PhpSpec\ObjectBehavior;
 use Pisa\GizmoAPI\Contracts\HttpClient;
-use spec\Pisa\GizmoAPI\ApiTester;
-use spec\Pisa\GizmoAPI\HttpResponses;
+use spec\Pisa\GizmoAPI\Helper;
 
-class SessionRepositorySpec extends ApiTester
+class SessionRepositorySpec extends ObjectBehavior
 {
     protected static $skip    = 2;
     protected static $top     = 1;
@@ -26,13 +24,13 @@ class SessionRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeSession(),
-            $this->fakeSession(),
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeSession(),
+            Helper::fakeSession(),
         ]));
         $this->all(self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->all(self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
@@ -40,10 +38,10 @@ class SessionRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
     }
 
@@ -53,13 +51,13 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeSession(),
-            $this->fakeSession(),
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeSession(),
+            Helper::fakeSession(),
         ]));
         $this->findActiveBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->findActiveBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
@@ -69,10 +67,10 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringFindActiveBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringFindActiveBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
     }
 
@@ -82,13 +80,13 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeSession(),
-            $this->fakeSession(),
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeSession(),
+            Helper::fakeSession(),
         ]));
         $this->findActiveInfosBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->findActiveInfosBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
@@ -98,10 +96,10 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringFindActiveInfosBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringFindActiveInfosBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
     }
 
@@ -111,13 +109,13 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeSession(),
-            $this->fakeSession(),
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeSession(),
+            Helper::fakeSession(),
         ]));
         $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
@@ -127,10 +125,10 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
     }
 
@@ -139,14 +137,14 @@ class SessionRepositorySpec extends ApiTester
         $criteria      = ['UserId' => 1];
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => 0, '$top' => 1];
-        $session       = $this->fakeSession();
+        $session       = Helper::fakeSession();
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
             $session,
         ]));
         $this->findOneBy($criteria, $caseSensitive)->shouldReturn($session);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->findOneBy($criteria, $caseSensitive)->shouldReturn(false);
     }
 
@@ -156,10 +154,10 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => 0, '$top' => 1];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringFindOneBy($criteria, $caseSensitive);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringFindOneBy($criteria, $caseSensitive);
     }
 
@@ -168,14 +166,14 @@ class SessionRepositorySpec extends ApiTester
         $criteria      = ['UserId' => 1];
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => 0, '$top' => 1];
-        $session       = $this->fakeSession();
+        $session       = Helper::fakeSession();
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
             $session,
         ]));
         $this->findOneActiveBy($criteria, $caseSensitive)->shouldReturn($session);
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->findOneActiveBy($criteria, $caseSensitive)->shouldReturn(false);
     }
 
@@ -185,10 +183,10 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => 0, '$top' => 1];
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringFindOneActiveBy($criteria, $caseSensitive);
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringFindOneActiveBy($criteria, $caseSensitive);
     }
 
@@ -197,14 +195,14 @@ class SessionRepositorySpec extends ApiTester
         $criteria      = ['UserId' => 1];
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => 0, '$top' => 1];
-        $session       = $this->fakeSession();
+        $session       = Helper::fakeSession();
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
             $session,
         ]));
         $this->findOneActiveInfosBy($criteria, $caseSensitive)->shouldReturn($session);
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->findOneActiveInfosBy($criteria, $caseSensitive)->shouldReturn(false);
     }
 
@@ -214,10 +212,10 @@ class SessionRepositorySpec extends ApiTester
         $caseSensitive = false;
         $options       = ['$filter' => $this->criteriaToFilter($criteria, $caseSensitive), '$skip' => 0, '$top' => 1];
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringFindOneActiveInfosBy($criteria, $caseSensitive);
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringFindOneActiveInfosBy($criteria, $caseSensitive);
     }
 
@@ -225,14 +223,14 @@ class SessionRepositorySpec extends ApiTester
     {
         $id      = 2;
         $options = ['$filter' => $this->criteriaToFilter(['Id' => $id]), '$skip' => 0, '$top' => 1];
-        $session = $this->fakeSession();
+        $session = Helper::fakeSession();
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
             $session,
         ]));
         $this->get($id)->shouldReturn($session);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->get($id)->shouldReturn(false);
     }
 
@@ -241,10 +239,10 @@ class SessionRepositorySpec extends ApiTester
         $id      = 2;
         $options = ['$filter' => $this->criteriaToFilter(['Id' => $id]), '$skip' => 0, '$top' => 1];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringGet($id);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringGet($id);
     }
 
@@ -252,13 +250,13 @@ class SessionRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeSession(),
-            $this->fakeSession(),
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeSession(),
+            Helper::fakeSession(),
         ]));
         $this->getActive(self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->getActive(self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
@@ -266,10 +264,10 @@ class SessionRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringGetActive(self::$top, self::$skip, self::$orderby);
 
-        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringGetActive(self::$top, self::$skip, self::$orderby);
     }
 
@@ -277,13 +275,13 @@ class SessionRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeSession(),
-            $this->fakeSession(),
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeSession(),
+            Helper::fakeSession(),
         ]));
         $this->getActiveInfos(self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->getActiveInfos(self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
@@ -291,10 +289,10 @@ class SessionRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringGetActiveInfos(self::$top, self::$skip, self::$orderby);
 
-        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringGetActiveInfos(self::$top, self::$skip, self::$orderby);
     }
 
@@ -303,12 +301,12 @@ class SessionRepositorySpec extends ApiTester
         $id      = 2;
         $options = ['$filter' => $this->criteriaToFilter(['Id' => $id]), '$skip' => 0, '$top' => 1];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeSession(),
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeSession(),
         ]));
         $this->has($id)->shouldReturn(true);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $this->has($id)->shouldReturn(false);
     }
 
@@ -317,10 +315,10 @@ class SessionRepositorySpec extends ApiTester
         $id      = 2;
         $options = ['$filter' => $this->criteriaToFilter(['Id' => $id]), '$skip' => 0, '$top' => 1];
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringHas($id);
 
-        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringHas($id);
     }
 

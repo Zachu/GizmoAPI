@@ -1,12 +1,12 @@
 <?php namespace spec\Pisa\GizmoAPI\Repositories;
 
+use PhpSpec\ObjectBehavior;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Models\NewsInterface;
-use spec\Pisa\GizmoAPI\ApiTester;
-use spec\Pisa\GizmoAPI\HttpResponses;
+use spec\Pisa\GizmoAPI\Helper;
 
-class NewsRepositorySpec extends ApiTester
+class NewsRepositorySpec extends ObjectBehavior
 {
     protected static $skip    = 2;
     protected static $top     = 1;
@@ -30,9 +30,9 @@ class NewsRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeNews(),
-            $this->fakeNews(),
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeNews(),
+            Helper::fakeNews(),
         ]));
         $ioc->make($this->fqnModel())->shouldBeCalled();
 
@@ -42,7 +42,7 @@ class NewsRepositorySpec extends ApiTester
     public function it_should_return_empty_array_for_all(HttpClient $client, Container $ioc)
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
 
         $this->all(self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
@@ -52,10 +52,10 @@ class NewsRepositorySpec extends ApiTester
     {
         $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
     }
 
@@ -75,9 +75,9 @@ class NewsRepositorySpec extends ApiTester
             '$orderby' => self::$orderby,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeNews(),
-            $this->fakeNews(),
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeNews(),
+            Helper::fakeNews(),
         ]));
 
         $ioc->make($this->fqnModel())->shouldBeCalled();
@@ -96,7 +96,7 @@ class NewsRepositorySpec extends ApiTester
             '$orderby' => self::$orderby,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
@@ -114,11 +114,11 @@ class NewsRepositorySpec extends ApiTester
             '$orderby' => self::$orderby,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
     }
@@ -138,8 +138,8 @@ class NewsRepositorySpec extends ApiTester
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeNews(),
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeNews(),
         ]));
 
         $ioc->make($this->fqnModel())->shouldBeCalled()->willReturn($news);
@@ -157,7 +157,7 @@ class NewsRepositorySpec extends ApiTester
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
 
         $this->findOneBy($criteria, $caseSensitive)->shouldReturn(null);
@@ -179,8 +179,8 @@ class NewsRepositorySpec extends ApiTester
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeNews(['Id' => $id]),
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeNews(['Id' => $id]),
         ]));
 
         $ioc->make($this->fqnModel())->shouldBeCalled()->willReturn($news);
@@ -203,8 +203,8 @@ class NewsRepositorySpec extends ApiTester
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::content([
-            $this->fakeNews(['Id' => $id]),
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
+            Helper::fakeNews(['Id' => $id]),
         ]));
         $ioc->make($this->fqnModel())->shouldBeCalled()->willReturn($news);
         $this->has($id)->shouldReturn(true);
@@ -222,7 +222,7 @@ class NewsRepositorySpec extends ApiTester
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(HttpResponses::emptyArray());
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->has($id)->shouldReturn(false);
     }

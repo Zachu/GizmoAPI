@@ -2,16 +2,16 @@
 
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Contracts\Validation\Validator;
+use PhpSpec\ObjectBehavior;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Prophecy\Argument;
-use spec\Pisa\GizmoAPI\ApiTester;
-use spec\Pisa\GizmoAPI\HttpResponses;
+use spec\Pisa\GizmoAPI\Helper;
 
-class NewsSpec extends ApiTester
+class NewsSpec extends ObjectBehavior
 {
     public function Let(HttpClient $client, Factory $factory, Validator $validator)
     {
-        $this->beConstructedWith($client, $factory, $this->fakeNews());
+        $this->beConstructedWith($client, $factory, Helper::fakeNews());
         $factory->make(Argument::any(), Argument::any())->willReturn($validator);
         $validator->fails()->willReturn(false);
     }
@@ -23,20 +23,20 @@ class NewsSpec extends ApiTester
 
     public function it_should_create_news(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $factory, $this->fakeNews(['Id' => null, 'Date' => null]));
+        $this->beConstructedWith($client, $factory, Helper::fakeNews(['Id' => null, 'Date' => null]));
 
-        $client->put('News/Add', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $client->put('News/Add', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::noContentResponse());
         $this->save()->shouldReturn($this);
     }
 
     public function it_should_throw_on_create_if_got_unexpected_response(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $factory, $this->fakeNews(['Id' => null, 'Date' => null]));
+        $this->beConstructedWith($client, $factory, Helper::fakeNews(['Id' => null, 'Date' => null]));
 
-        $client->put('News/Add', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->put('News/Add', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringSave();
 
-        $client->put('News/Add', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->put('News/Add', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringSave();
     }
 
@@ -44,7 +44,7 @@ class NewsSpec extends ApiTester
     {
         $this->Title = 'NewTitle';
 
-        $client->post('News/Update', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        $client->post('News/Update', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::noContentResponse());
         $this->save()->shouldReturn($this);
     }
 
@@ -52,10 +52,10 @@ class NewsSpec extends ApiTester
     {
         $this->Title = 'NewTitle';
 
-        $client->post('News/Update', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::true());
+        $client->post('News/Update', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringSave();
 
-        $client->post('News/Update', $this->getAttributes())->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        $client->post('News/Update', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringSave();
     }
 
@@ -63,7 +63,7 @@ class NewsSpec extends ApiTester
     {
         $client->delete('News/Delete', [
             'feedId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::noContent());
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->exists()->shouldBe(true);
         $this->delete();
@@ -72,7 +72,7 @@ class NewsSpec extends ApiTester
 
     public function it_should_throw_on_delete_if_news_doesnt_exist(HttpClient $client, Factory $factory)
     {
-        $this->beConstructedWith($client, $factory, $this->fakeNews(['Id' => null, 'Date' => null]));
+        $this->beConstructedWith($client, $factory, Helper::fakeNews(['Id' => null, 'Date' => null]));
         $this->shouldThrow('\Exception')->duringDelete();
     }
 
@@ -80,12 +80,12 @@ class NewsSpec extends ApiTester
     {
         $client->delete('News/Delete', [
             'feedId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::true());
+        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringDelete();
 
         $client->delete('News/Delete', [
             'feedId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(HttpResponses::internalServerError());
+        ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringDelete();
     }
 }
