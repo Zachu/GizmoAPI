@@ -11,6 +11,9 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
         $this->client = $client;
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
         $options = ['$skip' => $skip, '$top' => $limit];
@@ -30,6 +33,9 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function findActiveBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -50,6 +56,9 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function findActiveInfosBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -70,6 +79,9 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -90,31 +102,15 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
         }
     }
 
+    /**
+     * @throws Exception on error
+     * @uses   findActiveBy This is a wrapper for findActiveBy
+     */
     public function findOneActiveBy(array $criteria, $caseSensitive = false)
     {
         $session = $this->findActiveBy($criteria, $caseSensitive, 1);
         if (empty($session)) {
-            return false;
-        } else {
-            return reset($session);
-        }
-    }
-
-    public function findOneActiveInfosBy(array $criteria, $caseSensitive = false)
-    {
-        $session = $this->findActiveInfosBy($criteria, $caseSensitive, 1);
-        if (empty($session)) {
-            return false;
-        } else {
-            return reset($session);
-        }
-    }
-
-    public function findOneBy(array $criteria, $caseSensitive = false)
-    {
-        $session = $this->findBy($criteria, $caseSensitive, 1);
-        if (empty($session)) {
-            return false;
+            return null;
         } else {
             return reset($session);
         }
@@ -122,14 +118,44 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
 
     /**
      * @throws Exception on error
-     * @uses   findBy This is a wrapper for findOneBy
-     * @api
+     * @uses findActiveInfosBy This is a wrapper for findActiveInfosBy
+     */
+    public function findOneActiveInfosBy(array $criteria, $caseSensitive = false)
+    {
+        $session = $this->findActiveInfosBy($criteria, $caseSensitive, 1);
+        if (empty($session)) {
+            return null;
+        } else {
+            return reset($session);
+        }
+    }
+
+    /**
+     * @throws Exception on error
+     * @uses   findBy This is a wrapper for findBy
+     */
+    public function findOneBy(array $criteria, $caseSensitive = false)
+    {
+        $session = $this->findBy($criteria, $caseSensitive, 1);
+        if (empty($session)) {
+            return null;
+        } else {
+            return reset($session);
+        }
+    }
+
+    /**
+     * @throws Exception on error
+     * @uses   findOneBy This is a wrapper for findOneBy
      */
     public function get($id)
     {
         return $this->findOneBy(['Id' => (int) $id]);
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getActive($limit = 30, $skip = 0, $orderBy = null)
     {
         $options = ['$skip' => $skip, '$top' => $limit];
@@ -149,6 +175,9 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
         }
     }
 
+    /**
+     * @throws Exception on error
+     */
     public function getActiveInfos($limit = 30, $skip = 0, $orderBy = null)
     {
         $options = ['$skip' => $skip, '$top' => $limit];
@@ -178,6 +207,9 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
         return !($this->get($id) === false);
     }
 
+    /**
+     * @throws Exception always. You can't make up an session.
+     */
     public function make(array $attributes)
     {
         throw new Exception("You can't make up a session");

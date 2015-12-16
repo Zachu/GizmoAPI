@@ -5,13 +5,9 @@ use Pisa\GizmoAPI\GizmoClient as Client;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    /** {@inheritDoc} */
     protected $model = 'UserInterface';
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
@@ -37,9 +33,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
@@ -66,54 +59,29 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
-     * @uses  findBy
+     * @uses  findBy     This is a wrapper for findBy
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
         $user = $this->findBy($criteria, $caseSensitive, 1);
         if (empty($user)) {
-            return false;
+            return null;
         } else {
             return reset($user);
         }
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
+     * @uses   findOneBy This is a wrapper for findOneBy
      */
     public function get($id)
     {
-        try {
-            $response = $this->client->get('Users/Get', ['$filter' => 'Id eq ' . $id]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            $body = $response->getBody();
-            if (empty($body)) {
-                return false;
-            } else {
-                return $this->make(reset($body));
-            }
-        } catch (Exception $e) {
-            throw new Exception("Getting a user by id failed. " . $e->getMessage());
-        }
+        return $this->findOneBy(['Id' => (int) $id]);
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function has($id)
@@ -134,9 +102,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function hasLoginName($loginName)
@@ -158,9 +123,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function hasUserEmail($userEmail)
@@ -182,9 +144,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws Exception on error.
      */
     public function hasUserName($userName)
