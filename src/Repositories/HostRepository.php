@@ -8,6 +8,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
 
     /**
      * @throws Exception on error.
+     * @note   $orderBy doesn't work with Id column.
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -33,6 +34,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
 
     /**
      * @throws Exception on error.
+     * @note   $criteria or $orderBy doesn't work with Id column.
      */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
