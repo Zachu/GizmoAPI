@@ -204,7 +204,7 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
      */
     public function has($id)
     {
-        return !($this->get($id) === false);
+        return !($this->get($id) === null);
     }
 
     /**
