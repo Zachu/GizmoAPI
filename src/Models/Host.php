@@ -77,10 +77,10 @@ class Host extends BaseModel implements HostInterface
         'ShowActivated'  => 'false',
 
         /** @var int Max width of the dialog */
-        'MaxWidth'       => 0,
+        'MaxWidth'       => '',
 
         /** @var int Max height of the dialog */
-        'MaxHeight'      => 0,
+        'MaxHeight'      => '',
     ];
 
     /** @{inheritDoc} */
@@ -119,6 +119,7 @@ class Host extends BaseModel implements HostInterface
             if ($this->exists() === false) {
                 throw new Exception("Model does not exist");
             } else {
+
                 $response = $this->client->post('Host/UINotify', array_merge($this->defaultNotifyParameters, $parameters, [
                     'hostId'  => $this->getPrimaryKeyValue(),
                     'message' => (string) $message,
@@ -127,9 +128,9 @@ class Host extends BaseModel implements HostInterface
                     throw new Exception("Response failed");
                 }
 
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
-                return true;
+                $response->assertInteger();
+                $response->assertStatusCodes(200);
+                return $response->getBody();
 
                 /**
                  *  @todo Fiddle with the responses
