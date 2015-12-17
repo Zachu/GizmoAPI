@@ -186,25 +186,13 @@ class HostSpec extends ObjectBehavior
         $startInfo = [
             'FileName' => 'foo',
         ];
+        $randomPid = rand(1, 9999);
 
         $client->post("Host/CreateProcess", array_merge($startInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
-        ]))->shouldBeCalled()->willReturn(Helper::oneResponse());
+        ]))->shouldBeCalled()->willReturn(Helper::contentResponse($randomPid));
 
-        $this->CreateProcess($startInfo)->shouldBeInteger();
-    }
-
-    public function it_should_return_false_on_create_process_when_response_500(HttpClient $client)
-    {
-        $startInfo = [
-            'FileName' => 'foo',
-        ];
-
-        $client->post("Host/CreateProcess", array_merge($startInfo, [
-            'hostId' => $this->getPrimaryKeyValue(),
-        ]))->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-
-        $this->CreateProcess($startInfo)->shouldBe(false);
+        $this->CreateProcess($startInfo)->shouldBe($randomPid);
     }
 
     public function it_should_throw_on_create_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)
@@ -225,7 +213,11 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/CreateProcess", array_merge($startInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
         ]))->shouldBeCalled()->willReturn(Helper::trueResponse());
+        $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
 
+        $client->post("Host/CreateProcess", array_merge($startInfo, [
+            'hostId' => $this->getPrimaryKeyValue(),
+        ]))->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
     }
 

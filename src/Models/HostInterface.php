@@ -29,7 +29,6 @@ interface HostInterface extends BaseModelInterface
      * Create a new process
      * @api
      * @param  array $startInfo  Information about starting the process
-     * @return int|false Returns the process id on success. False if process couldn't be started.
      */
     public function createProcess($startInfo);
 

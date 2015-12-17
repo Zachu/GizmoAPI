@@ -119,7 +119,6 @@ class Host extends BaseModel implements HostInterface
             if ($this->exists() === false) {
                 throw new Exception("Model does not exist");
             } else {
-
                 $response = $this->client->post('Host/UINotify', array_merge($this->defaultNotifyParameters, $parameters, [
                     'hostId'  => $this->getPrimaryKeyValue(),
                     'message' => (string) $message,
@@ -148,14 +147,13 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Example:
      * <code>
      * $this->createProcess(['FileName' => 'C:\Start.bat']);
      * </code>
      *
-     * @throws  Exception on error
+     * @return int       Returns the process id.
+     * @throws Exception on error
      */
     public function createProcess($startInfo)
     {
@@ -173,15 +171,10 @@ class Host extends BaseModel implements HostInterface
                     throw new Exception("Response failed");
                 }
 
-                /**
-                 * @todo check return values
-                 */
-                if ($response->getStatusCode() === 200) {
-                    $response->assertInteger();
-                    return $response->getBody();
-                } elseif ($response->getStatusCode() === 500) {
-                    return false;
-                }
+                $response->assertInteger();
+                $response->assertStatusCodes(200);
+
+                return $response->getBody();
             }
         } catch (Exception $e) {
             throw new Exception("Unable to create a process: " . $e->getMessage());
