@@ -145,7 +145,7 @@ class SessionRepositorySpec extends ObjectBehavior
         $this->findOneBy($criteria, $caseSensitive)->shouldReturn($session);
 
         $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->findOneBy($criteria, $caseSensitive)->shouldReturn(false);
+        $this->findOneBy($criteria, $caseSensitive)->shouldReturn(null);
     }
 
     public function it_should_throw_on_find_one_if_got_unexpected_response(HttpClient $client)
@@ -174,7 +174,7 @@ class SessionRepositorySpec extends ObjectBehavior
         $this->findOneActiveBy($criteria, $caseSensitive)->shouldReturn($session);
 
         $client->get('Sessions/GetActive', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->findOneActiveBy($criteria, $caseSensitive)->shouldReturn(false);
+        $this->findOneActiveBy($criteria, $caseSensitive)->shouldReturn(null);
     }
 
     public function it_should_throw_on_find_one_active_if_got_unexpected_response(HttpClient $client)
@@ -203,7 +203,7 @@ class SessionRepositorySpec extends ObjectBehavior
         $this->findOneActiveInfosBy($criteria, $caseSensitive)->shouldReturn($session);
 
         $client->get('Sessions/GetActiveInfos', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->findOneActiveInfosBy($criteria, $caseSensitive)->shouldReturn(false);
+        $this->findOneActiveInfosBy($criteria, $caseSensitive)->shouldReturn(null);
     }
 
     public function it_should_throw_on_find_one_active_infos_if_got_unexpected_response(HttpClient $client)
@@ -231,7 +231,7 @@ class SessionRepositorySpec extends ObjectBehavior
         $this->get($id)->shouldReturn($session);
 
         $client->get('Sessions/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->get($id)->shouldReturn(false);
+        $this->get($id)->shouldReturn(null);
     }
 
     public function it_should_throw_on_get_if_got_unexpected_response(HttpClient $client)

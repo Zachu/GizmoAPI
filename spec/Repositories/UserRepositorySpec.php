@@ -238,7 +238,7 @@ class UserRepositorySpec extends ObjectBehavior
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->findOneBy($criteria, $caseSensitive)->shouldBe(false);
+        $this->findOneBy($criteria, $caseSensitive)->shouldBe(null);
     }
 
     public function it_should_get_user(HttpClient $client, Container $ioc, User $user)
@@ -246,6 +246,8 @@ class UserRepositorySpec extends ObjectBehavior
         $id = 2;
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
+            '$skip'   => 0,
+            '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             ['Id' => $id],
         ]));
@@ -260,10 +262,12 @@ class UserRepositorySpec extends ObjectBehavior
 
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
+            '$skip'   => 0,
+            '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->get($id)->shouldBe(false);
+        $this->get($id)->shouldBe(null);
     }
 
     public function it_should_throw_on_get_user_if_got_unexpected_response(HttpClient $client, Container $ioc)
@@ -272,12 +276,16 @@ class UserRepositorySpec extends ObjectBehavior
 
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
+            '$skip'   => 0,
+            '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringGet($id);
 
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
+            '$skip'   => 0,
+            '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->shouldThrow('\Exception')->duringGet($id);
