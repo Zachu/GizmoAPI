@@ -373,9 +373,9 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/UINotify", array_merge($this->getDefaultNotifyParameters()->getWrappedObject(), $parameters, [
             'hostId'  => $this->getPrimaryKeyValue(),
             'message' => $message,
-        ]))->shouldBeCalled()->willReturn(Helper::noContentResponse());
+        ]))->shouldBeCalled()->willReturn(Helper::zeroResponse());
 
-        $this->UINotify($message)->shouldBe(true);
+        $this->UINotify($message)->shouldBe(0);
     }
 
     public function it_should_throw_on_ui_notify_if_model_doesnt_exists(HttpClient $client, Factory $factory)
