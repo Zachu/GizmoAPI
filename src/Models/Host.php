@@ -378,6 +378,15 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
+     * Shorthand for HasValidDispatcher attribute
+     * @return boolean
+     */
+    public function isTurnedOn()
+    {
+        return $this->HasValidDispatcher;
+    }
+
+    /**
      * @throws  Exception on error
      */
     public function setLockState($isLocked)
