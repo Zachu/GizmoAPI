@@ -60,22 +60,28 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_get_processes(HttpClient $client)
     {
+        $skip  = 2;
+        $limit = 3;
         $client->get("Host/GetProcesses", [
+            '$skip'  => $skip,
+            '$top'   => $limit,
             'hostId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
-        $this->getProcesses()->shouldBeArray();
-        $this->getProcesses()->shouldHaveCount(0);
+        $this->getProcesses([], true, $limit, $skip)->shouldBeArray();
+        $this->getProcesses([], true, $limit, $skip)->shouldHaveCount(0);
 
         $client->get("Host/GetProcesses", [
+            '$skip'  => $skip,
+            '$top'   => $limit,
             'hostId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::contentResponse([
             'process1',
             'process2',
         ]));
 
-        $this->getProcesses()->shouldBeArray();
-        $this->getProcesses()->shouldHaveCount(2);
+        $this->getProcesses([], true, $limit, $skip)->shouldBeArray();
+        $this->getProcesses([], true, $limit, $skip)->shouldHaveCount(2);
     }
 
     public function it_should_throw_on_get_prorcesses_if_model_doesnt_exist(HttpClient $client, Factory $factory)
@@ -86,10 +92,15 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_throw_on_get_processes_if_got_unexpected_response(HttpClient $client)
     {
+        $skip  = 2;
+        $limit = 3;
+
         $client->get("Host/GetProcesses", [
+            '$skip'  => $skip,
+            '$top'   => $limit,
             'hostId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringGetProcesses();
+        $this->shouldThrow('\Exception')->duringGetProcesses([], true, $limit, $skip);
     }
 
     //
@@ -240,7 +251,7 @@ class HostSpec extends ObjectBehavior
             'hostId' => $this->getPrimaryKeyValue(),
         ]))->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
-        $this->terminateProcess($killInfo)->shouldBe(true);
+        $this->terminateProcess($killInfo);
     }
 
     public function it_should_throw_on_terminate_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)

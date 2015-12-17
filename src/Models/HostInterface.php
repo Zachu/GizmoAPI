@@ -7,7 +7,17 @@ interface HostInterface extends BaseModelInterface
      * @api
      * @return array processess
      */
-    public function getProcesses();
+    /**
+     * Get all processes running on the host
+     * @param  array   $criteria      Array of criteria to limit processes by. Defaults to array()
+     * @param  boolean $caseSensitive Search for case sensitive parameters. Defaults to false.
+     * @param  integer $limit         Limit the number of fetched instances. Defaults to 30.
+     * @param  integer $skip          Skip number of instances (i.e. fetch the next page). Defaults to 0.
+     * @param  string  $orderBy       Column to order the results with.
+     * @return array processess
+     * @api
+     */
+    public function getProcesses(array $criteria = [], $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null);
 
     /**
      * Get a single process by its id

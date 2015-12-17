@@ -1,6 +1,7 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
 use Exception;
+use Pisa\GizmoAPI\Repositories\BaseRepository;
 
 class Host extends BaseModel implements HostInterface
 {
@@ -283,15 +284,25 @@ class Host extends BaseModel implements HostInterface
     /**
      * @throws  Exception on error
      */
-    public function getProcesses()
+    public function getProcesses(array $criteria = [], $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
+        $options = ['$skip' => $skip, '$top' => $limit];
+
+        if (!empty($criteria)) {
+            $options['$filter'] = BaseRepository::criteriaToFilter($criteria, $caseSensitive);
+        }
+        if ($orderBy !== null) {
+            $options['$orderby'] = $orderBy;
+        }
+
         try {
             if ($this->exists() === false) {
                 throw new Exception("Model does not exist");
             } else {
-                $response = $this->client->get('Host/GetProcesses', [
-                    'hostId' => $this->getPrimaryKeyValue(),
-                ]);
+                $response = $this->client->get('Host/GetProcesses', array_merge(
+                    $options,
+                    ['hostId' => $this->getPrimaryKeyValue()]
+                ));
                 if ($response === null) {
                     throw new Exception("Response failed");
                 }
@@ -486,8 +497,6 @@ class Host extends BaseModel implements HostInterface
 
                 $response->assertEmpty();
                 $response->assertStatusCodes(204);
-
-                return true;
             }
         } catch (Exception $e) {
             throw new Exception("Unable to terminate processes: " . $e->getMessage());
