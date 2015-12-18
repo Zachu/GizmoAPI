@@ -109,7 +109,7 @@ class User extends BaseModel implements UserInterface
                 throw new Exception("Response failed");
             }
 
-            $response->assertBoolean();
+            $response->assertInteger(); //Gizmo responses 1 if user is logged in, 0 if not.
             $response->assertStatusCodes(200);
 
             return (bool) $response->getBody();

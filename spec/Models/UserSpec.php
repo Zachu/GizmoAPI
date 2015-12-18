@@ -43,7 +43,7 @@ class UserSpec extends ObjectBehavior
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
+        ])->shouldBeCalled()->willReturn(Helper::zeroResponse());
 
         $this->exists()->shouldBe(true);
         $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(Helper::noContentResponse());
@@ -55,7 +55,7 @@ class UserSpec extends ObjectBehavior
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->willReturn(Helper::falseResponse());
+        ])->willReturn(Helper::zeroResponse());
 
         $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(Helper::trueResponse());
         $this->shouldThrow('\Exception')->duringDelete();
@@ -65,7 +65,7 @@ class UserSpec extends ObjectBehavior
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->willReturn(Helper::trueResponse());
+        ])->willReturn(Helper::oneResponse());
 
         $client->post('Users/UserLogout', [
             'userId' => $this->getPrimaryKeyValue(),
@@ -186,7 +186,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
     }
 
-//
+    //
     // Is logged in
     //
 
@@ -194,12 +194,12 @@ class UserSpec extends ObjectBehavior
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+        ])->shouldBeCalled()->willReturn(Helper::oneResponse());
         $this->isLoggedIn()->shouldReturn(true);
 
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
+        ])->shouldBeCalled()->willReturn(Helper::zeroResponse());
         $this->isLoggedIn()->shouldReturn(false);
     }
 
@@ -207,7 +207,7 @@ class UserSpec extends ObjectBehavior
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::zeroResponse());
+        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
     }
 
@@ -283,7 +283,7 @@ class UserSpec extends ObjectBehavior
         $host->getPrimaryKeyValue()->shouldBeCalled()->willReturn(1);
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::falseResponse());
+        ])->shouldBeCalled()->willReturn(Helper::zeroResponse());
 
         $client->post('Users/UserLogin', [
             'userId' => $this->getPrimaryKeyValue(),
@@ -297,7 +297,7 @@ class UserSpec extends ObjectBehavior
         $host->getPrimaryKeyValue()->willReturn(1);
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->willReturn(Helper::falseResponse());
+        ])->willReturn(Helper::zeroResponse());
 
         $host->isFree()->shouldBeCalled()->willReturn(false);
 
@@ -311,7 +311,7 @@ class UserSpec extends ObjectBehavior
 
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+        ])->shouldBeCalled()->willReturn(Helper::oneResponse());
 
         $this->shouldThrow('\Exception')->duringLogin($host);
     }
@@ -333,7 +333,7 @@ class UserSpec extends ObjectBehavior
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+        ])->shouldBeCalled()->willReturn(Helper::oneResponse());
 
         $client->post('Users/UserLogout', [
             'userId' => $this->getPrimaryKeyValue(),
@@ -346,7 +346,7 @@ class UserSpec extends ObjectBehavior
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+        ])->shouldBeCalled()->willReturn(Helper::oneResponse());
         $client->post('Users/UserLogout', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
