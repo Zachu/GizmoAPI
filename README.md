@@ -16,9 +16,9 @@ $gizmo = new Gizmo([
     ],
 ]);
 
-$host = $gizmo->hosts->get(1);
+$host = $gizmo->hosts->get(1); // Gets the host model with id 1
 
-$user = $gizmo->users->get(1);
+$user = $gizmo->users->get(1); // Gets the user model with id 1
 ```
 
 The full API documentation at [wiki](/wikis/ApiIndex)
