@@ -289,7 +289,8 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
             'hostId' => 1,
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
-        $this->login($host)->shouldReturn(true);
+
+        $this->login($host);
     }
 
     public function it_should_throw_on_login_if_host_is_not_free(HttpClient $client, HostInterface $host)
@@ -339,7 +340,7 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
-        $this->logout()->shouldReturn(true);
+        $this->logout();
     }
 
     public function it_should_throw_on_logout_when_got_unexpected_response(HttpClient $client)

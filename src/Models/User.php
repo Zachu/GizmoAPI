@@ -171,6 +171,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
+     * @return  void
      * @throws  Exception on error
      */
     public function login(HostInterface $host)
@@ -196,14 +197,13 @@ class User extends BaseModel implements UserInterface
 
             $response->assertEmpty();
             $response->assertStatusCodes(204);
-
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to log user in: " . $e->getMessage());
         }
     }
 
     /**
+     * @return  void
      * @throws  Exception on error
      */
     public function logout()
@@ -226,8 +226,6 @@ class User extends BaseModel implements UserInterface
 
             $response->assertEmpty();
             $response->assertStatusCodes(204);
-
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to log user out: " . $e->getMessage());
         }
