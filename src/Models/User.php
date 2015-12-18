@@ -240,7 +240,7 @@ class User extends BaseModel implements UserInterface
             if (!$this->exists()) {
                 throw new Exception("User doesn't exist");
             } elseif ($repository->hasUserName($newUserName)) {
-                throw new Exception("$newName already exists");
+                throw new Exception("$newUserName already exists");
             }
 
             $response = $this->client->post('Users/Rename', [
