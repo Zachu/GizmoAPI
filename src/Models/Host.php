@@ -387,6 +387,7 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
+     * @return  void
      * @throws  Exception on error
      */
     public function setLockState($isLocked)
@@ -409,7 +410,6 @@ class Host extends BaseModel implements HostInterface
                 $response->assertStatusCodes(204);
 
                 $this->IsLocked = $isLocked;
-                return true;
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set lock state: " . $e->getMessage());
@@ -417,9 +417,7 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * @return  void
      * @throws  Exception on error
      */
     public function setOrderState($isOutOfOrder)
@@ -442,7 +440,6 @@ class Host extends BaseModel implements HostInterface
                 $response->assertStatusCodes(204);
 
                 $this->IsOutOfOrder = $isOutOfOrder;
-                return true;
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set order state: " . $e->getMessage());
@@ -450,9 +447,7 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * @return  void
      * @throws  Exception on error
      */
     public function setSecurityState($isEnabled)
@@ -475,7 +470,6 @@ class Host extends BaseModel implements HostInterface
                 $response->assertStatusCodes(204);
 
                 $this->IsSecurityEnabled = $isEnabled;
-                return true;
             }
         } catch (Exception $e) {
             throw new Exception("Unable to set security state: " . $e->getMessage());
@@ -483,9 +477,6 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
      * @throws  Exception on error
      */
     public function terminateProcess($killInfo)
