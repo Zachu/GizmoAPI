@@ -164,7 +164,13 @@ abstract class BaseModel implements BaseModelInterface
      */
     protected function changed()
     {
-        return array_diff_assoc($this->attributes, $this->savedAttributes);
+        return array_udiff_assoc($this->attributes, $this->savedAttributes, function ($a, $b) {
+            if ($a !== $b) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
     }
 
     /**
