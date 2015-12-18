@@ -1,6 +1,6 @@
 {
     "name": "pisa/gizmo-api",
-    "version": "0.0.1",
+    "version": "1.0.0rc1",
     "description": "Gizmo API wrapper for PHP",
     "license": "MIT",
     "authors": [
@@ -12,7 +12,8 @@
     "require-dev": {
         "phpspec/phpspec": "~2.0",
         "phpdocumentor/phpdocumentor": "2.*",
-        "cvuorinen/phpdoc-md" : "~0.1.1"
+        "cvuorinen/phpdoc-md" : "~0.1.1",
+        "fzaninotto/faker": "^1.5"
     },
     
     "autoload": {
@@ -24,8 +25,6 @@
         "guzzlehttp/guzzle": "~6.0",
         "guzzlehttp/psr7": "~1.2.0",
         "illuminate/container": "^5.1",
-        "illuminate/validation": "^5.1",
-        "psr/log": "1.0.*",
-        "fzaninotto/faker": "^1.5"
+        "illuminate/validation": "^5.1"
     }
 }
