@@ -432,7 +432,7 @@ class UserSpec extends ObjectBehavior
             'newEmail' => $newEmail,
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
-        $this->setEmail($repository, $newEmail)->shouldReturn(true);
+        $this->setEmail($repository, $newEmail);
         $this->Email->shouldBe($newEmail);
     }
 
@@ -478,7 +478,7 @@ class UserSpec extends ObjectBehavior
             'newPassword' => $newPassword,
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
-        $this->setPassword($newPassword)->shouldReturn(true);
+        $this->setPassword($newPassword);
     }
 
     public function it_should_throw_on_set_password_if_model_doesnt_exist(HttpClient $client, Factory $factory)
@@ -513,7 +513,7 @@ class UserSpec extends ObjectBehavior
             'newUserGroup' => $newUserGroup,
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
-        $this->setUserGroup($newUserGroup)->shouldReturn(true);
+        $this->setUserGroup($newUserGroup);
         $this->GroupId->shouldBe($newUserGroup);
     }
 

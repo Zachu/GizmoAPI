@@ -232,6 +232,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
+     * @return  void
      * @throws  Exception on error
      */
     public function rename(UserRepositoryInterface $repository, $newUserName)
@@ -255,7 +256,6 @@ class User extends BaseModel implements UserInterface
             $response->assertStatusCodes(204);
 
             $this->UserName = $newUserName;
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to rename user: " . $e->getMessage());
         }
@@ -294,6 +294,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
+     * @return  void
      * @throws  Exception on error
      */
     public function setEmail(UserRepositoryInterface $repository, $newEmail)
@@ -312,17 +313,18 @@ class User extends BaseModel implements UserInterface
             if ($response === null) {
                 throw new Exception("Response failed");
             }
+
             $response->assertEmpty();
             $response->assertStatusCodes(204);
 
             $this->Email = $newEmail;
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to set user email: " . $e->getMessage());
         }
     }
 
     /**
+     * @return  void
      * @throws  Exception on error
      */
     public function setPassword($newPassword)
@@ -342,14 +344,13 @@ class User extends BaseModel implements UserInterface
 
             $response->assertEmpty();
             $response->assertStatusCodes(204);
-
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to set user password: " . $e->getMessage());
         }
     }
 
     /**
+     * @return  void
      * @throws  Exception on error
      */
     public function setUserGroup($groupId)
@@ -373,7 +374,6 @@ class User extends BaseModel implements UserInterface
             $response->assertStatusCodes(204);
 
             $this->GroupId = $groupId;
-            return true;
         } catch (Exception $e) {
             throw new Exception("Unable to set user group: " . $e->getMessage());
         }
