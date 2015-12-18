@@ -1,6 +1,6 @@
 {
     "name": "pisa/gizmo-api",
-    "version": "1.0.0rc1",
+    "version": "1.0.0-rc1",
     "description": "Gizmo API wrapper for PHP",
     "license": "MIT",
     "authors": [

@@ -1,6 +1,6 @@
 {
   "name": "GizmoAPI",
-  "version": "0.0.1",
+  "version": "1.0.0-rc1",
   "devDependencies": {
     "gulp": "~3.9.0",
     "gulp-notify": "^2.2.0",
