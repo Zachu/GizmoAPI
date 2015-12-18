@@ -21,7 +21,7 @@ $host = $gizmo->hosts->get(1); // Gets the host model with id 1
 $user = $gizmo->users->get(1); // Gets the user model with id 1
 ```
 
-The full API documentation at [wiki](/wikis/ApiIndex)
+The full API documentation at [wiki](https://github.com/Zachu/GizmoAPI/wiki/ApiIndex)
 
 ## History
 TODO: Write history
