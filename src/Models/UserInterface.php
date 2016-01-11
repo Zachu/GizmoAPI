@@ -30,48 +30,43 @@ interface UserInterface extends BaseModelInterface
 
     /**
      * Log user in to a host
-     * @param  HostInterface $host Host to log in
-     * @return true                Returns true on success
+     * @param  Pisa\GizmoAPI\Models\HostInterface $host Host to log in
      * @throws Exception on error
      */
     public function login(HostInterface $host);
 
     /**
      * Log user out from a host
-     * @return true Returns true on success
      * @throws Exception on error
      */
     public function logout();
 
     /**
      * Renames a user
-     * @param  UserRepositoryInterface $repository  User repository to check whether the new username is available
-     * @param  string                  $newUserName New username
-     * @return true                    Returns true on success
-     * @throws Exception               on error
+     * @param  Pisa\GizmoAPI\Repositories\UserRepositoryInterface $repository User repository to check whether the new username is available
+     * @param  string                                             $newUserName New username
+     * @throws Exception                                          on error
      */
     public function rename(UserRepositoryInterface $repository, $newUserName);
 
     /**
      * Change the user email
-     * @param UserRepositoryInterface $repository User repository to check whether the new email is available
-     * @param string                  $newEmail   New email
-     * @return true                   Returns true on success
-     * @throws Exception              on error
+     * @param  Pisa\GizmoAPI\Repositories\UserRepositoryInterface $repository User repository to check whether the new email is available
+     * @param  string                                             $newEmail   New email
+     * @throws Exception                                          on error
      */
     public function setEmail(UserRepositoryInterface $repository, $newEmail);
 
     /**
      * Set new password for the user
-     * @param string $newPassword New password
-     * @return true on success
+     * @param  string $newPassword New password
      * @throws Exception on error
      */
     public function setPassword($newPassword);
 
     /**
      * Set user to a new user group
-     * @param integer $groupId New group id
+     * @param  integer $groupId New group id
      * @return true on success
      * @throws Exception on error
      */
