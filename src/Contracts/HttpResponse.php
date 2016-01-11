@@ -5,7 +5,7 @@ interface HttpResponse
     /**
      * Gets the response body
      * @param  boolean $autodetect Autodetect the content type and give the response accordingly. Defaults to true
-     * @return mixed               Response body. If autodetect is false, returns string.
+     * @return mixed               Response body. If autodetect is false it returns the response string.
      */
     public function getBody($autodetect = true);
 
@@ -16,7 +16,7 @@ interface HttpResponse
     public function getHeaders();
 
     /**
-     * Get JSON body
+     * Get the body json and decode it
      * @return mixed     Response
      * @throws Exception on error
      */
@@ -90,9 +90,9 @@ interface HttpResponse
 
     /**
      * Check that http response status codes match the codes we are expecting for.
-     * @param  int|array           $statusCodes Array of status codes to be expected. Can be a single status code too.
+     * @param  int|array $statusCodes Array of status codes to be expected. Can be a single status code too.
      * @return void
-     * @throws Exception                        if the status code was unexpected
+     * @throws Exception if the status code was unexpected
      */
     public function assertStatusCodes($statusCodes = []);
 }

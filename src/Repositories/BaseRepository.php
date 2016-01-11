@@ -35,18 +35,15 @@ abstract class BaseRepository implements BaseRepositoryInterface
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     abstract public function all($limit = 30, $skip = 0, $orderBy = null);
 
     /**
      * Turn array of criteria into an OData filter
+     *
      * @param  array   $criteria      Array of criteria
      * @param  boolean $caseSensitive Is the search supposed to be case sensitive. Defaults to false.
      * @return string                 Returns string to be put on the OData $filter
+     * @internal
      */
     public static function criteriaToFilter(array $criteria, $caseSensitive = false)
     {

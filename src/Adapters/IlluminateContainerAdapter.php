@@ -9,12 +9,12 @@ use Pisa\GizmoAPI\Contracts\Container;
  */
 class IlluminateContainerAdapter implements Container
 {
-    /** @var IlluminateContainer */
+    /** @var \Illuminate\Contracts\Container\Container */
     protected $container;
 
     /**
      * Create a container
-     * @param IlluminateContainer|null $container If no container is given, one is created automatically
+     * @param \Illuminate\Contracts\Container\Container|null $container If no container is given, one is created automatically
      */
     public function __construct(IlluminateContainer $container = null)
     {
@@ -25,31 +25,16 @@ class IlluminateContainerAdapter implements Container
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function bind($abstract, $concrete = null, $shared = false)
     {
         $this->container->bind($abstract, $concrete, $shared);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function make($abstract, array $parameters = [])
     {
         return $this->container->make($abstract, $parameters);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function singleton($abstract, $concrete = null)
     {
         $this->container->singleton($abstract, $concrete);

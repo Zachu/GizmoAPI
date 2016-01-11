@@ -24,7 +24,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses request This is a wrapper for request()
+     * @uses $this->request() This is a wrapper for request()
      */
     public function delete($url, array $parameters = [], array $options = [])
     {
@@ -32,7 +32,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses request This is a wrapper for request()
+     * @uses $this->request() This is a wrapper for request()
      */
     public function get($url, array $parameters = [], array $options = [])
     {
@@ -40,7 +40,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses request This is a wrapper for request()
+     * @uses $this->request() This is a wrapper for request()
      */
     public function post($url, array $parameters = [], array $options = [])
     {
@@ -48,7 +48,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses request This is a wrapper for request()
+     * @uses $this->request() This is a wrapper for request()
      */
     public function put($url, array $parameters = [], array $options = [])
     {
@@ -56,7 +56,14 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @return HttpResponse
+     * Perform the HTTP request
+     *
+     * @param  string $method     HTTP method/verb
+     * @param  string $url        URL to send the request
+     * @param  array  $parameters Key/Value pairs to form the query string
+     * @param  array  $options    Options to pass straight to GuzzleClient
+     *
+     * @return \Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter
      */
     public function request($method, $url, array $parameters = [], array $options = [])
     {
@@ -71,6 +78,7 @@ class GuzzleClientAdapter implements HttpClient
      * Converts URL parameters boolean and null parameters to string representations.
      * @param  array  $parameters URL parameters
      * @return array
+     *
      * @internal
      */
     private function fixParameters(array $parameters = [])

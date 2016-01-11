@@ -4,11 +4,6 @@ abstract class AbstractAttributable implements Attributable
 {
     protected $attributes = [];
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function fill(array $attributes)
     {
         foreach ($attributes as $key => $value) {
@@ -16,21 +11,11 @@ abstract class AbstractAttributable implements Attributable
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function getAttributes()
     {
         return $this->attributes;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function getAttribute($key)
     {
         if ($this->hasGetMutator($key)) {
@@ -43,11 +28,6 @@ abstract class AbstractAttributable implements Attributable
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function setAttribute($key, $value)
     {
         if ($this->hasSetMutator($key)) {
@@ -58,11 +38,6 @@ abstract class AbstractAttributable implements Attributable
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     public function toArray()
     {
         return $this->getAttributes();

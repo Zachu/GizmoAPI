@@ -262,7 +262,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @param $repository UserRepository has to be provided when changing UserName or Email (for checking availability). Otherwise the parameter is not needed
+     * @param \Pisa\GizmoAPI\Repositories\UserRepositoryInterface $repository UserRepository has to be provided when changing UserName or Email (for checking availability). Otherwise the parameter is not needed
      */
     public function save(UserRepositoryInterface $repository = null)
     {

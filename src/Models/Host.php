@@ -148,6 +148,8 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
+     * Create a new process
+     *
      * Example:
      * <code>
      * $this->createProcess(['FileName' => 'C:\Start.bat']);

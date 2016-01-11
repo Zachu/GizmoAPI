@@ -7,6 +7,7 @@ use Pisa\GizmoAPI\Contracts\HttpResponse;
 class GuzzleResponseAdapter implements HttpResponse
 {
     protected $response;
+
     public function __construct(Response $response)
     {
         $this->response = $response;
