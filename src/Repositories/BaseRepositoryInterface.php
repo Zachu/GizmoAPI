@@ -59,7 +59,6 @@ interface BaseRepositoryInterface
      *
      * @param  array  $attributes Attributes for the model to be made
      * @return Model              Returns model.
-     * @uses   BaseModel::load    For inputting the attributes
      */
     public function make(array $attributes);
 }

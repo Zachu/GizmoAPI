@@ -65,47 +65,26 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $filter;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     abstract public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null);
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     abstract public function findOneBy(array $criteria, $caseSensitive = false);
 
     /**
      * Return the fully qualified model name.
      * @return string Fully qualified name
+     * @internal
      */
     public function fqnModel()
     {
         return rtrim($this->modelNamespace, '\\') . '\\' . $this->model;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     abstract public function get($id);
 
-    /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
-     */
     abstract public function has($id);
 
     /**
-     * {@inheritDoc}
-     *
-     * {@inheritDoc}
+     * @uses \Pisa\GizmoAPI\Models\BaseModel->load()  For inputting the attributes
      */
     public function make(array $attributes)
     {
@@ -122,7 +101,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * Makes multiple model entries
      * @param  array  $data Array of attributes
      * @return array        Array of made models
-     * @uses   self::make   for making a single instance
+     * @uses   $this->make  for making a single instance
      */
     protected function makeArray(array $data)
     {
