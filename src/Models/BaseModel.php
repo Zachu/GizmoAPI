@@ -105,7 +105,7 @@ abstract class BaseModel implements BaseModelInterface
     }
 
     /**
-     * @todo How the created/uncreated should begul handled?
+     * @todo How the created/uncreated should be handled?
      */
     public function isSaved()
     {
