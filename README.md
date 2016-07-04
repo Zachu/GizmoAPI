@@ -1,5 +1,5 @@
 # GizmoAPI
-Gizmo API wrapper for PHP.
+[Gizmo Application Management Platform](http://www.gizmopowered.net) API wrapper for PHP.
 
 ## Installation
 
