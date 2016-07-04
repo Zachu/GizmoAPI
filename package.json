@@ -1,9 +1,9 @@
 {
-  "name": "GizmoAPI",
-  "version": "1.0.0-rc1",
-  "devDependencies": {
-    "gulp": "~3.9.0",
-    "gulp-notify": "^2.2.0",
-    "gulp-phpspec": "~0.5.3"
-  }
+    "name": "GizmoAPI",
+    "version": "1.0.1",
+    "devDependencies": {
+        "gulp": "~3.9.0",
+        "gulp-notify": "^2.2.0",
+        "gulp-phpspec": "~0.5.3"
+    }
 }
