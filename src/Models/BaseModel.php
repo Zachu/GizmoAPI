@@ -89,6 +89,11 @@ abstract class BaseModel implements BaseModelInterface
         return $this->validator;
     }
 
+    public function getValidatorFactory()
+    {
+        return $this->validatorFactory;
+    }
+
     public function getRules()
     {
         return $this->rules;
@@ -115,14 +120,13 @@ abstract class BaseModel implements BaseModelInterface
     public function validate()
     {
         try {
-            $this->validator = $this->validatorFactory->make($this->getAttributes(), $this->rules);
+            $this->validator = $this->getValidatorFactory()->make($this->getAttributes(), $this->rules);
             if (!$this->validator instanceof \Illuminate\Contracts\Validation\Validator) {
                 throw new Exception("Validator factory failed to make validator");
             }
 
             return $this->validator->fails();
         } catch (Exception $e) {
-            var_dump($e->getMessage());
             throw new Exception("Unable to validate: " . $e->getMessage());
         }
     }

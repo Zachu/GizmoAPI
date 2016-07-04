@@ -410,7 +410,6 @@ class HostSpec extends ObjectBehavior
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "false",
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
-//        $factory->make($this->getAttributes(), $this->getRules())->willReturn($validator);
 
         $this->IsLocked = false;
         $this->save();
