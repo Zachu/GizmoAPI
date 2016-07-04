@@ -17,11 +17,6 @@ Or follow instructions on https://getcomposer.org/doc/00-intro.md
 composer require pisa\gizmo-api
 ```
 
-Since currently there are no stable releases, you have to accept the release candidates:
-```
-composer require pisa\gizmo-api:"^1.0@RC"
-```
-
 ## Usage
 
 The full API documentation at [wiki](https://github.com/Zachu/GizmoAPI/wiki/ApiIndex)
