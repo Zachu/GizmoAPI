@@ -324,6 +324,15 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
+     * A shorthand for setPassword('')
+     *
+     * @see     $this->setPassword()
+     */
+    public function resetPassword()
+    {
+        return $this->setPassword('');
+    }
+    /**
      * @return  void
      * @throws  Exception on error
      */

@@ -50,6 +50,13 @@ interface UserInterface extends BaseModelInterface
     public function rename(UserRepositoryInterface $repository, $newUserName);
 
     /**
+     * Resets the user password so that it will be prompted on next login
+     * @return void
+     * @throws Exception on error
+     */
+    public function resetPassword();
+
+    /**
      * Change the user email
      * @param  Pisa\GizmoAPI\Repositories\UserRepositoryInterface $repository User repository to check whether the new email is available
      * @param  string                                             $newEmail   New email

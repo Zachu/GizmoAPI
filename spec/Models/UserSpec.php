@@ -35,7 +35,7 @@ class UserSpec extends ObjectBehavior
         $this->LastName->shouldBe(self::$user['LastName']);
     }
 
-//
+    //
     // Delete
     //
 
@@ -81,7 +81,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringDelete();
     }
 
-//
+    //
     // Save
     //
 
@@ -149,7 +149,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSave($repository);
     }
 
-//
+    //
     // Get logged in host id
     //
 
@@ -217,7 +217,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringIsLoggedIn();
     }
 
-//
+    //
     // Get last login time
     //
 
@@ -245,7 +245,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLastLoginTime();
     }
 
-//
+    //
     // Get last logout time
     //
 
@@ -273,7 +273,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLastLogoutTime();
     }
 
-//
+    //
     // Login
     //
 
@@ -326,7 +326,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLogin($host);
     }
 
-//
+    //
     // Logout
     //
 
@@ -370,7 +370,7 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringLogout();
     }
 
-//
+    //
     // Rename
     //
 
@@ -418,7 +418,7 @@ class UserSpec extends ObjectBehavior
         $this->UserName->shouldNotBe($newUserName);
     }
 
-//
+    //
     // Set Email
     //
 
@@ -466,7 +466,7 @@ class UserSpec extends ObjectBehavior
         $this->Email->shouldNotBe($newEmail);
     }
 
-//
+    //
     // Set Password
     //
 
@@ -500,7 +500,17 @@ class UserSpec extends ObjectBehavior
         $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
     }
 
-//
+    public function it_should_reset_password(HttpClient $client)
+    {
+        $client->post('Users/SetUserPassword', [
+            'userId'      => $this->getPrimaryKeyValue(),
+            'newPassword' => '',
+        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
+
+        $this->resetPassword();
+    }
+
+    //
     // Set usergroup
     //
 
