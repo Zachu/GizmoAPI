@@ -3,19 +3,16 @@
     "version": "1.0.0-rc1",
     "description": "Gizmo API wrapper for PHP",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Jani Korhonen",
-            "email": "zachu@thegroup.fi"
-        }
-    ],
+    "authors": [{
+        "name": "Jani Korhonen",
+        "email": "zachu@thegroup.fi"
+    }],
     "require-dev": {
         "phpspec/phpspec": "~2.0",
-        "phpdocumentor/phpdocumentor": "2.*",
-        "cvuorinen/phpdoc-md" : "~0.1.1",
+        "cvuorinen/phpdoc-markdown-public": "^0.1.2",
         "fzaninotto/faker": "^1.5"
     },
-    
+
     "autoload": {
         "psr-4": {
             "Pisa\\GizmoAPI\\": "src/"
