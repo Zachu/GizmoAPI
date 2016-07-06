@@ -5,4 +5,5 @@
  */
 class InternalException extends \RuntimeException implements GizmoAPIException
 {
+
 }

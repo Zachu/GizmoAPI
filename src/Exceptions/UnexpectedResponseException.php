@@ -5,4 +5,5 @@
  */
 class UnexpectedResponseException extends \UnexpectedValueException implements GizmoAPIException
 {
+
 }

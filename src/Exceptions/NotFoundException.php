@@ -5,4 +5,5 @@
  */
 class NotFoundException extends \OutOfBoundsException implements GizmoAPIException
 {
+
 }

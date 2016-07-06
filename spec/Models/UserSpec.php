@@ -1,13 +1,13 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
-use Illuminate\Contracts\Validation\Factory;
-use Illuminate\Contracts\Validation\Validator;
+use Prophecy\Argument;
 use PhpSpec\ObjectBehavior;
+use spec\Pisa\GizmoAPI\Helper;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Models\HostInterface;
+use Illuminate\Contracts\Validation\Factory;
+use Illuminate\Contracts\Validation\Validator;
 use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
-use Prophecy\Argument;
-use spec\Pisa\GizmoAPI\Helper;
 
 class UserSpec extends ObjectBehavior
 {

@@ -1,10 +1,10 @@
 <?php namespace spec\Pisa\GizmoAPI\Repositories;
 
 use PhpSpec\ObjectBehavior;
+use spec\Pisa\GizmoAPI\Helper;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Models\NewsInterface;
-use spec\Pisa\GizmoAPI\Helper;
 
 class NewsRepositorySpec extends ObjectBehavior
 {

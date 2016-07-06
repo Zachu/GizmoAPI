@@ -8,6 +8,36 @@ trait AttributableTrait
      */
     protected $attributes = [];
 
+    /** @ignore */
+    public function __get($key)
+    {
+        return $this->getAttribute($key);
+    }
+
+    /** @ignore */
+    public function __isset($key)
+    {
+        return isset($this->attributes[$key]);
+    }
+
+    /** @ignore */
+    public function __set($key, $value)
+    {
+        $this->setAttribute($key, $value);
+    }
+
+    /** @ignore */
+    public function __toString()
+    {
+        return json_encode($this->attributes);
+    }
+
+    /** @ignore */
+    public function __unset($key)
+    {
+        unset($this->attributes[$key]);
+    }
+
     /**
      * Set all attributes. Use AttributeMutators if presented.
      * @param  array  $attributes
@@ -18,15 +48,6 @@ trait AttributableTrait
         foreach ($attributes as $key => $value) {
             $this->setAttribute($key, $value);
         }
-    }
-
-    /**
-     * Get all attributes
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
     }
 
     /**
@@ -44,6 +65,15 @@ trait AttributableTrait
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get all attributes
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
     }
 
     /**
@@ -71,44 +101,14 @@ trait AttributableTrait
     }
 
     /** @ignore */
-    protected function hasSetMutator($key)
-    {
-        return method_exists($this, 'set' . $key . 'Attribute');
-    }
-
-    /** @ignore */
     protected function hasGetMutator($key)
     {
         return method_exists($this, 'get' . $key . 'Attribute');
     }
 
     /** @ignore */
-    public function __get($key)
+    protected function hasSetMutator($key)
     {
-        return $this->getAttribute($key);
-    }
-
-    /** @ignore */
-    public function __set($key, $value)
-    {
-        $this->setAttribute($key, $value);
-    }
-
-    /** @ignore */
-    public function __isset($key)
-    {
-        return isset($this->attributes[$key]);
-    }
-
-    /** @ignore */
-    public function __unset($key)
-    {
-        unset($this->attributes[$key]);
-    }
-
-    /** @ignore */
-    public function __toString()
-    {
-        return json_encode($this->attributes);
+        return method_exists($this, 'set' . $key . 'Attribute');
     }
 }

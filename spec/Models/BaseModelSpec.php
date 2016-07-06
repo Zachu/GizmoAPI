@@ -1,10 +1,10 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
+use PhpSpec\ObjectBehavior;
+use Pisa\GizmoAPI\Models\BaseModel;
+use Pisa\GizmoAPI\Contracts\HttpClient;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Contracts\Validation\Validator;
-use PhpSpec\ObjectBehavior;
-use Pisa\GizmoAPI\Contracts\HttpClient;
-use Pisa\GizmoAPI\Models\BaseModel;
 
 class BaseModelSpec extends ObjectBehavior
 {

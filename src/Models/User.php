@@ -262,6 +262,16 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
+     * A shorthand for setPassword('')
+     *
+     * @see     $this->setPassword()
+     */
+    public function resetPassword()
+    {
+        return $this->setPassword('');
+    }
+
+    /**
      * @param \Pisa\GizmoAPI\Repositories\UserRepositoryInterface $repository UserRepository has to be provided when changing UserName or Email (for checking availability). Otherwise the parameter is not needed
      */
     public function save(UserRepositoryInterface $repository = null)
@@ -323,15 +333,6 @@ class User extends BaseModel implements UserInterface
         }
     }
 
-    /**
-     * A shorthand for setPassword('')
-     *
-     * @see     $this->setPassword()
-     */
-    public function resetPassword()
-    {
-        return $this->setPassword('');
-    }
     /**
      * @return  void
      * @throws  Exception on error

@@ -1,11 +1,11 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
+use Prophecy\Argument;
+use PhpSpec\ObjectBehavior;
+use spec\Pisa\GizmoAPI\Helper;
+use Pisa\GizmoAPI\Contracts\HttpClient;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Contracts\Validation\Validator;
-use PhpSpec\ObjectBehavior;
-use Pisa\GizmoAPI\Contracts\HttpClient;
-use Prophecy\Argument;
-use spec\Pisa\GizmoAPI\Helper;
 
 class NewsSpec extends ObjectBehavior
 {

@@ -1,8 +1,8 @@
 <?php namespace Pisa\GizmoAPI\Adapters;
 
+use Pisa\GizmoAPI\Contracts\Container;
 use Illuminate\Container\Container as ConcreteContainer;
 use Illuminate\Contracts\Container\Container as IlluminateContainer;
-use Pisa\GizmoAPI\Contracts\Container;
 
 /**
  * Illuminate Container Adapter

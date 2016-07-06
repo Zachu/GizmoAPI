@@ -13,55 +13,6 @@ class GuzzleResponseAdapter implements HttpResponse
         $this->response = $response;
     }
 
-    public function getHeaders()
-    {
-        return $this->response->getHeaders();
-    }
-
-    public function getBody($autodetect = true)
-    {
-        if ($autodetect === false) {
-            return (string) $this->response->getBody();
-        } else {
-            $contentType = explode(';', $this->getType())[0];
-            if ($contentType === 'application/json') {
-                return $this->getJson();
-            } else {
-                return $this->getString();
-            }
-        }
-    }
-
-    public function getString()
-    {
-        return (string) $this->response->getBody();
-    }
-
-    public function getJson()
-    {
-        $json = json_decode($this->getBody(false), true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return $json;
-        } else {
-            throw new UnexpectedResponseException("Json error " . json_last_error_msg());
-        }
-    }
-
-    public function getStatusCode()
-    {
-        return $this->response->getStatusCode();
-    }
-
-    public function getReasonPhrase()
-    {
-        return $this->response->getReasonPhrase();
-    }
-
-    public function getType()
-    {
-        return $this->response->getHeaderLine('Content-Type');
-    }
-
     public function __toString()
     {
         return $this->getString();
@@ -103,6 +54,29 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
+    public function assertStatusCodes($statusCodes = [])
+    {
+        if (is_numeric($statusCodes)) {
+            $statusCodes = [(int) $statusCodes];
+        }
+
+        if (!in_array($this->getStatusCode(), $statusCodes)) {
+            throw new UnexpectedResponseException(
+                "Unexpected HTTP Code " . $this->getStatusCode()
+                . ". Expecting " . implode(',', $statusCodes)
+            );
+        }
+    }
+
+    public function assertString()
+    {
+        if (!is_string($this->getBody())) {
+            throw new UnexpectedResponseException(
+                "Unexpected response body " . gettype($body) . ". Expecting string"
+            );
+        }
+    }
+
     public function assertTime()
     {
         $body = $this->getBody();
@@ -124,26 +98,52 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
-    public function assertString()
+    public function getBody($autodetect = true)
     {
-        if (!is_string($this->getBody())) {
-            throw new UnexpectedResponseException(
-                "Unexpected response body " . gettype($body) . ". Expecting string"
-            );
+        if ($autodetect === false) {
+            return (string) $this->response->getBody();
+        } else {
+            $contentType = explode(';', $this->getType())[0];
+            if ($contentType === 'application/json') {
+                return $this->getJson();
+            } else {
+                return $this->getString();
+            }
         }
     }
 
-    public function assertStatusCodes($statusCodes = [])
+    public function getHeaders()
     {
-        if (is_numeric($statusCodes)) {
-            $statusCodes = [(int) $statusCodes];
-        }
+        return $this->response->getHeaders();
+    }
 
-        if (!in_array($this->getStatusCode(), $statusCodes)) {
-            throw new UnexpectedResponseException(
-                "Unexpected HTTP Code " . $this->getStatusCode()
-                . ". Expecting " . implode(',', $statusCodes)
-            );
+    public function getJson()
+    {
+        $json = json_decode($this->getBody(false), true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $json;
+        } else {
+            throw new UnexpectedResponseException("Json error " . json_last_error_msg());
         }
+    }
+
+    public function getReasonPhrase()
+    {
+        return $this->response->getReasonPhrase();
+    }
+
+    public function getStatusCode()
+    {
+        return $this->response->getStatusCode();
+    }
+
+    public function getString()
+    {
+        return (string) $this->response->getBody();
+    }
+
+    public function getType()
+    {
+        return $this->response->getHeaderLine('Content-Type');
     }
 }

@@ -2,4 +2,5 @@
 
 interface NewsInterface extends BaseModelInterface
 {
+
 }

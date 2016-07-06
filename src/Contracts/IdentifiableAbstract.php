@@ -8,6 +8,11 @@ abstract class IdentifiableAbstract implements Identifiable
      */
     protected $primaryKey = 'Id';
 
+    public function getPrimaryKey()
+    {
+        return $this->primaryKey;
+    }
+
     public function getPrimaryKeyValue()
     {
         if (isset($this->{$this->primaryKey})) {
@@ -15,10 +20,5 @@ abstract class IdentifiableAbstract implements Identifiable
         } else {
             return null;
         }
-    }
-
-    public function getPrimaryKey()
-    {
-        return $this->primaryKey;
     }
 }

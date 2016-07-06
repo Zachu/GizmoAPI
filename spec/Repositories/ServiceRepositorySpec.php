@@ -1,8 +1,8 @@
 <?php namespace spec\Pisa\GizmoAPI\Repositories;
 
 use PhpSpec\ObjectBehavior;
-use Pisa\GizmoAPI\Contracts\HttpClient;
 use spec\Pisa\GizmoAPI\Helper;
+use Pisa\GizmoAPI\Contracts\HttpClient;
 
 class ServiceRepositorySpec extends ObjectBehavior
 {

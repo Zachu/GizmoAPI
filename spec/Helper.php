@@ -6,6 +6,24 @@ use Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter as HttpResponseAdapter;
 
 class Helper
 {
+    public static function contentResponse($content)
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode($content)
+        ));
+    }
+
+    public static function emptyArrayResponse()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode([])
+        ));
+    }
+
     public static function fakeHost(array $fields = [])
     {
         $faker = Faker::create();
@@ -34,30 +52,6 @@ class Helper
             'HasValidDispatcher' => $faker->boolean(),
             'GroupId'            => $faker->numberBetween(1, 10),
             'Id'                 => $faker->numberBetween(1, 100),
-        ], $fields);
-    }
-
-    public static function fakeUser(array $fields = [])
-    {
-        $faker = Faker::create();
-        return array_merge([
-            'Id'          => $faker->randomDigitNotNull(),
-            'UserName'    => $faker->username(),
-            'FirstName'   => $faker->firstName(),
-            'LastName'    => $faker->lastName(),
-            'Email'       => $faker->email(),
-            'BirthDate'   => $faker->iso8601(),
-            'City'        => $faker->city(),
-            'Address'     => $faker->streetAddress(),
-            'PostCode'    => $faker->postcode(),
-            'Country'     => $faker->country(),
-            'Phone'       => $faker->phoneNumber(),
-            'MobilePhone' => $faker->phoneNumber(),
-            'Sex'         => $faker->numberBetween(1, 2),
-            'Role'        => 1,
-            'IsEnabled'   => $faker->boolean(),
-            'GroupID'     => $faker->randomDigitNotNull(),
-            'Registered'  => $faker->iso8601(),
         ], $fields);
     }
 
@@ -95,17 +89,68 @@ class Helper
         ], $fields);
     }
 
+    public static function fakeUser(array $fields = [])
+    {
+        $faker = Faker::create();
+        return array_merge([
+            'Id'          => $faker->randomDigitNotNull(),
+            'UserName'    => $faker->username(),
+            'FirstName'   => $faker->firstName(),
+            'LastName'    => $faker->lastName(),
+            'Email'       => $faker->email(),
+            'BirthDate'   => $faker->iso8601(),
+            'City'        => $faker->city(),
+            'Address'     => $faker->streetAddress(),
+            'PostCode'    => $faker->postcode(),
+            'Country'     => $faker->country(),
+            'Phone'       => $faker->phoneNumber(),
+            'MobilePhone' => $faker->phoneNumber(),
+            'Sex'         => $faker->numberBetween(1, 2),
+            'Role'        => 1,
+            'IsEnabled'   => $faker->boolean(),
+            'GroupID'     => $faker->randomDigitNotNull(),
+            'Registered'  => $faker->iso8601(),
+        ], $fields);
+    }
+
+    public static function falseResponse()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode(false)
+        ));
+    }
+
+    public static function internalServerErrorResponse()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            500,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode(['message' => 'An error has occured'])
+        ));
+    }
+
     public static function noContentResponse()
     {
         return new HttpResponseAdapter(new HttpResponse(204));
     }
 
-    public static function emptyArrayResponse()
+    public static function nullResponse()
     {
         return new HttpResponseAdapter(new HttpResponse(
             200,
             ['Content-Type' => 'application/json;charset=utf-8'],
-            json_encode([])
+            json_encode(null)
+        ));
+    }
+
+    public static function oneResponse()
+    {
+        return new HttpResponseAdapter(new HttpResponse(
+            200,
+            ['Content-Type' => 'application/json;charset=utf-8'],
+            json_encode(1)
         ));
     }
 
@@ -134,30 +179,12 @@ class Helper
         ));
     }
 
-    public static function contentResponse($content)
+    public static function timeResponse()
     {
         return new HttpResponseAdapter(new HttpResponse(
             200,
             ['Content-Type' => 'application/json;charset=utf-8'],
-            json_encode($content)
-        ));
-    }
-
-    public static function falseResponse()
-    {
-        return new HttpResponseAdapter(new HttpResponse(
-            200,
-            ['Content-Type' => 'application/json;charset=utf-8'],
-            json_encode(false)
-        ));
-    }
-
-    public static function nullResponse()
-    {
-        return new HttpResponseAdapter(new HttpResponse(
-            200,
-            ['Content-Type' => 'application/json;charset=utf-8'],
-            json_encode(null)
+            json_encode(date('c'))
         ));
     }
 
@@ -176,33 +203,6 @@ class Helper
             200,
             ['Content-Type' => 'application/json;charset=utf-8'],
             json_encode(0)
-        ));
-    }
-
-    public static function oneResponse()
-    {
-        return new HttpResponseAdapter(new HttpResponse(
-            200,
-            ['Content-Type' => 'application/json;charset=utf-8'],
-            json_encode(1)
-        ));
-    }
-
-    public static function timeResponse()
-    {
-        return new HttpResponseAdapter(new HttpResponse(
-            200,
-            ['Content-Type' => 'application/json;charset=utf-8'],
-            json_encode(date('c'))
-        ));
-    }
-
-    public static function internalServerErrorResponse()
-    {
-        return new HttpResponseAdapter(new HttpResponse(
-            500,
-            ['Content-Type' => 'application/json;charset=utf-8'],
-            json_encode(['message' => 'An error has occured'])
         ));
     }
 }

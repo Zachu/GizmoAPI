@@ -3,40 +3,10 @@
 interface ServiceRepositoryInterface
 {
     /**
-     * Returns current system time.
-     * @return int Unix timestamp
-     */
-    public function getTime();
-
-    /**
-     * Stops the service
-     * @return void
-     */
-    public function stop();
-
-    /**
-     * Restarts the service
-     * @return void
-     */
-    public function restart();
-
-    /**
-     * Returns status of the service
-     * @return array
-     */
-    public function getStatus();
-
-    /**
-     * Returns the service version
+     * Returns hardware id
      * @return string
      */
-    public function getVersion();
-
-    /**
-     * Returns the service module information
-     * @return array
-     */
-    public function getModule();
+    public function getHardwareId();
 
     /**
      * Returns license information
@@ -45,14 +15,44 @@ interface ServiceRepositoryInterface
     public function getLicense();
 
     /**
-     * Returns hardware id
-     * @return string
+     * Returns the service module information
+     * @return array
      */
-    public function getHardwareId();
+    public function getModule();
 
     /**
      * Returns the service settings
      * @return array
      */
     public function getSettings();
+
+    /**
+     * Returns status of the service
+     * @return array
+     */
+    public function getStatus();
+
+    /**
+     * Returns current system time.
+     * @return int Unix timestamp
+     */
+    public function getTime();
+
+    /**
+     * Returns the service version
+     * @return string
+     */
+    public function getVersion();
+
+    /**
+     * Restarts the service
+     * @return void
+     */
+    public function restart();
+
+    /**
+     * Stops the service
+     * @return void
+     */
+    public function stop();
 }

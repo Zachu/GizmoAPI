@@ -2,4 +2,5 @@
 
 interface GizmoAPIException
 {
+
 }

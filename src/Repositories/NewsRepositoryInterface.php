@@ -2,4 +2,5 @@
 
 interface NewsRepositoryInterface extends BaseRepositoryInterface
 {
+
 }

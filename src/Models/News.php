@@ -48,30 +48,6 @@ class News extends BaseModel implements NewsInterface
     /**
      * @throws Exception on error
      */
-    protected function update()
-    {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("News does not exist. Did you mean create?");
-            }
-
-            $response = $this->client->post('News/Update', $this->getAttributes());
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-
-            return $this;
-        } catch (Exception $e) {
-            throw new Exception("Unable to update news: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * @throws Exception on error
-     */
     protected function create()
     {
         try {
@@ -94,6 +70,25 @@ class News extends BaseModel implements NewsInterface
     }
 
     /**
+     * Sets EndDate attributes to ISO-8601 format
+     * @param int|string $date Unix timestamp or strtotime parseable string
+     * @return void
+     * @internal
+     */
+    protected function setEndDateAttribute($date)
+    {
+        if (is_int($date) && $date >= 0) {
+            $value = date('c', $date);
+        } elseif (is_string($date) && strtotime($date) !== false) {
+            $value = date('c', strtotime($date));
+        } else {
+            throw new Exception("Unable to parse attribute EndDate");
+        }
+
+        $this->attributes['EndDate'] = $value;
+    }
+
+    /**
      * Sets StartDate attributes to ISO-8601 format
      * @param int|string $date Unix timestamp or strtotime parseable string
      * @return void
@@ -113,21 +108,26 @@ class News extends BaseModel implements NewsInterface
     }
 
     /**
-     * Sets EndDate attributes to ISO-8601 format
-     * @param int|string $date Unix timestamp or strtotime parseable string
-     * @return void
-     * @internal
+     * @throws Exception on error
      */
-    protected function setEndDateAttribute($date)
+    protected function update()
     {
-        if (is_int($date) && $date >= 0) {
-            $value = date('c', $date);
-        } elseif (is_string($date) && strtotime($date) !== false) {
-            $value = date('c', strtotime($date));
-        } else {
-            throw new Exception("Unable to parse attribute EndDate");
-        }
+        try {
+            if (!$this->exists()) {
+                throw new Exception("News does not exist. Did you mean create?");
+            }
 
-        $this->attributes['EndDate'] = $value;
+            $response = $this->client->post('News/Update', $this->getAttributes());
+            if ($response === null) {
+                throw new Exception("Response failed");
+            }
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
+
+            return $this;
+        } catch (Exception $e) {
+            throw new Exception("Unable to update news: " . $e->getMessage());
+        }
     }
 }

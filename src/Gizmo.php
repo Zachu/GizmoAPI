@@ -12,6 +12,10 @@ use Pisa\GizmoAPI\Repositories\SessionRepositoryInterface;
 
 class Gizmo
 {
+    protected $config;
+
+    protected $ioc;
+
     protected $repositories = [
         'users'    => null,
         'hosts'    => null,
@@ -19,8 +23,6 @@ class Gizmo
         'sessions' => null,
         'service'  => null,
     ];
-    protected $config;
-    protected $ioc;
 
     public function __construct(array $config = [], Container $ioc = null)
     {
@@ -37,6 +39,89 @@ class Gizmo
 
         $this->ioc = $ioc;
         $this->bootstrap();
+    }
+
+    public function __get($name)
+    {
+        if ($this->hasRepository($name)) {
+            return $this->getRepository($name);
+        } else {
+            return null;
+        }
+    }
+
+    public function getConfig($name = null)
+    {
+        if ($name === null) {
+            return $this->config;
+        } elseif (isset($this->config[$name])) {
+            return $this->config[$name];
+        } else {
+            return null;
+        }
+    }
+
+    public function getRepository($name)
+    {
+        if ($this->hasRepository($name) && $this->repositoryInitialized($name)) {
+            return $this->repositories[$name];
+        } elseif ($this->hasRepository($name) && !$this->repositoryInitialized($name)) {
+            if ($this->initializeRepository($name) === true) {
+                //Succesfull initialization
+                return $this->repositories[$name];
+            } else {
+                throw new InternalException(
+                    "Repository definition found for $name but initialization failed. "
+                    . 'Maybe Gizmo::initializeRepository() is missing the repository?'
+                );
+            }
+        } else {
+            throw new NotFoundException("No repositories found with name $name");
+        }
+    }
+
+    public function hasRepository($name)
+    {
+        return array_key_exists($name, $this->repositories);
+    }
+
+    public function setConfig($name, $value = null)
+    {
+        $this->config[$name] = $value;
+    }
+
+    protected function initializeRepository($name)
+    {
+        $repository = null;
+        switch ($name) {
+            case 'users':
+                $repository = $this->ioc->make(UserRepositoryInterface::class);
+                break;
+            case 'hosts':
+                $repository = $this->ioc->make(HostRepositoryInterface::class);
+                break;
+            case 'news':
+                $repository = $this->ioc->make(NewsRepositoryInterface::class);
+                break;
+            case 'sessions':
+                $repository = $this->ioc->make(SessionRepositoryInterface::class);
+                break;
+            case 'service':
+                $repository = $this->ioc->make(ServiceRepositoryInterface::class);
+                break;
+        }
+
+        if ($repository !== null) {
+            $this->repositories[$name] = $repository;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function repositoryInitialized($name)
+    {
+        return ($this->hasRepository($name) && is_object($this->repositories[$name]));
     }
 
     private function bootstrap()
@@ -109,88 +194,5 @@ class Gizmo
         $this->ioc->bind(\Symfony\Component\Translation\TranslatorInterface::class, function ($c) {
             return new \Symfony\Component\Translation\Translator('en');
         });
-    }
-
-    public function getConfig($name = null)
-    {
-        if ($name === null) {
-            return $this->config;
-        } elseif (isset($this->config[$name])) {
-            return $this->config[$name];
-        } else {
-            return null;
-        }
-    }
-
-    public function setConfig($name, $value = null)
-    {
-        $this->config[$name] = $value;
-    }
-
-    public function __get($name)
-    {
-        if ($this->hasRepository($name)) {
-            return $this->getRepository($name);
-        } else {
-            return null;
-        }
-    }
-
-    public function hasRepository($name)
-    {
-        return array_key_exists($name, $this->repositories);
-    }
-
-    public function getRepository($name)
-    {
-        if ($this->hasRepository($name) && $this->repositoryInitialized($name)) {
-            return $this->repositories[$name];
-        } elseif ($this->hasRepository($name) && !$this->repositoryInitialized($name)) {
-            if ($this->initializeRepository($name) === true) {
-                //Succesfull initialization
-                return $this->repositories[$name];
-            } else {
-                throw new InternalException(
-                    "Repository definition found for $name but initialization failed. "
-                    . 'Maybe Gizmo::initializeRepository() is missing the repository?'
-                );
-            }
-        } else {
-            throw new NotFoundException("No repositories found with name $name");
-        }
-    }
-
-    protected function repositoryInitialized($name)
-    {
-        return ($this->hasRepository($name) && is_object($this->repositories[$name]));
-    }
-
-    protected function initializeRepository($name)
-    {
-        $repository = null;
-        switch ($name) {
-            case 'users':
-                $repository = $this->ioc->make(UserRepositoryInterface::class);
-                break;
-            case 'hosts':
-                $repository = $this->ioc->make(HostRepositoryInterface::class);
-                break;
-            case 'news':
-                $repository = $this->ioc->make(NewsRepositoryInterface::class);
-                break;
-            case 'sessions':
-                $repository = $this->ioc->make(SessionRepositoryInterface::class);
-                break;
-            case 'service':
-                $repository = $this->ioc->make(ServiceRepositoryInterface::class);
-                break;
-        }
-
-        if ($repository !== null) {
-            $this->repositories[$name] = $repository;
-            return true;
-        } else {
-            return false;
-        }
     }
 }
