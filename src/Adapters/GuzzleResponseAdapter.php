@@ -1,8 +1,8 @@
 <?php namespace Pisa\GizmoAPI\Adapters;
 
-use Exception;
 use GuzzleHttp\Psr7\Response;
 use Pisa\GizmoAPI\Contracts\HttpResponse;
+use Pisa\GizmoAPI\Exceptions\UnexpectedResponseException;
 
 class GuzzleResponseAdapter implements HttpResponse
 {
@@ -43,7 +43,7 @@ class GuzzleResponseAdapter implements HttpResponse
         if (json_last_error() === JSON_ERROR_NONE) {
             return $json;
         } else {
-            throw new Exception("Json error " . json_last_error_msg());
+            throw new UnexpectedResponseException("Json error " . json_last_error_msg());
         }
     }
 
@@ -70,28 +70,36 @@ class GuzzleResponseAdapter implements HttpResponse
     public function assertArray()
     {
         if (!is_array($this->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($this->getBody()) . ". Expecting array");
+            throw new UnexpectedResponseException(
+                "Unexpected response body " . gettype($this->getBody()) . ". Expecting array"
+            );
         }
     }
 
     public function assertBoolean()
     {
         if (!is_bool($this->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($this->getBody()) . ". Expecting boolean");
+            throw new UnexpectedResponseException(
+                "Unexpected response body " . gettype($this->getBody()) . ". Expecting boolean"
+            );
         }
     }
 
     public function assertEmpty()
     {
         if ($this->getBody() != '') {
-            throw new Exception("Unexpected response body " . gettype($this->getBody()) . ". Expecting none");
+            throw new UnexpectedResponseException(
+                "Unexpected response body " . gettype($this->getBody()) . ". Expecting none"
+            );
         }
     }
 
     public function assertInteger()
     {
         if (!is_int($this->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($this->getBody()) . ". Expecting integer");
+            throw new UnexpectedResponseException(
+                "Unexpected response body " . gettype($this->getBody()) . ". Expecting integer"
+            );
         }
     }
 
@@ -99,18 +107,29 @@ class GuzzleResponseAdapter implements HttpResponse
     {
         $body = $this->getBody();
         if (is_int($body) && $body < 0) {
-            throw new Exception("Unexpected response body negative integer. Expecting time (positive integer or strtotime parseable string)");
+            throw new UnexpectedResponseException(
+                "Unexpected response body negative integer. "
+                . "Expecting time (positive integer or strtotime parseable string)"
+            );
         } elseif (is_string($body) && strtotime($body) === false) {
-            throw new Exception("Unexpected response body unparseable string. Expecting time (positive integer or strtotime parseable string)");
+            throw new UnexpectedResponseException(
+                "Unexpected response body unparseable string. "
+                . "Expecting time (positive integer or strtotime parseable string)"
+            );
         } elseif (!is_int($body) && !is_string($body)) {
-            throw new Exception("Unexpected response body " . gettype($body) . ". Expecting time (positive integer or strtotime parseable string)");
+            throw new UnexpectedResponseException(
+                "Unexpected response body " . gettype($body) . ". "
+                . "Expecting time (positive integer or strtotime parseable string)"
+            );
         }
     }
 
     public function assertString()
     {
         if (!is_string($this->getBody())) {
-            throw new Exception("Unexpected response body " . gettype($body) . ". Expecting string");
+            throw new UnexpectedResponseException(
+                "Unexpected response body " . gettype($body) . ". Expecting string"
+            );
         }
     }
 
@@ -121,7 +140,10 @@ class GuzzleResponseAdapter implements HttpResponse
         }
 
         if (!in_array($this->getStatusCode(), $statusCodes)) {
-            throw new Exception("Unexpected HTTP Code " . $this->getStatusCode() . ". Expecting " . implode(',', $statusCodes));
+            throw new UnexpectedResponseException(
+                "Unexpected HTTP Code " . $this->getStatusCode()
+                . ". Expecting " . implode(',', $statusCodes)
+            );
         }
     }
 }
