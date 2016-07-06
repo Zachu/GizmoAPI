@@ -1,13 +1,14 @@
 <?php namespace Pisa\GizmoAPI;
 
-use Exception;
-use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
 use Pisa\GizmoAPI\Contracts\Container;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Exceptions\NotFoundException;
+use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
 use Pisa\GizmoAPI\Repositories\HostRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\NewsRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\SessionRepositoryInterface;
-use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
 class Gizmo
 {
@@ -21,7 +22,7 @@ class Gizmo
     protected $config;
     protected $ioc;
 
-    public function __construct(array $config = array(), Container $ioc = null)
+    public function __construct(array $config = [], Container $ioc = null)
     {
         $this->config = array_merge([
             'http'       => [],
@@ -59,11 +60,26 @@ class Gizmo
             return new \GuzzleHttp\Client($httpConfig);
         });
 
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\UserRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\UserRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\HostRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\HostRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\SessionRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\NewsRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\ServiceRepository::class);
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\UserRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\UserRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\HostRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\HostRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\SessionRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\NewsRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\ServiceRepository::class
+        );
 
         $this->ioc->bind(\Pisa\GizmoAPI\Models\UserInterface::class, function ($c) {
             $user = $c->make(\Pisa\GizmoAPI\Models\User::class);
@@ -86,7 +102,10 @@ class Gizmo
             return $user;
         });
 
-        $this->ioc->bind(\Illuminate\Contracts\Validation\Factory::class, \Illuminate\Validation\Factory::class);
+        $this->ioc->bind(
+            \Illuminate\Contracts\Validation\Factory::class,
+            \Illuminate\Validation\Factory::class
+        );
         $this->ioc->bind(\Symfony\Component\Translation\TranslatorInterface::class, function ($c) {
             return new \Symfony\Component\Translation\Translator('en');
         });
@@ -131,10 +150,13 @@ class Gizmo
                 //Succesfull initialization
                 return $this->repositories[$name];
             } else {
-                throw new Exception("Repository definition found for $name but initialization failed");
+                throw new InternalException(
+                    "Repository definition found for $name but initialization failed. "
+                    . 'Maybe Gizmo::initializeRepository() is missing the repository?'
+                );
             }
         } else {
-            throw new Exception("No repositories found with name $name");
+            throw new NotFoundException("No repositories found with name $name");
         }
     }
 

@@ -2,8 +2,8 @@
 namespace spec\Pisa\GizmoAPI;
 
 use PhpSpec\ObjectBehavior;
-use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Repositories;
+use Pisa\GizmoAPI\Contracts\Container;
 
 class GizmoSpec extends ObjectBehavior
 {
@@ -49,7 +49,7 @@ class GizmoSpec extends ObjectBehavior
     {
         $repository = 'unknown';
         $this->hasRepository($repository)->shouldBe(false);
-        $this->shouldThrow('\Exception')->duringGetRepository($repository);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\NotFoundException')->duringGetRepository($repository);
     }
 
     public function it_should_set_and_get_config_values()
