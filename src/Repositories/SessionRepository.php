@@ -1,6 +1,8 @@
 <?php namespace Pisa\GizmoAPI\Repositories;
 
 use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Exceptions\NotImplementedException;
 
 class SessionRepository extends BaseRepository implements SessionRepositoryInterface
 {
@@ -21,16 +23,15 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Sessions/Get', $options);
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Unable to get all sessions: " . $e->getMessage());
+        $response = $this->client->get('Sessions/Get', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -38,22 +39,22 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
      */
     public function findActiveBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Sessions/GetActive', $options);
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Unable to find active sessions: " . $e->getMessage());
+        $response = $this->client->get('Sessions/GetActive', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -61,22 +62,22 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
      */
     public function findActiveInfosBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Sessions/GetActiveInfos', $options);
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Unable to find active session infos: " . $e->getMessage());
+        $response = $this->client->get('Sessions/GetActiveInfos', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -84,22 +85,21 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
      */
     public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Sessions/Get', $options);
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Unable to find sessions: " . $e->getMessage());
+        $response = $this->client->get('Sessions/Get', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -158,21 +158,20 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
      */
     public function getActive($limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $options = ['$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Sessions/GetActive', $options);
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Unable to get all active sessions: " . $e->getMessage());
+        $response = $this->client->get('Sessions/GetActive', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -180,21 +179,21 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
      */
     public function getActiveInfos($limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $options = ['$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Sessions/GetActiveInfos', $options);
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Unable to get all active session infos: " . $e->getMessage());
+        $response = $this->client->get('Sessions/GetActiveInfos', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -212,6 +211,6 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
      */
     public function make(array $attributes)
     {
-        throw new Exception("You can't make up a session");
+        throw new NotImplementedException("You can't make up a session");
     }
 }

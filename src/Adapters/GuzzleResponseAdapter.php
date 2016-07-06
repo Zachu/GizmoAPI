@@ -22,7 +22,8 @@ class GuzzleResponseAdapter implements HttpResponse
     {
         if (!is_array($this->getBody())) {
             throw new UnexpectedResponseException(
-                "Unexpected response body " . gettype($this->getBody()) . ". Expecting array"
+                "Unexpected response body " . gettype($this->getBody())
+                . ". Expecting array"
             );
         }
     }
@@ -31,7 +32,8 @@ class GuzzleResponseAdapter implements HttpResponse
     {
         if (!is_bool($this->getBody())) {
             throw new UnexpectedResponseException(
-                "Unexpected response body " . gettype($this->getBody()) . ". Expecting boolean"
+                "Unexpected response body " . gettype($this->getBody())
+                . ". Expecting boolean"
             );
         }
     }
@@ -40,7 +42,8 @@ class GuzzleResponseAdapter implements HttpResponse
     {
         if ($this->getBody() != '') {
             throw new UnexpectedResponseException(
-                "Unexpected response body " . gettype($this->getBody()) . ". Expecting none"
+                "Unexpected response body " . gettype($this->getBody())
+                . ". Expecting none"
             );
         }
     }
@@ -49,7 +52,8 @@ class GuzzleResponseAdapter implements HttpResponse
     {
         if (!is_int($this->getBody())) {
             throw new UnexpectedResponseException(
-                "Unexpected response body " . gettype($this->getBody()) . ". Expecting integer"
+                "Unexpected response body " . gettype($this->getBody())
+                . ". Expecting integer"
             );
         }
     }
@@ -72,7 +76,8 @@ class GuzzleResponseAdapter implements HttpResponse
     {
         if (!is_string($this->getBody())) {
             throw new UnexpectedResponseException(
-                "Unexpected response body " . gettype($body) . ". Expecting string"
+                "Unexpected response body " . gettype($this->getBody())
+                . ". Expecting string"
             );
         }
     }
@@ -123,7 +128,8 @@ class GuzzleResponseAdapter implements HttpResponse
         if (json_last_error() === JSON_ERROR_NONE) {
             return $json;
         } else {
-            throw new UnexpectedResponseException("Json error " . json_last_error_msg());
+            throw new UnexpectedResponseException("Json error "
+                . json_last_error_msg());
         }
     }
 

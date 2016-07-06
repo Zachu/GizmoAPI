@@ -23,8 +23,11 @@ class UserRepositorySpec extends ObjectBehavior
         $this->shouldHaveType('Pisa\GizmoAPI\Repositories\UserRepository');
     }
 
-    public function it_should_get_all_users(HttpClient $client, Container $ioc, User $user)
-    {
+    public function it_should_get_all_users(
+        HttpClient $client,
+        Container $ioc,
+        User $user
+    ) {
         $client->get('Users/Get', [
             '$skip'    => self::$skip,
             '$top'     => self::$top,
@@ -41,8 +44,10 @@ class UserRepositorySpec extends ObjectBehavior
         $this->all(self::$top, self::$skip, self::$orderby)->shouldContain($user);
     }
 
-    public function it_should_return_empty_list_on_get_all_users(HttpClient $client, Container $ioc)
-    {
+    public function it_should_return_empty_list_on_get_all_users(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $client->get('Users/Get', [
             '$skip'    => self::$skip,
             '$top'     => self::$top,
@@ -55,27 +60,35 @@ class UserRepositorySpec extends ObjectBehavior
         $this->all(self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
-    public function it_should_throw_on_all_if_got_unexpected_response(HttpClient $client, Container $ioc)
-    {
+    public function it_should_throw_on_all_if_got_unexpected_response(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $client->get('Users/Get', [
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringAll(self::$top, self::$skip, self::$orderby);
 
         $client->get('Users/Get', [
             '$skip'    => self::$skip,
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringAll(self::$top, self::$skip, self::$orderby);
     }
 
-    public function it_should_find_users_by_parameters(HttpClient $client, Container $ioc)
-    {
+    public function it_should_find_users_by_parameters(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $caseSensitive = false;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -92,13 +105,21 @@ class UserRepositorySpec extends ObjectBehavior
 
         $ioc->make($this->fqnModel())->shouldBeCalled();
 
-        $result = $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
+        $result = $this->findBy(
+            $criteria,
+            $caseSensitive,
+            self::$top,
+            self::$skip,
+            self::$orderby
+        );
         $result->shouldBeArray();
         $result->shouldHaveCount(2);
     }
 
-    public function it_should_find_users_by_case_sensitive_parameters(HttpClient $client, Container $ioc)
-    {
+    public function it_should_find_users_by_case_sensitive_parameters(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $caseSensitive = true;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -115,13 +136,20 @@ class UserRepositorySpec extends ObjectBehavior
 
         $ioc->make($this->fqnModel())->shouldBeCalled();
 
-        $result = $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
+        $result = $this->findBy($criteria,
+            $caseSensitive,
+            self::$top,
+            self::$skip,
+            self::$orderby
+        );
         $result->shouldBeArray();
         $result->shouldHaveCount(2);
     }
 
-    public function it_should_throw_on_find_users_by_parameters_if_got_unexpected_response(HttpClient $client, Container $ioc)
-    {
+    public function it_should_throw_on_find_users_by_parameters_if_got_unexpected_response(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $caseSensitive = false;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -132,8 +160,16 @@ class UserRepositorySpec extends ObjectBehavior
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringFindBy(
+                $criteria,
+                $caseSensitive,
+                self::$top,
+                self::$skip,
+                self::$orderby
+            );
 
         $client->get('Users/Get', [
             '$filter'  => $filter,
@@ -141,12 +177,22 @@ class UserRepositorySpec extends ObjectBehavior
             '$top'     => self::$top,
             '$orderby' => self::$orderby,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringFindBy(
+                $criteria,
+                $caseSensitive,
+                self::$top,
+                self::$skip,
+                self::$orderby
+            );
     }
 
-    public function it_should_return_empty_list_on_find_users_by_parameters(HttpClient $client, Container $ioc)
-    {
+    public function it_should_return_empty_list_on_find_users_by_parameters(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $caseSensitive = false;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -159,13 +205,21 @@ class UserRepositorySpec extends ObjectBehavior
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
 
-        $result = $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
+        $result = $this->findBy($criteria,
+            $caseSensitive,
+            self::$top,
+            self::$skip,
+            self::$orderby
+        );
         $result->shouldBeArray();
         $result->shouldHaveCount(0);
     }
 
-    public function it_should_find_one_user_by_parameters(HttpClient $client, Container $ioc, User $user)
-    {
+    public function it_should_find_one_user_by_parameters(
+        HttpClient $client,
+        Container $ioc,
+        User $user
+    ) {
         $caseSensitive = false;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -183,8 +237,11 @@ class UserRepositorySpec extends ObjectBehavior
         $result->shouldBe($user);
     }
 
-    public function it_should_find_one_user_by_case_sensitive_parameters(HttpClient $client, Container $ioc, User $user)
-    {
+    public function it_should_find_one_user_by_case_sensitive_parameters(
+        HttpClient $client,
+        Container $ioc,
+        User $user
+    ) {
         $caseSensitive = true;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -202,8 +259,10 @@ class UserRepositorySpec extends ObjectBehavior
         $result->shouldBe($user);
     }
 
-    public function it_should_throw_on_find_one_user_by_parameters_if_got_unexpected_response(HttpClient $client, Container $ioc)
-    {
+    public function it_should_throw_on_find_one_user_by_parameters_if_got_unexpected_response(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $caseSensitive = false;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -213,20 +272,26 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'   => 0,
             '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringFindOneBy($criteria, $caseSensitive);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringFindOneBy($criteria, $caseSensitive);
 
         $client->get('Users/Get', [
             '$filter' => $filter,
             '$skip'   => 0,
             '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringFindOneBy($criteria, $caseSensitive);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringFindOneBy($criteria, $caseSensitive);
     }
 
-    public function it_should_return_false_when_no_user_is_found_by_parameters(HttpClient $client, Container $ioc)
-    {
+    public function it_should_return_false_when_no_user_is_found_by_parameters(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $caseSensitive = false;
         $criteria      = ['LastName' => 'Tester'];
         $filter        = $this->criteriaToFilter($criteria, $caseSensitive);
@@ -241,8 +306,11 @@ class UserRepositorySpec extends ObjectBehavior
         $this->findOneBy($criteria, $caseSensitive)->shouldBe(null);
     }
 
-    public function it_should_get_user(HttpClient $client, Container $ioc, User $user)
-    {
+    public function it_should_get_user(
+        HttpClient $client,
+        Container $ioc,
+        User $user
+    ) {
         $id = 2;
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
@@ -256,8 +324,10 @@ class UserRepositorySpec extends ObjectBehavior
         $this->get($id)->shouldBe($user);
     }
 
-    public function it_should_return_false_if_no_user_is_found_on_get(HttpClient $client, Container $ioc)
-    {
+    public function it_should_return_false_if_no_user_is_found_on_get(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $id = 2;
 
         $client->get('Users/Get', [
@@ -270,8 +340,10 @@ class UserRepositorySpec extends ObjectBehavior
         $this->get($id)->shouldBe(null);
     }
 
-    public function it_should_throw_on_get_user_if_got_unexpected_response(HttpClient $client, Container $ioc)
-    {
+    public function it_should_throw_on_get_user_if_got_unexpected_response(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $id = 2;
 
         $client->get('Users/Get', [
@@ -279,21 +351,20 @@ class UserRepositorySpec extends ObjectBehavior
             '$skip'   => 0,
             '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringGet($id);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGet($id);
 
         $client->get('Users/Get', [
             '$filter' => 'Id eq ' . $id,
             '$skip'   => 0,
             '$top'    => 1,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-        $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringGet($id);
-    }
 
-    public function it_should_throw_on_get_user_if_parameter_is_not_integer(HttpClient $client)
-    {
-        $this->shouldThrow('\Exception')->duringGet('foo');
+        $ioc->make($this->fqnModel())->shouldNotBeCalled();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGet($id);
     }
 
     public function it_should_check_if_user_exists(HttpClient $client)
@@ -317,12 +388,14 @@ class UserRepositorySpec extends ObjectBehavior
         $client->get('Users/UserExist', [
             'userId' => $id,
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->shouldThrow('\Exception')->duringHas($id);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringHas($id);
 
         $client->get('Users/UserExist', [
             'userId' => $id,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-        $this->shouldThrow('\Exception')->duringHas($id);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringHas($id);
     }
     public function it_should_check_if_username_exists(HttpClient $client)
     {
@@ -344,12 +417,14 @@ class UserRepositorySpec extends ObjectBehavior
         $client->get('Users/UserNameExist', [
             'userName' => $userName,
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->shouldThrow('\Exception')->duringHasUserName($userName);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringHasUserName($userName);
 
         $client->get('Users/UserNameExist', [
             'userName' => $userName,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-        $this->shouldThrow('\Exception')->duringHasUserName($userName);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringHasUserName($userName);
     }
     public function it_should_check_if_email_exists(HttpClient $client)
     {
@@ -372,12 +447,14 @@ class UserRepositorySpec extends ObjectBehavior
         $client->get('Users/UserEmailExist', [
             'userEmail' => $email,
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->shouldThrow('\Exception')->duringHasUserEmail($email);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringHasUserEmail($email);
 
         $client->get('Users/UserEmailExist', [
             'userEmail' => $email,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-        $this->shouldThrow('\Exception')->duringHasUserEmail($email);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringHasUserEmail($email);
     }
 
     public function it_should_check_if_loginname_exists(HttpClient $client)
@@ -392,7 +469,6 @@ class UserRepositorySpec extends ObjectBehavior
             'loginName' => $loginName,
         ])->shouldBeCalled()->willReturn(Helper::falseResponse());
         $this->hasLoginName($loginName)->shouldReturn(false);
-
     }
 
     public function it_should_throw_on_has_loginname_if_got_unexpected_response(HttpClient $client)
@@ -402,12 +478,13 @@ class UserRepositorySpec extends ObjectBehavior
         $client->get('Users/LoginNameExist', [
             'loginName' => $loginName,
         ])->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $this->shouldThrow('\Exception')->duringhasLoginName($loginName);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringhasLoginName($loginName);
 
         $client->get('Users/LoginNameExist', [
             'loginName' => $loginName,
         ])->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-        $this->shouldThrow('\Exception')->duringhasLoginName($loginName);
-
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringhasLoginName($loginName);
     }
 }

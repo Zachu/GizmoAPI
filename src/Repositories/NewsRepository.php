@@ -1,5 +1,7 @@
 <?php namespace Pisa\GizmoAPI\Repositories;
 
+use Pisa\GizmoAPI\Exceptions\InternalException;
+
 class NewsRepository extends BaseRepository implements NewsRepositoryInterface
 {
     protected $model = 'NewsInterface';
@@ -10,32 +12,35 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $options = ['$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('News/Get', $options);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $this->makeArray($response->getBody());
-        } catch (Exception $e) {
-            throw new Exception("Unable to get all news: " . $e->getMessage());
+        $response = $this->client->get('News/Get', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $this->makeArray($response->getBody());
     }
 
     /**
      * @throws Exception on error
      * @api
      */
-    public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
-    {
+    public function findBy(
+        array $criteria,
+        $caseSensitive = false,
+        $limit = 30,
+        $skip = 0,
+        $orderBy = null
+    ) {
+        // Gather filtering info to options
         $options = [
             '$filter' => $this->criteriaToFilter($criteria, $caseSensitive),
             '$skip'   => $skip,
@@ -45,19 +50,15 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('News/Get', $options);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $this->makeArray($response->getBody());
-        } catch (EXception $e) {
-            throw new Exception("Unable to find hosts by parameters: " . $e->getMessage());
+        $response = $this->client->get('News/Get', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $this->makeArray($response->getBody());
     }
 
     /**

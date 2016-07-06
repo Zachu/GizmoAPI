@@ -2,8 +2,8 @@
 
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Exceptions\InternalException;
-use Pisa\GizmoAPI\Exceptions\NotFoundException;
 use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
+use Pisa\GizmoAPI\Exceptions\InvalidArgumentException;
 use Pisa\GizmoAPI\Repositories\HostRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\NewsRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
@@ -76,7 +76,7 @@ class Gizmo
                 );
             }
         } else {
-            throw new NotFoundException("No repositories found with name $name");
+            throw new InvalidArgumentException("No repositories found with name $name");
         }
     }
 

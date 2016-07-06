@@ -1,6 +1,7 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
-use Exception;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Exceptions\RequirementException;
 
 class News extends BaseModel implements NewsInterface
 {
@@ -23,26 +24,22 @@ class News extends BaseModel implements NewsInterface
      */
     public function delete()
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("News doesn't even exist");
-            }
-
-            $response = $this->client->delete('News/Delete', [
-                'feedId' => $this->getPrimaryKeyValue(),
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-
-            unset($this->Id);
-            return $this;
-        } catch (Exception $e) {
-            throw new Exception("Unable to delete news: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("News doesn't even exist");
         }
+
+        $response = $this->client->delete('News/Delete', [
+            'feedId' => $this->getPrimaryKeyValue(),
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
+
+        unset($this->Id);
+        return $this;
     }
 
     /**
@@ -50,23 +47,19 @@ class News extends BaseModel implements NewsInterface
      */
     protected function create()
     {
-        try {
-            if ($this->exists()) {
-                throw new Exception("News already exists. Did you mean update?");
-            }
-
-            $response = $this->client->put('News/Add', $this->getAttributes());
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-
-            return $this;
-        } catch (Exception $e) {
-            throw new Exception("Unable to create news: " . $e->getMessage());
+        if ($this->exists()) {
+            throw new RequirementException("News already exists. Did you mean update?");
         }
+
+        $response = $this->client->put('News/Add', $this->getAttributes());
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
+
+        return $this;
     }
 
     /**
@@ -82,7 +75,7 @@ class News extends BaseModel implements NewsInterface
         } elseif (is_string($date) && strtotime($date) !== false) {
             $value = date('c', strtotime($date));
         } else {
-            throw new Exception("Unable to parse attribute EndDate");
+            throw new InvalidArgumentException("Unable to parse attribute EndDate");
         }
 
         $this->attributes['EndDate'] = $value;
@@ -101,7 +94,7 @@ class News extends BaseModel implements NewsInterface
         } elseif (is_string($date) && strtotime($date) !== false) {
             $value = date('c', strtotime($date));
         } else {
-            throw new Exception("Unable to parse attribute StartDate");
+            throw new InvalidArgumentException("Unable to parse attribute StartDate");
         }
 
         $this->attributes['StartDate'] = $value;
@@ -112,22 +105,18 @@ class News extends BaseModel implements NewsInterface
      */
     protected function update()
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("News does not exist. Did you mean create?");
-            }
-
-            $response = $this->client->post('News/Update', $this->getAttributes());
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-
-            return $this;
-        } catch (Exception $e) {
-            throw new Exception("Unable to update news: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("News does not exist. Did you mean create?");
         }
+
+        $response = $this->client->post('News/Update', $this->getAttributes());
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
+
+        return $this;
     }
 }

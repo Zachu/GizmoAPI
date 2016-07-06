@@ -1,6 +1,7 @@
 <?php namespace Pisa\GizmoAPI\Repositories;
 
 use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Exceptions\InternalException;
 
 class ServiceRepository implements ServiceRepositoryInterface
 {
@@ -16,20 +17,15 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function getHardwareId()
     {
-        try {
-            $response = $this->client->get('Service/HardwareId');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertString();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-
-        } catch (Exception $e) {
-            throw new Exception("Could not get hardware id from service: " . $e->getMessage());
+        $response = $this->client->get('Service/HardwareId');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertString();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -37,19 +33,15 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function getLicense()
     {
-        try {
-            $response = $this->client->get('Service/License');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Could not get license from service: " . $e->getMessage());
+        $response = $this->client->get('Service/License');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -57,19 +49,15 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function getModule()
     {
-        try {
-            $response = $this->client->get('Service/Module');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Could not get module from service: " . $e->getMessage());
+        $response = $this->client->get('Service/Module');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -77,19 +65,15 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function getSettings()
     {
-        try {
-            $response = $this->client->get('Service/Settings');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Could not get settings from service: " . $e->getMessage());
+        $response = $this->client->get('Service/Settings');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -97,19 +81,15 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function getStatus()
     {
-        try {
-            $response = $this->client->get('Service/Status');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Could not get status from service: " . $e->getMessage());
+        $response = $this->client->get('Service/Status');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -117,18 +97,14 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function getTime()
     {
-        try {
-            $response = $this->client->get('Service/Time');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-            $response->assertTime();
-            $response->assertStatusCodes(200);
-
-            return strtotime($response->getBody());
-        } catch (Exception $e) {
-            throw new Exception("Could not get time from service: " . $e->getMessage());
+        $response = $this->client->get('Service/Time');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+        $response->assertTime();
+        $response->assertStatusCodes(200);
+
+        return strtotime($response->getBody());
     }
 
     /**
@@ -136,19 +112,15 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function getVersion()
     {
-        try {
-            $response = $this->client->get('Service/Version');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertString();
-            $response->assertStatusCodes(200);
-
-            return $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Could not get version from service: " . $e->getMessage());
+        $response = $this->client->get('Service/Version');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertString();
+        $response->assertStatusCodes(200);
+
+        return $response->getBody();
     }
 
     /**
@@ -156,20 +128,16 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function restart()
     {
-        try {
-            $response = $this->client->get('Service/Restart');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            /**
-             * @todo Check that restart really returns 204 empty
-             */
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-        } catch (Exception $e) {
-            throw new Exception("Could not restart service: " . $e->getMessage());
+        $response = $this->client->get('Service/Restart');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        /**
+         * @todo Check that restart really returns 204 empty
+         */
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
     }
 
     /**
@@ -177,19 +145,15 @@ class ServiceRepository implements ServiceRepositoryInterface
      */
     public function stop()
     {
-        try {
-            $response = $this->client->get('Service/Stop');
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            /**
-             * @todo Check that stop really returns 204 empty
-             */
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-        } catch (Exception $e) {
-            throw new Exception("Could not stop service: " . $e->getMessage());
+        $response = $this->client->get('Service/Stop');
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        /**
+         * @todo Check that stop really returns 204 empty
+         */
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
     }
 }

@@ -1,6 +1,7 @@
 <?php namespace Pisa\GizmoAPI\Repositories;
 
 use Exception;
+use Pisa\GizmoAPI\Exceptions\InternalException;
 
 class HostRepository extends BaseRepository implements HostRepositoryInterface
 {
@@ -12,51 +13,50 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $options = ['$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Hosts/Get', $options);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $this->makeArray($response->getBody());
-        } catch (Exception $e) {
-            throw new Exception("Unable to get all hosts: " . $e->getMessage());
+        $response = $this->client->get('Hosts/Get', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $this->makeArray($response->getBody());
     }
 
     /**
      * @throws Exception on error.
      * @note   $criteria or $orderBy doesn't work with Id column.
      */
-    public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
-    {
+    public function findBy(
+        array $criteria,
+        $caseSensitive = false,
+        $limit = 30,
+        $skip = 0,
+        $orderBy = null
+    ) {
+        // Gather filtering info to options
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
         if ($orderBy !== null) {
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            $response = $this->client->get('Hosts/Get', $options);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertArray();
-            $response->assertStatusCodes(200);
-
-            return $this->makeArray($response->getBody());
-        } catch (Exception $e) {
-            throw new Exception("Unable to find hosts by parameters: " . $e->getMessage());
+        $response = $this->client->get('Hosts/Get', $options);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertArray();
+        $response->assertStatusCodes(200);
+
+        return $this->makeArray($response->getBody());
     }
 
     /**
@@ -78,23 +78,19 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
      */
     public function get($id)
     {
-        try {
-            $response = $this->client->get('Hosts/Get/' . (int) $id);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
+        $response = $this->client->get('Hosts/Get/' . (int) $id);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
 
-            $response->assertStatusCodes(200);
+        $response->assertStatusCodes(200);
 
-            $body = $response->getBody();
-            if ($body === null) {
-                return null;
-            } else {
-                $response->assertArray();
-                return $this->make($body);
-            }
-        } catch (Exception $e) {
-            throw new Exception("Getting a host by id failed. " . $e->getMessage());
+        $body = $response->getBody();
+        if ($body === null) {
+            return null;
+        } else {
+            $response->assertArray();
+            return $this->make($body);
         }
     }
 
@@ -103,19 +99,15 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
      */
     public function getByNumber($hostNumber)
     {
-        try {
-            $response = $this->client->get('Hosts/GetByNumber', ['hostNumber' => $hostNumber]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertStatusCodes(200);
-            $response->assertArray();
-
-            return $this->makeArray($response->getBody());
-        } catch (Exception $e) {
-            throw new Exception("Getting hosts by number failed. " . $e->getMessage());
+        $response = $this->client->get('Hosts/GetByNumber', ['hostNumber' => $hostNumber]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
         }
+
+        $response->assertStatusCodes(200);
+        $response->assertArray();
+
+        return $this->makeArray($response->getBody());
     }
 
     /**

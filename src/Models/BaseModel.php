@@ -1,7 +1,8 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
-use Exception;
 use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Exceptions\ValidationException;
 use Illuminate\Contracts\Validation\Factory as Validator;
 
 abstract class BaseModel implements BaseModelInterface
@@ -126,10 +127,10 @@ abstract class BaseModel implements BaseModelInterface
     public function save()
     {
         if ($this->isValid() === false) {
-            throw new Exception(
+            throw new ValidationException(
                 'Unable to save model: Model instance has invalid fields (' .
-                implode(', ', array_keys($this->getInvalid())) .
-                ')');
+                implode(', ', array_keys($this->getInvalid())) . ')'
+            );
         }
 
         $return = null;
@@ -150,16 +151,12 @@ abstract class BaseModel implements BaseModelInterface
 
     public function validate()
     {
-        try {
-            $this->validator = $this->getValidatorFactory()->make($this->getAttributes(), $this->rules);
-            if (!$this->validator instanceof \Illuminate\Contracts\Validation\Validator) {
-                throw new Exception("Validator factory failed to make validator");
-            }
-
-            return $this->validator->fails();
-        } catch (Exception $e) {
-            throw new Exception("Unable to validate: " . $e->getMessage());
+        $this->validator = $this->getValidatorFactory()->make($this->getAttributes(), $this->rules);
+        if (!$this->validator instanceof \Illuminate\Contracts\Validation\Validator) {
+            throw new InternalException("Validator factory failed to make validator");
         }
+
+        return $this->validator->fails();
     }
 
     /**

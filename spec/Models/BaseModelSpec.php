@@ -51,6 +51,22 @@ class BaseModelSpec extends ObjectBehavior
         $validator->fails()->shouldBeCalled()->willReturn(false);
         $this->isValid()->shouldBe(true);
     }
+
+    public function it_should_prevent_saving_is_validation_fails(Factory $factory, Validator $validator)
+    {
+        $rules = [
+            'name' => 'required',
+        ];
+        $this->setRules($rules);
+
+        // Invalid
+        $factory->make($this->getAttributes(), $rules)->shouldBeCalled()->willReturn($validator);
+        $validator->fails()->shouldBeCalled()->willReturn(true);
+        $validator->failed()->shouldBeCalled()->willReturn(["name" => ["Required" => []]]);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\ValidationException')
+            ->duringSave();
+    }
 }
 
 class ConcreteModel extends BaseModel

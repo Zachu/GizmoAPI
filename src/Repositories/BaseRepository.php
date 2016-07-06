@@ -1,8 +1,8 @@
 <?php namespace Pisa\GizmoAPI\Repositories;
 
-use Exception;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Exceptions\InternalException;
 use Pisa\GizmoAPI\Models\BaseModelInterface as BaseModel;
 
 abstract class BaseRepository implements BaseRepositoryInterface
@@ -31,7 +31,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->ioc    = $ioc;
 
         if (!isset($this->model)) {
-            throw new Exception(get_class($this) . ' should have $model');
+            throw new InternalException(get_class($this)
+                . ' should have $model property set');
         }
     }
 
@@ -65,7 +66,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $filter;
     }
 
-    abstract public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null);
+    abstract public function findBy(
+        array $criteria,
+        $caseSensitive = false,
+        $limit = 30,
+        $skip = 0,
+        $orderBy = null
+    );
 
     abstract public function findOneBy(array $criteria, $caseSensitive = false);
 

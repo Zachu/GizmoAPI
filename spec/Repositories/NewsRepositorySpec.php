@@ -28,43 +28,66 @@ class NewsRepositorySpec extends ObjectBehavior
 
     public function it_should_get_all_news(HttpClient $client, Container $ioc)
     {
-        $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
+        $options = [
+            '$skip'    => self::$skip,
+            '$top'     => self::$top,
+            '$orderby' => self::$orderby,
+        ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
-            Helper::fakeNews(),
-            Helper::fakeNews(),
-        ]));
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(
+            Helper::contentResponse([
+                Helper::fakeNews(),
+                Helper::fakeNews(),
+            ]));
+
         $ioc->make($this->fqnModel())->shouldBeCalled();
-
         $this->all(self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
     }
 
-    public function it_should_return_empty_array_for_all(HttpClient $client, Container $ioc)
-    {
-        $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
-        $ioc->make($this->fqnModel())->shouldNotBeCalled();
+    public function it_should_return_empty_array_for_all(
+        HttpClient $client,
+        Container $ioc
+    ) {
+        $options = [
+            '$skip'    => self::$skip,
+            '$top'     => self::$top,
+            '$orderby' => self::$orderby,
+        ];
 
+        $client->get('News/Get', $options)
+            ->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
+
+        $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->all(self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
     }
 
     public function it_should_throw_on_all_if_got_unexpected_response(HttpClient $client)
     {
-        $options = ['$skip' => self::$skip, '$top' => self::$top, '$orderby' => self::$orderby];
+        $options = [
+            '$skip'    => self::$skip,
+            '$top'     => self::$top,
+            '$orderby' => self::$orderby,
+        ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-        $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
+        $client->get('News/Get', $options)
+            ->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringAll(self::$top, self::$skip, self::$orderby);
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringAll(self::$top, self::$skip, self::$orderby);
+        $client->get('News/Get', $options)
+            ->shouldBeCalled()->willReturn(Helper::trueResponse());
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringAll(self::$top, self::$skip, self::$orderby);
     }
 
     //
     // FindBy
     //
 
-    public function it_should_find_news_by_parameters(HttpClient $client, Container $ioc)
-    {
+    public function it_should_find_news_by_parameters(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $criteria      = ['Title' => 'Foo'];
         $caseSensitive = false;
 
@@ -75,17 +98,26 @@ class NewsRepositorySpec extends ObjectBehavior
             '$orderby' => self::$orderby,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
-            Helper::fakeNews(),
-            Helper::fakeNews(),
-        ]));
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(
+            Helper::contentResponse([
+                Helper::fakeNews(),
+                Helper::fakeNews(),
+            ]));
 
         $ioc->make($this->fqnModel())->shouldBeCalled();
-        $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(2);
+        $this->findBy(
+            $criteria,
+            $caseSensitive,
+            self::$top,
+            self::$skip,
+            self::$orderby
+        )->shouldHaveCount(2);
     }
 
-    public function it_should_return_empty_array_for_findby(HttpClient $client, Container $ioc)
-    {
+    public function it_should_return_empty_array_for_findby(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $criteria      = ['Title' => 'Foo'];
         $caseSensitive = true;
 
@@ -96,14 +128,23 @@ class NewsRepositorySpec extends ObjectBehavior
             '$orderby' => self::$orderby,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
+        $client->get('News/Get', $options)
+            ->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
 
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->findBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby)->shouldHaveCount(0);
+        $this->findBy(
+            $criteria,
+            $caseSensitive,
+            self::$top,
+            self::$skip,
+            self::$orderby
+        )->shouldHaveCount(0);
     }
 
-    public function it_should_throw_on_findby_if_got_unexpected_response(HttpClient $client, Container $ioc)
-    {
+    public function it_should_throw_on_findby_if_got_unexpected_response(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $criteria      = ['Title' => 'Foo'];
         $caseSensitive = false;
 
@@ -114,21 +155,39 @@ class NewsRepositorySpec extends ObjectBehavior
             '$orderby' => self::$orderby,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
+        $client->get('News/Get', $options)
+            ->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringFindBy(
+                $criteria,
+                $caseSensitive,
+                self::$top,
+                self::$skip,
+                self::$orderby
+            );
 
         $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::trueResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
-        $this->shouldThrow('\Exception')->duringFindBy($criteria, $caseSensitive, self::$top, self::$skip, self::$orderby);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringFindBy(
+                $criteria,
+                $caseSensitive,
+                self::$top,
+                self::$skip,
+                self::$orderby
+            );
     }
 
     //
     // Find One By
     //
 
-    public function it_should_find_one_by_parameters(HttpClient $client, Container $ioc, NewsInterface $news)
-    {
+    public function it_should_find_one_by_parameters(
+        HttpClient $client,
+        Container $ioc,
+        NewsInterface $news
+    ) {
         $criteria      = ['Title' => 'Foo'];
         $caseSensitive = false;
 
@@ -138,16 +197,19 @@ class NewsRepositorySpec extends ObjectBehavior
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
-            Helper::fakeNews(),
-        ]));
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(
+            Helper::contentResponse([
+                Helper::fakeNews(),
+            ]));
 
         $ioc->make($this->fqnModel())->shouldBeCalled()->willReturn($news);
         $this->findOneBy($criteria, $caseSensitive)->shouldReturn($news);
     }
 
-    public function it_should_return_null_if_nothing_was_found_on_find_one_by_parameters(HttpClient $client, Container $ioc)
-    {
+    public function it_should_return_null_if_nothing_was_found_on_find_one_by_parameters(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $criteria      = ['Title' => 'Foo'];
         $caseSensitive = false;
 
@@ -157,7 +219,8 @@ class NewsRepositorySpec extends ObjectBehavior
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
+        $client->get('News/Get', $options)
+            ->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
 
         $this->findOneBy($criteria, $caseSensitive)->shouldReturn(null);
@@ -167,8 +230,11 @@ class NewsRepositorySpec extends ObjectBehavior
     // Get
     //
 
-    public function it_should_get_news_by_id(HttpClient $client, Container $ioc, NewsInterface $news)
-    {
+    public function it_should_get_news_by_id(
+        HttpClient $client,
+        Container $ioc,
+        NewsInterface $news
+    ) {
         $id            = 3;
         $criteria      = ['Id' => $id];
         $caseSensitive = true;
@@ -179,9 +245,10 @@ class NewsRepositorySpec extends ObjectBehavior
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
-            Helper::fakeNews(['Id' => $id]),
-        ]));
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(
+            Helper::contentResponse([
+                Helper::fakeNews(['Id' => $id]),
+            ]));
 
         $ioc->make($this->fqnModel())->shouldBeCalled()->willReturn($news);
         $this->get($id)->shouldReturn($news);
@@ -191,8 +258,11 @@ class NewsRepositorySpec extends ObjectBehavior
     // Has
     //
 
-    public function it_should_return_true_if_news_exist_on_id(HttpClient $client, Container $ioc, NewsInterface $news)
-    {
+    public function it_should_return_true_if_news_exist_on_id(
+        HttpClient $client,
+        Container $ioc,
+        NewsInterface $news
+    ) {
         $id            = 3;
         $criteria      = ['Id' => $id];
         $caseSensitive = true;
@@ -203,15 +273,19 @@ class NewsRepositorySpec extends ObjectBehavior
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::contentResponse([
-            Helper::fakeNews(['Id' => $id]),
-        ]));
+        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(
+            Helper::contentResponse([
+                Helper::fakeNews(['Id' => $id]),
+            ]));
+
         $ioc->make($this->fqnModel())->shouldBeCalled()->willReturn($news);
         $this->has($id)->shouldReturn(true);
     }
 
-    public function it_should_return_false_if_news_doesnt_exist_on_id(HttpClient $client, Container $ioc)
-    {
+    public function it_should_return_false_if_news_doesnt_exist_on_id(
+        HttpClient $client,
+        Container $ioc
+    ) {
         $id            = 3;
         $criteria      = ['Id' => $id];
         $caseSensitive = true;
@@ -222,7 +296,9 @@ class NewsRepositorySpec extends ObjectBehavior
             '$top'    => 1,
         ];
 
-        $client->get('News/Get', $options)->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
+        $client->get('News/Get', $options)
+            ->shouldBeCalled()->willReturn(Helper::emptyArrayResponse());
+
         $ioc->make($this->fqnModel())->shouldNotBeCalled();
         $this->has($id)->shouldReturn(false);
     }

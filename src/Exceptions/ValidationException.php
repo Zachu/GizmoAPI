@@ -1,9 +1,9 @@
 <?php namespace Pisa\GizmoAPI\Exceptions;
 
 /**
- * Exception when a validation fails
+ * Exception when an object validation fails
  */
-class ValidationException extends \DomainException implements GizmoAPIException
+class ValidationException extends RequirementException implements GizmoAPIException
 {
 
 }
