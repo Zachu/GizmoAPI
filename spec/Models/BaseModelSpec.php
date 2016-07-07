@@ -1,10 +1,10 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
+use PhpSpec\ObjectBehavior;
+use Pisa\GizmoAPI\Models\BaseModel;
+use Pisa\GizmoAPI\Contracts\HttpClient;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Contracts\Validation\Validator;
-use PhpSpec\ObjectBehavior;
-use Pisa\GizmoAPI\Contracts\HttpClient;
-use Pisa\GizmoAPI\Models\BaseModel;
 
 class BaseModelSpec extends ObjectBehavior
 {
@@ -50,6 +50,22 @@ class BaseModelSpec extends ObjectBehavior
         $factory->make($this->getAttributes(), $rules)->shouldBeCalled()->willReturn($validator);
         $validator->fails()->shouldBeCalled()->willReturn(false);
         $this->isValid()->shouldBe(true);
+    }
+
+    public function it_should_prevent_saving_is_validation_fails(Factory $factory, Validator $validator)
+    {
+        $rules = [
+            'name' => 'required',
+        ];
+        $this->setRules($rules);
+
+        // Invalid
+        $factory->make($this->getAttributes(), $rules)->shouldBeCalled()->willReturn($validator);
+        $validator->fails()->shouldBeCalled()->willReturn(true);
+        $validator->failed()->shouldBeCalled()->willReturn(["name" => ["Required" => []]]);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\ValidationException')
+            ->duringSave();
     }
 }
 

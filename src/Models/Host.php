@@ -1,7 +1,10 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
-use Exception;
 use Pisa\GizmoAPI\Repositories\BaseRepository;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Exceptions\RequirementException;
+use Pisa\GizmoAPI\Exceptions\NotImplementedException;
+use Pisa\GizmoAPI\Exceptions\InvalidArgumentException;
 
 class Host extends BaseModel implements HostInterface
 {
@@ -116,34 +119,20 @@ class Host extends BaseModel implements HostInterface
      */
     public function UINotify($message, $parameters = [])
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } else {
-                $response = $this->client->post('Host/UINotify', array_merge($this->defaultNotifyParameters, $parameters, [
-                    'hostId'  => $this->getPrimaryKeyValue(),
-                    'message' => (string) $message,
-                ]));
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertInteger();
-                $response->assertStatusCodes(200);
-                return $response->getBody();
-
-                /**
-                 *  @todo Fiddle with the responses
-                 *  Old code looks like this:
-                 *  if (is_int($response)) {
-                 *    return true;
-                 *  } else {
-                 *    return false;
-                 *  }
-                 */
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } else {
+            $response = $this->client->post('Host/UINotify', array_merge($this->defaultNotifyParameters, $parameters, [
+                'hostId'  => $this->getPrimaryKeyValue(),
+                'message' => (string) $message,
+            ]));
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to write UI notify: " . $e->getMessage());
+
+            $response->assertInteger();
+            $response->assertStatusCodes(200);
+            return $response->getBody();
         }
     }
 
@@ -160,27 +149,23 @@ class Host extends BaseModel implements HostInterface
      */
     public function createProcess($startInfo)
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } elseif (!is_array($startInfo)) {
-                throw new Exception("Start info has to be an array. Try giving a FileName parameter for example");
-            } else {
-                $response = $this->client->post('Host/CreateProcess', array_merge(
-                    $startInfo,
-                    ['hostId' => $this->getPrimaryKeyValue()]
-                ));
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertInteger();
-                $response->assertStatusCodes(200);
-
-                return $response->getBody();
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } elseif (!is_array($startInfo)) {
+            throw new InvalidArgumentException("Start info has to be an array. Try giving a FileName parameter for example");
+        } else {
+            $response = $this->client->post('Host/CreateProcess', array_merge(
+                $startInfo,
+                ['hostId' => $this->getPrimaryKeyValue()]
+            ));
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to create a process: " . $e->getMessage());
+
+            $response->assertInteger();
+            $response->assertStatusCodes(200);
+
+            return $response->getBody();
         }
     }
 
@@ -191,7 +176,8 @@ class Host extends BaseModel implements HostInterface
      */
     public function delete()
     {
-        throw new Exception("Host cannot be deleted via API. Host is deleted by via the server service");
+        throw new NotImplementedException("Host cannot be deleted via API. "
+            . "Host is deleted by the server service");
     }
 
     /** @internal Basically for testing */
@@ -206,51 +192,43 @@ class Host extends BaseModel implements HostInterface
      */
     public function getLastUserLoginTime()
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } else {
-                $response = $this->client->get('Host/GetLastUserLogin', [
-                    'hostId' => $this->getPrimaryKeyValue(),
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertTime();
-                $response->assertStatusCodes(200);
-
-                return strtotime($response->getBody());
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } else {
+            $response = $this->client->get('Host/GetLastUserLogin', [
+                'hostId' => $this->getPrimaryKeyValue(),
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to last login time: " . $e->getMessage());
+
+            $response->assertTime();
+            $response->assertStatusCodes(200);
+
+            return strtotime($response->getBody());
         }
     }
 
     /**
      * @throws  Exception on error
-     * @note: Renamed function to getLastUserLogoutTime instead of GizmoAPI's GetLastUserLogout to better reflect what the method does.
+     * @note    Renamed function to getLastUserLogoutTime instead of GizmoAPI's GetLastUserLogout to better reflect what the method does.
      */
     public function getLastUserLogoutTime()
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } else {
-                $response = $this->client->get('Host/GetLastUserLogout', [
-                    'hostId' => $this->getPrimaryKeyValue(),
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertTime();
-                $response->assertStatusCodes(200);
-
-                return strtotime($response->getBody());
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } else {
+            $response = $this->client->get('Host/GetLastUserLogout', [
+                'hostId' => $this->getPrimaryKeyValue(),
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to last logout time: " . $e->getMessage());
+
+            $response->assertTime();
+            $response->assertStatusCodes(200);
+
+            return strtotime($response->getBody());
         }
     }
 
@@ -259,27 +237,23 @@ class Host extends BaseModel implements HostInterface
      */
     public function getProcess($processId)
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } elseif (!is_int($processId)) {
-                throw new Exception("Process id has to be integer");
-            } else {
-                $response = $this->client->get('Host/GetProcess', [
-                    'hostId'    => $this->getPrimaryKeyValue(),
-                    'processId' => (int) $processId,
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertArray();
-                $response->assertStatusCodes(200);
-
-                return $response->getBody();
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } elseif (!is_int($processId)) {
+            throw new InvalidArgumentException("Process id has to be integer");
+        } else {
+            $response = $this->client->get('Host/GetProcess', [
+                'hostId'    => $this->getPrimaryKeyValue(),
+                'processId' => (int) $processId,
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to get processes by id: " . $e->getMessage());
+
+            $response->assertArray();
+            $response->assertStatusCodes(200);
+
+            return $response->getBody();
         }
     }
 
@@ -288,8 +262,8 @@ class Host extends BaseModel implements HostInterface
      */
     public function getProcesses(array $criteria = [], $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
     {
+        // Gather filtering info to options
         $options = ['$skip' => $skip, '$top' => $limit];
-
         if (!empty($criteria)) {
             $options['$filter'] = BaseRepository::criteriaToFilter($criteria, $caseSensitive);
         }
@@ -297,25 +271,21 @@ class Host extends BaseModel implements HostInterface
             $options['$orderby'] = $orderBy;
         }
 
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } else {
-                $response = $this->client->get('Host/GetProcesses', array_merge(
-                    $options,
-                    ['hostId' => $this->getPrimaryKeyValue()]
-                ));
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertArray();
-                $response->assertStatusCodes(200);
-
-                return $response->getBody();
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } else {
+            $response = $this->client->get('Host/GetProcesses', array_merge(
+                $options,
+                ['hostId' => $this->getPrimaryKeyValue()]
+            ));
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to list processes: " . $e->getMessage());
+
+            $response->assertArray();
+            $response->assertStatusCodes(200);
+
+            return $response->getBody();
         }
     }
 
@@ -324,27 +294,23 @@ class Host extends BaseModel implements HostInterface
      */
     public function getProcessesByName($processName)
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } elseif (!is_string($processName)) {
-                throw new Exception("Process name has to be string");
-            } else {
-                $response = $this->client->get('Host/GetProcesses', [
-                    'hostId'      => $this->getPrimaryKeyValue(),
-                    'processName' => (string) $processName,
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertArray();
-                $response->assertStatusCodes(200);
-
-                return $response->getBody();
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } elseif (!is_string($processName)) {
+            throw new InvalidArgumentException("Process name has to be string");
+        } else {
+            $response = $this->client->get('Host/GetProcesses', [
+                'hostId'      => $this->getPrimaryKeyValue(),
+                'processName' => (string) $processName,
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to get processes by name: " . $e->getMessage());
+
+            $response->assertArray();
+            $response->assertStatusCodes(200);
+
+            return $response->getBody();
         }
     }
 
@@ -354,28 +320,25 @@ class Host extends BaseModel implements HostInterface
      */
     public function isFree()
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } else {
-                $response = $this->client->get('Sessions/GetActive');
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertArray();
-                $response->assertStatusCodes(200);
-
-                foreach ($response->getBody() as $row) {
-                    if (isset($row['HostId']) && (int) $row['HostId'] === (int) $this->getPrimaryKeyValue()) {
-                        return false;
-                    }
-                }
-
-                return true;
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } else {
+            $response = $this->client->get('Sessions/GetActive');
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to get free status: " . $e->getMessage());
+
+            $response->assertArray();
+            $response->assertStatusCodes(200);
+
+            // Find if this host is in the active session table
+            foreach ($response->getBody() as $row) {
+                if (isset($row['HostId']) && (int) $row['HostId'] === (int) $this->getPrimaryKeyValue()) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 
@@ -394,27 +357,23 @@ class Host extends BaseModel implements HostInterface
      */
     public function setLockState($isLocked)
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } elseif (!is_bool($isLocked)) {
-                throw new Exception("Provided lock state isn't boolean");
-            } else {
-                $response = $this->client->post('Host/SetLockState', [
-                    'hostId' => $this->getPrimaryKeyValue(),
-                    'locked' => ($isLocked ? 'true' : 'false'),
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
-
-                $this->IsLocked = $isLocked;
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } elseif (!is_bool($isLocked)) {
+            throw new InvalidArgumentException("Provided lock state isn't boolean");
+        } else {
+            $response = $this->client->post('Host/SetLockState', [
+                'hostId' => $this->getPrimaryKeyValue(),
+                'locked' => ($isLocked ? 'true' : 'false'),
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to set lock state: " . $e->getMessage());
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
+
+            $this->IsLocked = $isLocked;
         }
     }
 
@@ -424,27 +383,23 @@ class Host extends BaseModel implements HostInterface
      */
     public function setOrderState($isOutOfOrder)
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } elseif (!is_bool($isOutOfOrder)) {
-                throw new Exception("Provided order state isn't boolean");
-            } else {
-                $response = $this->client->post('Host/SetOrderState', [
-                    'hostId'  => $this->getPrimaryKeyValue(),
-                    'inOrder' => (!$isOutOfOrder ? 'true' : 'false'),
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
-
-                $this->IsOutOfOrder = $isOutOfOrder;
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } elseif (!is_bool($isOutOfOrder)) {
+            throw new InvalidArgumentException("Provided order state isn't boolean");
+        } else {
+            $response = $this->client->post('Host/SetOrderState', [
+                'hostId'  => $this->getPrimaryKeyValue(),
+                'inOrder' => (!$isOutOfOrder ? 'true' : 'false'),
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to set order state: " . $e->getMessage());
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
+
+            $this->IsOutOfOrder = $isOutOfOrder;
         }
     }
 
@@ -454,27 +409,23 @@ class Host extends BaseModel implements HostInterface
      */
     public function setSecurityState($isEnabled)
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } elseif (!is_bool($isEnabled)) {
-                throw new Exception("Provided security state isn't boolean");
-            } else {
-                $response = $this->client->post('Host/SetSecurityState', [
-                    'hostId'  => $this->getPrimaryKeyValue(),
-                    'enabled' => ($isEnabled ? 'true' : 'false'),
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
-
-                $this->IsSecurityEnabled = $isEnabled;
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } elseif (!is_bool($isEnabled)) {
+            throw new InvalidArgumentException("Provided security state isn't boolean");
+        } else {
+            $response = $this->client->post('Host/SetSecurityState', [
+                'hostId'  => $this->getPrimaryKeyValue(),
+                'enabled' => ($isEnabled ? 'true' : 'false'),
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to set security state: " . $e->getMessage());
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
+
+            $this->IsSecurityEnabled = $isEnabled;
         }
     }
 
@@ -483,25 +434,22 @@ class Host extends BaseModel implements HostInterface
      */
     public function terminateProcess($killInfo)
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } elseif (!is_array($killInfo)) {
-                throw new Exception("Kill info has to be an array. Try giving a FileName parameter for example");
-            } else {
-                $response = $this->client->post('Host/TerminateProcess', array_merge(
-                    $killInfo,
-                    ['hostId' => $this->getPrimaryKeyValue()]
-                ));
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } elseif (!is_array($killInfo)) {
+            throw new InvalidArgumentException('Kill info has to be an array. '
+                . 'Try giving a FileName parameter for example');
+        } else {
+            $response = $this->client->post('Host/TerminateProcess', array_merge(
+                $killInfo,
+                ['hostId' => $this->getPrimaryKeyValue()]
+            ));
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to terminate processes: " . $e->getMessage());
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
         }
     }
 
@@ -513,24 +461,20 @@ class Host extends BaseModel implements HostInterface
      */
     public function userLogout()
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } else {
-                $response = $this->client->post('Host/UserLogout', [
-                    'hostId' => $this->getPrimaryKeyValue(),
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
-
-                return true;
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } else {
+            $response = $this->client->post('Host/UserLogout', [
+                'hostId' => $this->getPrimaryKeyValue(),
+            ]);
+            if ($response === null) {
+                throw new InternalException('Response failed');
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to log user out: " . $e->getMessage());
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
+
+            return true;
         }
     }
 
@@ -541,7 +485,8 @@ class Host extends BaseModel implements HostInterface
      */
     protected function create()
     {
-        throw new Exception("New host cannot be created via API. Host is created by connecting new host client to the server service");
+        throw new NotImplementedException('New host cannot be created via API. '
+            . 'Host is created by connecting new host client to the server service');
     }
 
     /**
@@ -551,22 +496,19 @@ class Host extends BaseModel implements HostInterface
      */
     protected function update()
     {
-        try {
-            foreach ($this->changed() as $key => $newValue) {
-                if ($key == 'IsOutOfOrder') {
-                    $this->setOrderState($newValue);
-                } elseif ($key == 'IsSecurityEnabled') {
-                    $this->setSecurityState($newValue);
-                } elseif ($key == 'IsLocked') {
-                    $this->setLockState($newValue);
-                } else {
-                    throw new Exception("Host attributes are only changeable from server service.");
-                }
+        foreach ($this->changed() as $key => $newValue) {
+            if ($key == 'IsOutOfOrder') {
+                $this->setOrderState($newValue);
+            } elseif ($key == 'IsSecurityEnabled') {
+                $this->setSecurityState($newValue);
+            } elseif ($key == 'IsLocked') {
+                $this->setLockState($newValue);
+            } else {
+                throw new NotImplementedException("Host attributes are only " .
+                    "changeable from server service.");
             }
-
-            return $this;
-        } catch (Exception $e) {
-            throw new Exception("Unable to update host: " . $e->getMessage());
         }
+
+        return $this;
     }
 }

@@ -1,11 +1,11 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
+use Prophecy\Argument;
+use PhpSpec\ObjectBehavior;
+use spec\Pisa\GizmoAPI\Helper;
+use Pisa\GizmoAPI\Contracts\HttpClient;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Contracts\Validation\Validator;
-use PhpSpec\ObjectBehavior;
-use Pisa\GizmoAPI\Contracts\HttpClient;
-use Prophecy\Argument;
-use spec\Pisa\GizmoAPI\Helper;
 
 class HostSpec extends ObjectBehavior
 {
@@ -35,14 +35,16 @@ class HostSpec extends ObjectBehavior
     {
         $this->beConstructedWith($client, $factory, []);
 
-        $this->shouldThrow('\Exception')->duringSave();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\NotImplementedException')
+            ->duringSave();
     }
 
     public function it_should_throw_on_update(Factory $factory)
     {
         $this->HostName = 'Test';
 
-        $this->shouldThrow('\Exception')->duringSave();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\NotImplementedException')
+            ->duringSave();
     }
 
     //
@@ -51,7 +53,8 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_throw_on_delete()
     {
-        $this->shouldThrow('\Exception')->duringDelete();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\NotImplementedException')
+            ->duringDelete();
     }
 
     //
@@ -84,10 +87,14 @@ class HostSpec extends ObjectBehavior
         $this->getProcesses([], true, $limit, $skip)->shouldHaveCount(2);
     }
 
-    public function it_should_throw_on_get_prorcesses_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_prorcesses_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringGetProcesses();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringGetProcesses();
     }
 
     public function it_should_throw_on_get_processes_if_got_unexpected_response(HttpClient $client)
@@ -100,7 +107,9 @@ class HostSpec extends ObjectBehavior
             '$top'   => $limit,
             'hostId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringGetProcesses([], true, $limit, $skip);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGetProcesses([], true, $limit, $skip);
     }
 
     //
@@ -119,11 +128,15 @@ class HostSpec extends ObjectBehavior
         $this->getProcess($pid)->shouldHaveCount(0);
     }
 
-    public function it_should_throw_on_get_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_process_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $pid = 1;
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringGetProcess($pid);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringGetProcess($pid);
     }
 
     public function it_should_throw_on_get_process_if_got_unexpected_response(HttpClient $client)
@@ -133,7 +146,9 @@ class HostSpec extends ObjectBehavior
             'hostId'    => $this->getPrimaryKeyValue(),
             'processId' => $pid,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringGetProcess($pid);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGetProcess($pid);
     }
 
     //
@@ -166,15 +181,19 @@ class HostSpec extends ObjectBehavior
     {
         $pname = ['process'];
 
-        $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InvalidArgumentException')
+            ->duringGetProcessesByName($pname);
     }
 
-    public function it_should_throw_on_get_processes_by_name_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_processes_by_name_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $pname = 'process';
         $this->beConstructedWith($client, $factory, []);
 
-        $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringGetProcessesByName($pname);
     }
 
     public function it_should_throw_on_get_processes_by_name_if_got_unexpected_response(HttpClient $client)
@@ -185,7 +204,8 @@ class HostSpec extends ObjectBehavior
             'processName' => $pname,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringGetProcessesByName($pname);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGetProcessesByName($pname);
     }
 
     //
@@ -206,13 +226,17 @@ class HostSpec extends ObjectBehavior
         $this->CreateProcess($startInfo)->shouldBe($randomPid);
     }
 
-    public function it_should_throw_on_create_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_create_process_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $startInfo = [
             'FileName' => 'foo',
         ];
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringCreateProcess($startInfo);
     }
 
     public function it_should_throw_on_create_process_on_unexpected_response(HttpClient $client)
@@ -224,17 +248,20 @@ class HostSpec extends ObjectBehavior
         $client->post("Host/CreateProcess", array_merge($startInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
         ]))->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringCreateProcess($startInfo);
 
         $client->post("Host/CreateProcess", array_merge($startInfo, [
             'hostId' => $this->getPrimaryKeyValue(),
         ]))->shouldBeCalled()->willReturn(Helper::internalServerErrorResponse());
-        $this->shouldThrow('\Exception')->duringCreateProcess($startInfo);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringCreateProcess($startInfo);
     }
 
     public function it_should_throw_on_create_process_when_not_given_an_array()
     {
-        $this->shouldThrow('\Exception')->duringCreateProcess("FileName.exe");
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InvalidArgumentException')
+            ->duringCreateProcess("FileName.exe");
     }
 
     //
@@ -254,13 +281,17 @@ class HostSpec extends ObjectBehavior
         $this->terminateProcess($killInfo);
     }
 
-    public function it_should_throw_on_terminate_process_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_terminate_process_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $killInfo = [
             'FileName' => 'foo',
         ];
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringTerminateProcess($killInfo);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringTerminateProcess($killInfo);
     }
 
     public function it_should_throw_on_terminate_process_on_unexpected_response(HttpClient $client)
@@ -273,12 +304,14 @@ class HostSpec extends ObjectBehavior
             'hostId' => $this->getPrimaryKeyValue(),
         ]))->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringTerminateProcess($killInfo);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringTerminateProcess($killInfo);
     }
 
     public function it_should_throw_on_terminate_process_when_not_given_an_array()
     {
-        $this->shouldThrow('\Exception')->duringTerminateProcess("FileName.exe");
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InvalidArgumentException')
+            ->duringTerminateProcess("FileName.exe");
     }
 
     //
@@ -294,10 +327,14 @@ class HostSpec extends ObjectBehavior
         $this->getLastUserLoginTime()->shouldBeInteger();
     }
 
-    public function it_should_throw_on_get_last_user_login_time_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_last_user_login_time_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringGetLastUserLoginTime();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringGetLastUserLoginTime();
     }
 
     public function it_should_throw_on_get_last_user_login_time_if_got_unexpected_response(HttpClient $client)
@@ -306,7 +343,8 @@ class HostSpec extends ObjectBehavior
             'hostId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringGetLastUserLoginTime();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGetLastUserLoginTime();
     }
 
     //
@@ -322,10 +360,12 @@ class HostSpec extends ObjectBehavior
         $this->getLastUserLogoutTime()->shouldBeInteger();
     }
 
-    public function it_should_throw_on_get_last_user_logout_time_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_last_user_logout_time_if_model_doesnt_exist(
+        HttpClient $client, Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringGetLastUserLogoutTime();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringGetLastUserLogoutTime();
     }
 
     public function it_should_throw_on_get_last_user_logout_time_if_got_unexpected_response(HttpClient $client)
@@ -334,7 +374,8 @@ class HostSpec extends ObjectBehavior
             'hostId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringGetLastUserLogoutTime();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGetLastUserLogoutTime();
     }
 
     //
@@ -350,10 +391,13 @@ class HostSpec extends ObjectBehavior
         $this->userLogout()->shouldBe(true);
     }
 
-    public function it_should_throw_on_logout_user_if_model_doesnt_exists(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_logout_user_if_model_doesnt_exists(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringUserLogout();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringUserLogout();
     }
 
     public function it_should_throw_on_logout_user_if_got_unexpected_response(HttpClient $client)
@@ -362,7 +406,8 @@ class HostSpec extends ObjectBehavior
             'hostId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringUserLogout();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringUserLogout();
     }
 
     //
@@ -381,10 +426,13 @@ class HostSpec extends ObjectBehavior
         $this->UINotify($message)->shouldBe(0);
     }
 
-    public function it_should_throw_on_ui_notify_if_model_doesnt_exists(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_ui_notify_if_model_doesnt_exists(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringUINotify('Test');
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringUINotify('Test');
     }
 
     public function it_should_throw_on_ui_notify_if_got_unexpected_response(HttpClient $client)
@@ -392,20 +440,27 @@ class HostSpec extends ObjectBehavior
         $message    = 'Test';
         $parameters = [];
 
-        $client->post("Host/UINotify", array_merge($this->getDefaultNotifyParameters()->getWrappedObject(), $parameters, [
-            'hostId'  => $this->getPrimaryKeyValue(),
-            'message' => $message,
-        ]))->shouldBeCalled()->willReturn(Helper::trueResponse());
+        $client->post("Host/UINotify", array_merge(
+            $this->getDefaultNotifyParameters()->getWrappedObject(),
+            $parameters,
+            [
+                'hostId'  => $this->getPrimaryKeyValue(),
+                'message' => $message,
+            ]
+        ))->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringUINotify($message);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringUINotify($message);
     }
 
     //
     // Set lock state
     //
 
-    public function it_should_set_lock_state_to_false(HttpClient $client, Factory $factory)
-    {
+    public function it_should_set_lock_state_to_false(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "false",
@@ -418,7 +473,6 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_set_lock_state_to_true(HttpClient $client)
     {
-        echo "FOO?";
         $client->post("Host/SetLockState", [
             'hostId' => $this->getPrimaryKeyValue(),
             'locked' => "true",
@@ -431,7 +485,8 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_throw_on_lock_state_when_setting_other_than_boolean()
     {
-        $this->shouldThrow('\Exception')->duringSetLockState("Invalid");
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InvalidArgumentException')
+            ->duringSetLockState("Invalid");
     }
 
     public function it_should_throw_on_lock_state_if_got_unexpected_response(HttpClient $client)
@@ -441,13 +496,17 @@ class HostSpec extends ObjectBehavior
             'locked' => "true",
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringSetLockState(true);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSetLockState(true);
     }
 
-    public function it_should_throw_on_lock_state_if_model_doesnt_exists(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_lock_state_if_model_doesnt_exists(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringSetLockState(true);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringSetLockState(true);
     }
 
     //
@@ -480,7 +539,8 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_throw_on_security_state_when_setting_other_than_boolean()
     {
-        $this->shouldThrow('\Exception')->duringSetSecurityState("Invalid");
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InvalidArgumentException')
+            ->duringSetSecurityState("Invalid");
     }
 
     public function it_should_throw_on_security_state_if_got_unexpected_response(HttpClient $client)
@@ -490,13 +550,17 @@ class HostSpec extends ObjectBehavior
             'enabled' => "true",
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringSetSecurityState(true);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSetSecurityState(true);
     }
 
-    public function it_should_throw_security_state_if_model_doesnt_exists(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_security_state_if_model_doesnt_exists(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringSetSecurityState(true);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringSetSecurityState(true);
     }
 
     //
@@ -529,7 +593,8 @@ class HostSpec extends ObjectBehavior
 
     public function it_should_throw_on_out_of_order_when_setting_other_than_boolean()
     {
-        $this->shouldThrow('\Exception')->duringSetOrderState("Invalid");
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InvalidArgumentException')
+            ->duringSetOrderState("Invalid");
     }
 
     public function it_should_throw_on_out_of_order_if_got_unexpected_response(HttpClient $client)
@@ -539,13 +604,17 @@ class HostSpec extends ObjectBehavior
             'inOrder' => "false",
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringSetOrderState(true);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSetOrderState(true);
     }
 
-    public function it_should_throw_on_out_of_order_if_model_doesnt_exists(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_out_of_order_if_model_doesnt_exists(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringSetOrderState(true);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringSetOrderState(true);
     }
 
     //
@@ -564,15 +633,19 @@ class HostSpec extends ObjectBehavior
 
     }
 
-    public function it_should_throw_on_get_free_state_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_free_state_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, []);
-        $this->shouldThrow('\Exception')->duringIsFree();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringIsFree();
     }
 
     public function it_should_throw_on_get_free_state_if_got_unexpected_response(HttpClient $client)
     {
         $client->get('Sessions/GetActive')->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringIsFree();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringIsFree();
     }
 }

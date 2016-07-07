@@ -9,6 +9,15 @@ trait IdentifiableTrait
     protected $primaryKey = 'Id';
 
     /**
+     * Gets the primary key
+     * @return string
+     */
+    public function getPrimaryKey()
+    {
+        return $this->primaryKey;
+    }
+
+    /**
      * Gets the value of the primary key
      * @return mixed
      */
@@ -19,14 +28,5 @@ trait IdentifiableTrait
         } else {
             return null;
         }
-    }
-
-    /**
-     * Gets the primary key
-     * @return string
-     */
-    public function getPrimaryKey()
-    {
-        return $this->primaryKey;
     }
 }

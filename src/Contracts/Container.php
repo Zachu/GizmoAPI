@@ -13,15 +13,6 @@ interface Container
     public function bind($abstract, $concrete = null, $shared = false);
 
     /**
-     * Register a shared binding with the container
-     * @param  string|array          $abstract  If given an array, expect it to be an alias
-     * @param  \Closure|string|null  $concrete  If given null, try to resolve $abstract
-     * @return void
-     * @api
-     */
-    public function singleton($abstract, $concrete = null);
-
-    /**
      * Resolve a binding.
      * @param  string $abstract   String to resolve
      * @param  array  $parameters Parameters to create the new object with
@@ -29,4 +20,13 @@ interface Container
      * @api
      */
     public function make($abstract, array $parameters = []);
+
+    /**
+     * Register a shared binding with the container
+     * @param  string|array          $abstract  If given an array, expect it to be an alias
+     * @param  \Closure|string|null  $concrete  If given null, try to resolve $abstract
+     * @return void
+     * @api
+     */
+    public function singleton($abstract, $concrete = null);
 }

@@ -1,16 +1,21 @@
 <?php namespace Pisa\GizmoAPI;
 
-use Exception;
-use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
 use Pisa\GizmoAPI\Contracts\Container;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
+use Pisa\GizmoAPI\Exceptions\InvalidArgumentException;
 use Pisa\GizmoAPI\Repositories\HostRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\NewsRepositoryInterface;
+use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\SessionRepositoryInterface;
-use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
 class Gizmo
 {
+    protected $config;
+
+    protected $ioc;
+
     protected $repositories = [
         'users'    => null,
         'hosts'    => null,
@@ -18,10 +23,8 @@ class Gizmo
         'sessions' => null,
         'service'  => null,
     ];
-    protected $config;
-    protected $ioc;
 
-    public function __construct(array $config = array(), Container $ioc = null)
+    public function __construct(array $config = [], Container $ioc = null)
     {
         $this->config = array_merge([
             'http'       => [],
@@ -38,58 +41,13 @@ class Gizmo
         $this->bootstrap();
     }
 
-    private function bootstrap()
+    public function __get($name)
     {
-        $this->ioc->singleton(\Pisa\GizmoAPI\Contracts\Container::class, function ($c) {
-            return $this->ioc;
-        });
-
-        $this->ioc->singleton(
-            \Pisa\GizmoAPI\Contracts\HttpClient::class,
-            \Pisa\GizmoAPI\Adapters\GuzzleClientAdapter::class
-        );
-
-        $this->ioc->bind(
-            \Pisa\GizmoAPI\Contracts\HttpResonse::class,
-            \Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter::class
-        );
-
-        $this->ioc->singleton(\GuzzleHttp\ClientInterface::class, function ($c) {
-            $httpConfig = ($this->getConfig('http') !== null ? $this->getConfig('http') : []);
-            return new \GuzzleHttp\Client($httpConfig);
-        });
-
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\UserRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\UserRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\HostRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\HostRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\SessionRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\NewsRepository::class);
-        $this->ioc->bind(\Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface::class, \Pisa\GizmoAPI\Repositories\ServiceRepository::class);
-
-        $this->ioc->bind(\Pisa\GizmoAPI\Models\UserInterface::class, function ($c) {
-            $user = $c->make(\Pisa\GizmoAPI\Models\User::class);
-            $user->mergeRules($this->getConfig('user.rules'));
-
-            return $user;
-        });
-
-        $this->ioc->bind(\Pisa\GizmoAPI\Models\HostInterface::class, function ($c) {
-            $user = $c->make(\Pisa\GizmoAPI\Models\Host::class);
-            $user->mergeRules($this->getConfig('host.rules'));
-
-            return $user;
-        });
-
-        $this->ioc->bind(\Pisa\GizmoAPI\Models\NewsInterface::class, function ($c) {
-            $user = $c->make(\Pisa\GizmoAPI\Models\News::class);
-            $user->mergeRules($this->getConfig('news.rules'));
-
-            return $user;
-        });
-
-        $this->ioc->bind(\Illuminate\Contracts\Validation\Factory::class, \Illuminate\Validation\Factory::class);
-        $this->ioc->bind(\Symfony\Component\Translation\TranslatorInterface::class, function ($c) {
-            return new \Symfony\Component\Translation\Translator('en');
-        });
+        if ($this->hasRepository($name)) {
+            return $this->getRepository($name);
+        } else {
+            return null;
+        }
     }
 
     public function getConfig($name = null)
@@ -103,25 +61,6 @@ class Gizmo
         }
     }
 
-    public function setConfig($name, $value = null)
-    {
-        $this->config[$name] = $value;
-    }
-
-    public function __get($name)
-    {
-        if ($this->hasRepository($name)) {
-            return $this->getRepository($name);
-        } else {
-            return null;
-        }
-    }
-
-    public function hasRepository($name)
-    {
-        return array_key_exists($name, $this->repositories);
-    }
-
     public function getRepository($name)
     {
         if ($this->hasRepository($name) && $this->repositoryInitialized($name)) {
@@ -131,16 +70,24 @@ class Gizmo
                 //Succesfull initialization
                 return $this->repositories[$name];
             } else {
-                throw new Exception("Repository definition found for $name but initialization failed");
+                throw new InternalException(
+                    "Repository definition found for $name but initialization failed. "
+                    . 'Maybe Gizmo::initializeRepository() is missing the repository?'
+                );
             }
         } else {
-            throw new Exception("No repositories found with name $name");
+            throw new InvalidArgumentException("No repositories found with name $name");
         }
     }
 
-    protected function repositoryInitialized($name)
+    public function hasRepository($name)
     {
-        return ($this->hasRepository($name) && is_object($this->repositories[$name]));
+        return array_key_exists($name, $this->repositories);
+    }
+
+    public function setConfig($name, $value = null)
+    {
+        $this->config[$name] = $value;
     }
 
     protected function initializeRepository($name)
@@ -170,5 +117,82 @@ class Gizmo
         } else {
             return false;
         }
+    }
+
+    protected function repositoryInitialized($name)
+    {
+        return ($this->hasRepository($name) && is_object($this->repositories[$name]));
+    }
+
+    private function bootstrap()
+    {
+        $this->ioc->singleton(\Pisa\GizmoAPI\Contracts\Container::class, function ($c) {
+            return $this->ioc;
+        });
+
+        $this->ioc->singleton(
+            \Pisa\GizmoAPI\Contracts\HttpClient::class,
+            \Pisa\GizmoAPI\Adapters\GuzzleClientAdapter::class
+        );
+
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Contracts\HttpResonse::class,
+            \Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter::class
+        );
+
+        $this->ioc->singleton(\GuzzleHttp\ClientInterface::class, function ($c) {
+            $httpConfig = ($this->getConfig('http') !== null ? $this->getConfig('http') : []);
+            return new \GuzzleHttp\Client($httpConfig);
+        });
+
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\UserRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\UserRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\HostRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\HostRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\SessionRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\SessionRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\NewsRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\NewsRepository::class
+        );
+        $this->ioc->bind(
+            \Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface::class,
+            \Pisa\GizmoAPI\Repositories\ServiceRepository::class
+        );
+
+        $this->ioc->bind(\Pisa\GizmoAPI\Models\UserInterface::class, function ($c) {
+            $user = $c->make(\Pisa\GizmoAPI\Models\User::class);
+            $user->mergeRules($this->getConfig('user.rules'));
+
+            return $user;
+        });
+
+        $this->ioc->bind(\Pisa\GizmoAPI\Models\HostInterface::class, function ($c) {
+            $user = $c->make(\Pisa\GizmoAPI\Models\Host::class);
+            $user->mergeRules($this->getConfig('host.rules'));
+
+            return $user;
+        });
+
+        $this->ioc->bind(\Pisa\GizmoAPI\Models\NewsInterface::class, function ($c) {
+            $user = $c->make(\Pisa\GizmoAPI\Models\News::class);
+            $user->mergeRules($this->getConfig('news.rules'));
+
+            return $user;
+        });
+
+        $this->ioc->bind(
+            \Illuminate\Contracts\Validation\Factory::class,
+            \Illuminate\Validation\Factory::class
+        );
+        $this->ioc->bind(\Symfony\Component\Translation\TranslatorInterface::class, function ($c) {
+            return new \Symfony\Component\Translation\Translator('en');
+        });
     }
 }

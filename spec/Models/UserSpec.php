@@ -1,13 +1,13 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
-use Illuminate\Contracts\Validation\Factory;
-use Illuminate\Contracts\Validation\Validator;
+use Prophecy\Argument;
 use PhpSpec\ObjectBehavior;
+use spec\Pisa\GizmoAPI\Helper;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Models\HostInterface;
+use Illuminate\Contracts\Validation\Factory;
+use Illuminate\Contracts\Validation\Validator;
 use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
-use Prophecy\Argument;
-use spec\Pisa\GizmoAPI\Helper;
 
 class UserSpec extends ObjectBehavior
 {
@@ -46,7 +46,9 @@ class UserSpec extends ObjectBehavior
         ])->shouldBeCalled()->willReturn(Helper::zeroResponse());
 
         $this->exists()->shouldBe(true);
-        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(Helper::noContentResponse());
+        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])
+            ->shouldBeCalled()->willReturn(Helper::noContentResponse());
+
         $this->delete()->shouldReturn($this);
         $this->exists()->shouldBe(false);
     }
@@ -57,8 +59,11 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->willReturn(Helper::zeroResponse());
 
-        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringDelete();
+        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])
+            ->shouldBeCalled()->willReturn(Helper::trueResponse());
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringDelete();
     }
 
     public function it_should_logout_on_delete_if_user_is_logged_in(HttpClient $client)
@@ -67,45 +72,61 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->willReturn(Helper::oneResponse());
 
-        $client->post('Users/UserLogout', [
-            'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
-        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])->shouldBeCalled()->willReturn(Helper::noContentResponse());
+        $client->post('Users/UserLogout', ['userId' => $this->getPrimaryKeyValue()])
+            ->shouldBeCalled()->willReturn(Helper::noContentResponse());
+        $client->delete('Users/Delete', ['userId' => $this->getPrimaryKeyValue()])
+            ->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->delete()->shouldReturn($this);
     }
 
-    public function it_should_throw_on_delete_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
-        $this->shouldThrow('\Exception')->duringDelete();
+    public function it_should_throw_on_delete_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
+        $this->beConstructedWith($client, $factory, Helper::fakeUser([
+            'Id' => null,
+        ]));
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringDelete();
     }
 
     //
     // Save
     //
 
-    public function it_should_create_new_user_on_save(HttpClient $client, Factory $factory)
-    {
+    public function it_should_create_new_user_on_save(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
 
-        $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::noContentResponse());
+        $client->post('Users/Create', $this->getAttributes())
+            ->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
         $this->save()->shouldReturn($this);
     }
 
-    public function it_should_throw_on_create_if_got_unexpected_response(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_create_if_got_unexpected_response(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
 
-        $client->post('Users/Create', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringSave();
+        $client->post('Users/Create', $this->getAttributes())
+            ->shouldBeCalled()->willReturn(Helper::trueResponse());
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSave();
     }
 
     public function it_should_update_user_information_on_save(HttpClient $client)
     {
         $this->FirstName = 'Todd';
-        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::noContentResponse());
+        $client->post('Users/Update', $this->getAttributes())
+            ->shouldBeCalled()->willReturn(Helper::noContentResponse());
+
         $this->save()->shouldReturn($this);
     }
 
@@ -113,18 +134,25 @@ class UserSpec extends ObjectBehavior
     {
         $this->FirstName = 'Todd';
 
-        $client->post('Users/Update', $this->getAttributes())->shouldBeCalled()->willReturn(Helper::trueResponse());
+        $client->post('Users/Update', $this->getAttributes())
+            ->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringSave();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSave();
     }
 
-    public function it_should_handle_rename_on_save(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_handle_rename_on_save(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newUserName = 'NewUserName';
 
         $this->UserName = $newUserName;
         $repository->hasUserName($newUserName)->shouldBeCalled();
-        $this->shouldThrow('\Exception')->duringSave($repository);
+
+        // Throws InternalException because response is not mocked
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InternalException')
+            ->duringSave($repository);
     }
 
     public function it_should_handle_usergroup_change_on_save(HttpClient $client)
@@ -137,16 +165,23 @@ class UserSpec extends ObjectBehavior
             'newUserGroup' => $groupId,
         ])->shouldBeCalled();
 
-        $this->shouldThrow('\Exception')->duringSave();
+        // Throws InternalException because response is not mocked
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InternalException')
+            ->duringSave();
     }
 
-    public function it_should_handle_email_on_save(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_handle_email_on_save(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newEmail = 'test@example.com';
 
         $this->Email = $newEmail;
         $repository->hasUserEmail($newEmail)->shouldBeCalled();
-        $this->shouldThrow('\Exception')->duringSave($repository);
+
+        // Throws InternalException because response is not mocked
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InternalException')
+            ->duringSave($repository);
     }
 
     //
@@ -177,13 +212,18 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::falseResponse());
 
-        $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringGetLoggedInHostId();
     }
 
-    public function it_should_throw_on_get_logged_in_host_id_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_logged_in_host_id_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
-        $this->shouldThrow('\Exception')->duringGetLoggedInHostId();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringGetLoggedInHostId();
     }
 
     //
@@ -200,6 +240,7 @@ class UserSpec extends ObjectBehavior
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::zeroResponse());
+
         $this->isLoggedIn()->shouldReturn(false);
     }
 
@@ -208,16 +249,22 @@ class UserSpec extends ObjectBehavior
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::falseResponse());
-        $this->shouldThrow('\Exception')->duringIsLoggedIn();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringIsLoggedIn();
     }
 
-    public function it_should_throw_on_is_logged_in_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_is_logged_in_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
-        $this->shouldThrow('\Exception')->duringIsLoggedIn();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringIsLoggedIn();
     }
 
-    //
+//
     // Get last login time
     //
 
@@ -236,13 +283,18 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
-        $this->shouldThrow('\Exception')->duringLastLoginTime();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringLastLoginTime();
     }
 
-    public function it_should_throw_on_get_last_login_time_if_model_does_not_exists(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_last_login_time_if_model_does_not_exists(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
-        $this->shouldThrow('\Exception')->duringLastLoginTime();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringLastLoginTime();
     }
 
     //
@@ -264,21 +316,28 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
 
-        $this->shouldThrow('\Exception')->duringLastLogoutTime();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringLastLogoutTime();
     }
 
-    public function it_should_throw_on_get_last_logout_time_if_model_does_not_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_get_last_logout_time_if_model_does_not_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
-        $this->shouldThrow('\Exception')->duringLastLogoutTime();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringLastLogoutTime();
     }
 
     //
     // Login
     //
 
-    public function it_should_login_user_to_host(HttpClient $client, HostInterface $host)
-    {
+    public function it_should_login_user_to_host(
+        HttpClient $client,
+        HostInterface $host
+    ) {
         $host->isFree()->shouldBeCalled()->willReturn(true);
         $host->getPrimaryKeyValue()->shouldBeCalled()->willReturn(1);
         $client->get('Users/GetLoginState', [
@@ -293,8 +352,10 @@ class UserSpec extends ObjectBehavior
         $this->login($host);
     }
 
-    public function it_should_throw_on_login_if_host_is_not_free(HttpClient $client, HostInterface $host)
-    {
+    public function it_should_throw_on_login_if_host_is_not_free(
+        HttpClient $client,
+        HostInterface $host
+    ) {
         $host->getPrimaryKeyValue()->willReturn(1);
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
@@ -302,11 +363,14 @@ class UserSpec extends ObjectBehavior
 
         $host->isFree()->shouldBeCalled()->willReturn(false);
 
-        $this->shouldThrow('\Exception')->duringLogin($host);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringLogin($host);
     }
 
-    public function it_should_throw_on_login_if_user_already_logged_in(HttpClient $client, HostInterface $host)
-    {
+    public function it_should_throw_on_login_if_user_already_logged_in(
+        HttpClient $client,
+        HostInterface $host
+    ) {
         $host->isFree()->willReturn(true);
         $host->getPrimaryKeyValue()->willReturn(1);
 
@@ -314,16 +378,21 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::oneResponse());
 
-        $this->shouldThrow('\Exception')->duringLogin($host);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringLogin($host);
     }
 
-    public function it_should_throw_on_login_if_model_doesnt_exist(HttpClient $client, HostInterface $host, Factory $factory)
-    {
+    public function it_should_throw_on_login_if_model_doesnt_exist(
+        HttpClient $client,
+        HostInterface $host,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
         $host->isFree()->willReturn(true);
         $host->getPrimaryKeyValue()->willReturn(1);
 
-        $this->shouldThrow('\Exception')->duringLogin($host);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringLogin($host);
     }
 
     //
@@ -352,43 +421,54 @@ class UserSpec extends ObjectBehavior
             'userId' => $this->getPrimaryKeyValue(),
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringLogout();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringLogout();
     }
 
     public function it_should_throw_on_logout_if_user_not_logged_in(HttpClient $client)
     {
         $client->get('Users/GetLoginState', [
             'userId' => $this->getPrimaryKeyValue(),
-        ])->shouldBeCalled()->willReturn(Helper::trueResponse());
+        ])->shouldBeCalled()->willReturn(Helper::zeroResponse());
 
-        $this->shouldThrow('\Exception')->duringLogout();
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringLogout();
     }
 
-    public function it_should_throw_on_logout_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_logout_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
-        $this->shouldThrow('\Exception')->duringLogout();
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringLogout();
     }
 
     //
     // Rename
     //
 
-    public function it_should_rename_user(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_rename_user(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newUserName = 'NewName';
-        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
 
+        $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
         $client->post('Users/Rename', [
             'userId'      => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(Helper::noContentResponse());
+
         $this->rename($repository, $newUserName);
         $this->UserName->shouldBe($newUserName);
     }
 
-    public function it_should_throw_on_rename_when_got_unexpected_response(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_throw_on_rename_when_got_unexpected_response(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newUserName = 'NewName';
         $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(false);
 
@@ -396,25 +476,34 @@ class UserSpec extends ObjectBehavior
             'userId'      => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
-        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringRename($repository, $newUserName);
         $this->UserName->shouldNotBe($newUserName);
     }
 
-    public function it_should_throw_on_rename_if_username_is_taken(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_throw_on_rename_if_username_is_taken(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newUserName = 'NewName';
         $repository->hasUserName($newUserName)->shouldBeCalled()->willReturn(true);
 
-        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\ValidationException')
+            ->duringRename($repository, $newUserName);
         $this->UserName->shouldNotBe($newUserName);
     }
 
-    public function it_should_throw_on_rename_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository, Factory $factory)
-    {
+    public function it_should_throw_on_rename_if_model_doesnt_exist(
+        HttpClient $client,
+        UserRepositoryInterface $repository,
+        Factory $factory
+    ) {
         $newUserName = 'NewName';
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
 
-        $this->shouldThrow('\Exception')->duringRename($repository, $newUserName);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringRename($repository, $newUserName);
         $this->UserName->shouldNotBe($newUserName);
     }
 
@@ -422,8 +511,10 @@ class UserSpec extends ObjectBehavior
     // Set Email
     //
 
-    public function it_should_set_email(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_set_email(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newEmail = 'test@example.com';
         $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
 
@@ -436,8 +527,10 @@ class UserSpec extends ObjectBehavior
         $this->Email->shouldBe($newEmail);
     }
 
-    public function it_should_throw_on_set_email_when_got_unexpected_reply(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_throw_on_set_email_when_got_unexpected_reply(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newEmail = 'test@example.com';
         $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(false);
 
@@ -446,23 +539,32 @@ class UserSpec extends ObjectBehavior
             'newEmail' => $newEmail,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSetEmail($repository, $newEmail);
         $this->Email->shouldNotBe($newEmail);
     }
 
-    public function it_should_throw_on_set_email_if_email_is_taken(HttpClient $client, UserRepositoryInterface $repository)
-    {
+    public function it_should_throw_on_set_email_if_email_is_taken(
+        HttpClient $client,
+        UserRepositoryInterface $repository
+    ) {
         $newEmail = 'test@example.com';
         $repository->hasUserEmail($newEmail)->shouldBeCalled()->willReturn(true);
-        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\ValidationException')->duringSetEmail($repository, $newEmail);
         $this->Email->shouldNotBe($newEmail);
     }
 
-    public function it_should_throw_on_set_email_if_model_doesnt_exist(HttpClient $client, UserRepositoryInterface $repository, Factory $factory)
-    {
+    public function it_should_throw_on_set_email_if_model_doesnt_exist(
+        HttpClient $client,
+        UserRepositoryInterface $repository,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
         $newEmail = 'test@example.com';
-        $this->shouldThrow('\Exception')->duringSetEmail($repository, $newEmail);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringSetEmail($repository, $newEmail);
         $this->Email->shouldNotBe($newEmail);
     }
 
@@ -481,11 +583,15 @@ class UserSpec extends ObjectBehavior
         $this->setPassword($newPassword);
     }
 
-    public function it_should_throw_on_set_password_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_set_password_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
         $newPassword = 'newPassword';
-        $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
+
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringSetPassword($newPassword);
     }
 
     public function it_should_throw_on_set_password_when_got_unexpected_reply(HttpClient $client)
@@ -497,7 +603,8 @@ class UserSpec extends ObjectBehavior
             'newPassword' => $newPassword,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringSetPassword($newPassword);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSetPassword($newPassword);
     }
 
     public function it_should_reset_password(HttpClient $client)
@@ -527,13 +634,16 @@ class UserSpec extends ObjectBehavior
         $this->GroupId->shouldBe($newUserGroup);
     }
 
-    public function it_should_throw_on_set_user_group_if_model_doesnt_exist(HttpClient $client, Factory $factory)
-    {
+    public function it_should_throw_on_set_user_group_if_model_doesnt_exist(
+        HttpClient $client,
+        Factory $factory
+    ) {
         $fakeUser = Helper::fakeUser(['Id' => null]);
         $this->beConstructedWith($client, $factory, $fakeUser);
         $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
 
-        $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
+            ->duringSetUserGroup($newUserGroup);
         $this->GroupId->shouldNotBe($newUserGroup);
     }
 
@@ -546,7 +656,8 @@ class UserSpec extends ObjectBehavior
             'newUserGroup' => $newUserGroup,
         ])->shouldBeCalled()->willReturn(Helper::trueResponse());
 
-        $this->shouldThrow('\Exception')->duringSetUserGroup($newUserGroup);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\UnexpectedResponseException')
+            ->duringSetUserGroup($newUserGroup);
         $this->GroupId->shouldNotBe($newUserGroup);
     }
-}
+};

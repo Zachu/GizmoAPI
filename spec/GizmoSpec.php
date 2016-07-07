@@ -2,8 +2,8 @@
 namespace spec\Pisa\GizmoAPI;
 
 use PhpSpec\ObjectBehavior;
-use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Repositories;
+use Pisa\GizmoAPI\Contracts\Container;
 
 class GizmoSpec extends ObjectBehavior
 {
@@ -17,31 +17,47 @@ class GizmoSpec extends ObjectBehavior
         $this->shouldHaveType('Pisa\GizmoAPI\Gizmo');
     }
 
-    public function it_should_return_users_repository(Container $ioc, Repositories\UserRepositoryInterface $repository)
-    {
+    public function it_should_return_users_repository(
+        Container $ioc,
+        Repositories\UserRepositoryInterface $repository
+    ) {
         $this->hasRepository('users')->shouldBe(true);
-        $ioc->make(Repositories\UserRepositoryInterface::class)->willReturn($repository);
+        $ioc->make(Repositories\UserRepositoryInterface::class)
+            ->willReturn($repository);
+
         $this->users->shouldBe($repository);
     }
 
-    public function it_should_return_hosts_repository(Container $ioc, Repositories\HostRepositoryInterface $repository)
-    {
+    public function it_should_return_hosts_repository(
+        Container $ioc,
+        Repositories\HostRepositoryInterface $repository
+    ) {
         $this->hasRepository('hosts')->shouldBe(true);
-        $ioc->make(Repositories\HostRepositoryInterface::class)->willReturn($repository);
+        $ioc->make(Repositories\HostRepositoryInterface::class)
+            ->willReturn($repository);
+
         $this->hosts->shouldBe($repository);
     }
 
-    public function it_should_return_news_repository(Container $ioc, Repositories\NewsRepositoryInterface $repository)
-    {
+    public function it_should_return_news_repository(
+        Container $ioc,
+        Repositories\NewsRepositoryInterface $repository
+    ) {
         $this->hasRepository('news')->shouldBe(true);
-        $ioc->make(Repositories\NewsRepositoryInterface::class)->willReturn($repository);
+        $ioc->make(Repositories\NewsRepositoryInterface::class)
+            ->willReturn($repository);
+
         $this->news->shouldBe($repository);
     }
 
-    public function it_should_return_session_repository(Container $ioc, Repositories\SessionRepositoryInterface $repository)
-    {
+    public function it_should_return_session_repository(
+        Container $ioc,
+        Repositories\SessionRepositoryInterface $repository
+    ) {
         $this->hasRepository('sessions')->shouldBe(true);
-        $ioc->make(Repositories\SessionRepositoryInterface::class)->willReturn($repository);
+        $ioc->make(Repositories\SessionRepositoryInterface::class)
+            ->willReturn($repository);
+
         $this->sessions->shouldBe($repository);
     }
 
@@ -49,7 +65,8 @@ class GizmoSpec extends ObjectBehavior
     {
         $repository = 'unknown';
         $this->hasRepository($repository)->shouldBe(false);
-        $this->shouldThrow('\Exception')->duringGetRepository($repository);
+        $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\InvalidArgumentException')
+            ->duringGetRepository($repository);
     }
 
     public function it_should_set_and_get_config_values()

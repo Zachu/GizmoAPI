@@ -1,6 +1,9 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
-use Exception;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Exceptions\ValidationException;
+use Pisa\GizmoAPI\Exceptions\RequirementException;
+use Pisa\GizmoAPI\Exceptions\InvalidArgumentException;
 use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 
 class User extends BaseModel implements UserInterface
@@ -38,27 +41,23 @@ class User extends BaseModel implements UserInterface
      */
     public function delete()
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            } elseif ($this->isLoggedIn()) {
-                $this->logout();
-            }
-
-            $response = $this->client->delete("Users/Delete", [
-                'userId' => $this->getPrimaryKeyValue(),
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-            unset($this->Id);
-            return $this;
-        } catch (Exception $e) {
-            throw new Exception("Unable to delete user: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
+        } elseif ($this->isLoggedIn()) {
+            $this->logout();
         }
+
+        $response = $this->client->delete("Users/Delete", [
+            'userId' => $this->getPrimaryKeyValue(),
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
+        unset($this->Id);
+        return $this;
     }
 
     /**
@@ -66,29 +65,25 @@ class User extends BaseModel implements UserInterface
      */
     public function getLoggedInHostId()
     {
-        try {
-            if ($this->exists() === false) {
-                throw new Exception("Model does not exist");
-            } else {
-                $response = $this->client->get('Users/GetLoggedInHost', [
-                    'userId' => $this->getPrimaryKeyValue(),
-                ]);
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertInteger();
-                $response->assertStatusCodes(200);
-                $body = $response->getBody();
-
-                if ($body === 0) {
-                    return false;
-                } else {
-                    return $body;
-                }
+        if ($this->exists() === false) {
+            throw new RequirementException("Model does not exist");
+        } else {
+            $response = $this->client->get('Users/GetLoggedInHost', [
+                'userId' => $this->getPrimaryKeyValue(),
+            ]);
+            if ($response === null) {
+                throw new InternalException("Response failed");
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to get logged in host: " . $e->getMessage());
+
+            $response->assertInteger();
+            $response->assertStatusCodes(200);
+            $body = $response->getBody();
+
+            if ($body === 0) {
+                return false;
+            } else {
+                return $body;
+            }
         }
     }
 
@@ -97,25 +92,21 @@ class User extends BaseModel implements UserInterface
      */
     public function isLoggedIn()
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            }
-
-            $response = $this->client->get('Users/GetLoginState', [
-                'userId' => $this->getPrimaryKeyValue(),
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertInteger(); //Gizmo responses 1 if user is logged in, 0 if not.
-            $response->assertStatusCodes(200);
-
-            return (bool) $response->getBody();
-        } catch (Exception $e) {
-            throw new Exception("Unable to get login status: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
         }
+
+        $response = $this->client->get('Users/GetLoginState', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertInteger(); //Gizmo responses 1 if user is logged in, 0 if not.
+        $response->assertStatusCodes(200);
+
+        return (bool) $response->getBody();
     }
 
     /**
@@ -123,25 +114,21 @@ class User extends BaseModel implements UserInterface
      */
     public function lastLoginTime()
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            }
-
-            $response = $this->client->get('Users/GetLastUserLogin', [
-                'userId' => $this->getPrimaryKeyValue(),
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertTime();
-            $response->assertStatusCodes(200);
-
-            return strtotime($response->getBody());
-        } catch (Exception $e) {
-            throw new Exception("Unable to get last login time: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
         }
+
+        $response = $this->client->get('Users/GetLastUserLogin', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertTime();
+        $response->assertStatusCodes(200);
+
+        return strtotime($response->getBody());
     }
 
     /**
@@ -149,25 +136,21 @@ class User extends BaseModel implements UserInterface
      */
     public function lastLogoutTime()
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            }
-
-            $response = $this->client->get('Users/GetLastUserLogout', [
-                'userId' => $this->getPrimaryKeyValue(),
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertTime();
-            $response->assertStatusCodes(200);
-
-            return strtotime($response->getBody());
-        } catch (Exception $e) {
-            throw new Exception("Unable to get last logout time: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
         }
+
+        $response = $this->client->get('Users/GetLastUserLogout', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertTime();
+        $response->assertStatusCodes(200);
+
+        return strtotime($response->getBody());
     }
 
     /**
@@ -176,30 +159,26 @@ class User extends BaseModel implements UserInterface
      */
     public function login(HostInterface $host)
     {
-        try {
-            //Currently Gizmo never returns anything but 204, so we never should catch an error
-            //That's why we have to do some checks beforehand
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            } elseif ($this->isLoggedIn()) {
-                throw new Exception("User is already logged in");
-            } elseif (!$host->isFree()) {
-                throw new Exception("Someone is already logged in to that host");
-            }
-
-            $response = $this->client->post('Users/UserLogin', [
-                'userId' => $this->getPrimaryKeyValue(),
-                'hostId' => $host->getPrimaryKeyValue(),
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-        } catch (Exception $e) {
-            throw new Exception("Unable to log user in: " . $e->getMessage());
+        //Currently Gizmo never returns anything but 204, so we never should catch an error
+        //That's why we have to do some checks beforehand
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
+        } elseif ($this->isLoggedIn()) {
+            throw new RequirementException("User is already logged in");
+        } elseif (!$host->isFree()) {
+            throw new RequirementException("Someone is already logged in to that host");
         }
+
+        $response = $this->client->post('Users/UserLogin', [
+            'userId' => $this->getPrimaryKeyValue(),
+            'hostId' => $host->getPrimaryKeyValue(),
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
     }
 
     /**
@@ -208,27 +187,23 @@ class User extends BaseModel implements UserInterface
      */
     public function logout()
     {
-        try {
-            //Currently Gizmo never returns anything but 204, so we never should catch an error
-            //That's why we have to do some checks beforehand
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            } elseif (!$this->isLoggedIn()) {
-                throw new Exception("User is not logged in anywhere");
-            }
-
-            $response = $this->client->post('Users/UserLogout', [
-                'userId' => $this->getPrimaryKeyValue(),
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-        } catch (Exception $e) {
-            throw new Exception("Unable to log user out: " . $e->getMessage());
+        //Currently Gizmo never returns anything but 204, so we never should catch an error
+        //That's why we have to do some checks beforehand
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
+        } elseif (!$this->isLoggedIn()) {
+            throw new RequirementException("User is not logged in anywhere");
         }
+
+        $response = $this->client->post('Users/UserLogout', [
+            'userId' => $this->getPrimaryKeyValue(),
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
     }
 
     /**
@@ -237,28 +212,34 @@ class User extends BaseModel implements UserInterface
      */
     public function rename(UserRepositoryInterface $repository, $newUserName)
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            } elseif ($repository->hasUserName($newUserName)) {
-                throw new Exception("$newUserName already exists");
-            }
-
-            $response = $this->client->post('Users/Rename', [
-                'userId'      => $this->getPrimaryKeyValue(),
-                'newUserName' => $newUserName,
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-
-            $this->UserName = $newUserName;
-        } catch (Exception $e) {
-            throw new Exception("Unable to rename user: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
+        } elseif ($repository->hasUserName($newUserName)) {
+            throw new ValidationException("$newUserName already exists");
         }
+
+        $response = $this->client->post('Users/Rename', [
+            'userId'      => $this->getPrimaryKeyValue(),
+            'newUserName' => $newUserName,
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
+
+        $this->UserName = $newUserName;
+    }
+
+    /**
+     * A shorthand for setPassword('')
+     *
+     * @uses $this->setPassword()
+     */
+    public function resetPassword()
+    {
+        return $this->setPassword('');
     }
 
     /**
@@ -266,31 +247,31 @@ class User extends BaseModel implements UserInterface
      */
     public function save(UserRepositoryInterface $repository = null)
     {
-        try {
-            if ($this->exists()) {
-                foreach ($this->changed() as $key => $newValue) {
-                    if ($key == 'UserName') {
-                        if ($repository !== null) {
-                            $this->rename($repository, $newValue);
-                        } else {
-                            throw new Exception("UserRepository not provided when renaming");
-                        }
-                    } elseif ($key == 'Email') {
-                        if ($repository !== null) {
-                            $this->setEmail($repository, $newValue);
-                        } else {
-                            throw new Exception("UserRepository not provided when changing email");
-                        }
-                    } elseif ($key == 'GroupId') {
-                        $this->setUserGroup($newValue);
+        if ($this->exists()) {
+            foreach ($this->changed() as $key => $newValue) {
+                if ($key == 'UserName') {
+                    if ($repository !== null) {
+                        $this->rename($repository, $newValue);
+                    } else {
+                        throw new InvalidArgumentException(
+                            "UserRepository not provided when renaming"
+                        );
                     }
+                } elseif ($key == 'Email') {
+                    if ($repository !== null) {
+                        $this->setEmail($repository, $newValue);
+                    } else {
+                        throw new InvalidArgumentException(
+                            "UserRepository not provided when changing email"
+                        );
+                    }
+                } elseif ($key == 'GroupId') {
+                    $this->setUserGroup($newValue);
                 }
             }
-
-            return parent::save();
-        } catch (Exception $e) {
-            throw new Exception("Unable to save user: " . $e->getMessage());
         }
+
+        return parent::save();
     }
 
     /**
@@ -299,63 +280,46 @@ class User extends BaseModel implements UserInterface
      */
     public function setEmail(UserRepositoryInterface $repository, $newEmail)
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            } elseif ($repository->hasUserEmail($newEmail)) {
-                throw new Exception("$newEmail is already registered");
-            }
-
-            $response = $this->client->post('Users/SetUserEmail', [
-                'userId'   => $this->getPrimaryKeyValue(),
-                'newEmail' => $newEmail,
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-
-            $this->Email = $newEmail;
-        } catch (Exception $e) {
-            throw new Exception("Unable to set user email: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
+        } elseif ($repository->hasUserEmail($newEmail)) {
+            throw new ValidationException("$newEmail is already registered");
         }
+
+        $response = $this->client->post('Users/SetUserEmail', [
+            'userId'   => $this->getPrimaryKeyValue(),
+            'newEmail' => $newEmail,
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
+
+        $this->Email = $newEmail;
     }
 
-    /**
-     * A shorthand for setPassword('')
-     *
-     * @see     $this->setPassword()
-     */
-    public function resetPassword()
-    {
-        return $this->setPassword('');
-    }
     /**
      * @return  void
      * @throws  Exception on error
      */
     public function setPassword($newPassword)
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            }
-
-            $response = $this->client->post('Users/SetUserPassword', [
-                'userId'      => $this->getPrimaryKeyValue(),
-                'newPassword' => $newPassword,
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-        } catch (Exception $e) {
-            throw new Exception("Unable to set user password: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
         }
+
+        $response = $this->client->post('Users/SetUserPassword', [
+            'userId'      => $this->getPrimaryKeyValue(),
+            'newPassword' => $newPassword,
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
     }
 
     /**
@@ -364,28 +328,24 @@ class User extends BaseModel implements UserInterface
      */
     public function setUserGroup($groupId)
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exist");
-            }
-
-            $groupId = (int) $groupId;
-
-            $response = $this->client->post('Users/SetUserGroup', [
-                'userId'       => $this->getPrimaryKeyValue(),
-                'newUserGroup' => $groupId,
-            ]);
-            if ($response === null) {
-                throw new Exception("Response failed");
-            }
-
-            $response->assertEmpty();
-            $response->assertStatusCodes(204);
-
-            $this->GroupId = $groupId;
-        } catch (Exception $e) {
-            throw new Exception("Unable to set user group: " . $e->getMessage());
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exist");
         }
+
+        $groupId = (int) $groupId;
+
+        $response = $this->client->post('Users/SetUserGroup', [
+            'userId'       => $this->getPrimaryKeyValue(),
+            'newUserGroup' => $groupId,
+        ]);
+        if ($response === null) {
+            throw new InternalException("Response failed");
+        }
+
+        $response->assertEmpty();
+        $response->assertStatusCodes(204);
+
+        $this->GroupId = $groupId;
     }
 
     /**
@@ -396,22 +356,18 @@ class User extends BaseModel implements UserInterface
      */
     protected function create()
     {
-        try {
-            if ($this->exists()) {
-                throw new Exception("User already exist. Maybe try update?");
-            } else {
-                $response = $this->client->post("Users/Create", $this->getAttributes());
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
-
-                return $this;
+        if ($this->exists()) {
+            throw new RequirementException("User already exist. Maybe try update?");
+        } else {
+            $response = $this->client->post("Users/Create", $this->getAttributes());
+            if ($response === null) {
+                throw new InternalException("Response failed");
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to create user: " . $e->getMessage());
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
+
+            return $this;
         }
     }
 
@@ -513,7 +469,7 @@ class User extends BaseModel implements UserInterface
         } elseif (in_array(strtolower($sex), $female)) {
             $return = reset($female); //Assume the first one in the list is the default
         } else {
-            throw new Exception("Could not parse sex from {$sex}");
+            throw new InvalidArgumentException("Could not parse sex from {$sex}");
         }
 
         $this->attributes['Sex'] = $return;
@@ -527,22 +483,18 @@ class User extends BaseModel implements UserInterface
      */
     protected function update()
     {
-        try {
-            if (!$this->exists()) {
-                throw new Exception("User doesn't exists. Maybe try create first?");
-            } else {
-                $response = $this->client->post("Users/Update", $this->getAttributes());
-                if ($response === null) {
-                    throw new Exception("Response failed");
-                }
-
-                $response->assertEmpty();
-                $response->assertStatusCodes(204);
-
-                return $this;
+        if (!$this->exists()) {
+            throw new RequirementException("User doesn't exists. Maybe try create first?");
+        } else {
+            $response = $this->client->post("Users/Update", $this->getAttributes());
+            if ($response === null) {
+                throw new InternalException("Response failed");
             }
-        } catch (Exception $e) {
-            throw new Exception("Unable to update user: " . $e->getMessage());
+
+            $response->assertEmpty();
+            $response->assertStatusCodes(204);
+
+            return $this;
         }
     }
 }

@@ -1,8 +1,9 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
-use Exception;
-use Illuminate\Contracts\Validation\Factory as Validator;
 use Pisa\GizmoAPI\Contracts\HttpClient;
+use Pisa\GizmoAPI\Exceptions\InternalException;
+use Pisa\GizmoAPI\Exceptions\ValidationException;
+use Illuminate\Contracts\Validation\Factory as Validator;
 
 abstract class BaseModel implements BaseModelInterface
 {
@@ -51,7 +52,7 @@ abstract class BaseModel implements BaseModelInterface
      * @param Validator  $validator  Model validator
      * @param array      $attributes Attributes to initialize
      */
-    public function __construct(HttpClient $client, Validator $validatorFactory, array $attributes = array())
+    public function __construct(HttpClient $client, Validator $validatorFactory, array $attributes = [])
     {
         $this->client = $client;
         $this->load($attributes);
@@ -83,6 +84,11 @@ abstract class BaseModel implements BaseModelInterface
         return $this->validator->failed();
     }
 
+    public function getRules()
+    {
+        return $this->rules;
+    }
+
     public function getValidator()
     {
         $this->validate();
@@ -94,41 +100,12 @@ abstract class BaseModel implements BaseModelInterface
         return $this->validatorFactory;
     }
 
-    public function getRules()
-    {
-        return $this->rules;
-    }
-
-    public function setRules(array $rules)
-    {
-        $this->rules = $rules;
-    }
-
-    public function mergeRules(array $rules)
-    {
-        $this->rules = array_merge($this->rules, $rules);
-    }
-
     /**
      * @todo How the created/uncreated should be handled?
      */
     public function isSaved()
     {
         return (empty($this->changed()) && $this->exists());
-    }
-
-    public function validate()
-    {
-        try {
-            $this->validator = $this->getValidatorFactory()->make($this->getAttributes(), $this->rules);
-            if (!$this->validator instanceof \Illuminate\Contracts\Validation\Validator) {
-                throw new Exception("Validator factory failed to make validator");
-            }
-
-            return $this->validator->fails();
-        } catch (Exception $e) {
-            throw new Exception("Unable to validate: " . $e->getMessage());
-        }
     }
 
     public function isValid()
@@ -142,13 +119,18 @@ abstract class BaseModel implements BaseModelInterface
         $this->savedAttributes = $this->attributes;
     }
 
+    public function mergeRules(array $rules)
+    {
+        $this->rules = array_merge($this->rules, $rules);
+    }
+
     public function save()
     {
         if ($this->isValid() === false) {
-            throw new Exception(
+            throw new ValidationException(
                 'Unable to save model: Model instance has invalid fields (' .
-                implode(', ', array_keys($this->getInvalid())) .
-                ')');
+                implode(', ', array_keys($this->getInvalid())) . ')'
+            );
         }
 
         $return = null;
@@ -160,6 +142,21 @@ abstract class BaseModel implements BaseModelInterface
 
         $this->savedAttributes = $this->attributes;
         return $return;
+    }
+
+    public function setRules(array $rules)
+    {
+        $this->rules = $rules;
+    }
+
+    public function validate()
+    {
+        $this->validator = $this->getValidatorFactory()->make($this->getAttributes(), $this->rules);
+        if (!$this->validator instanceof \Illuminate\Contracts\Validation\Validator) {
+            throw new InternalException("Validator factory failed to make validator");
+        }
+
+        return $this->validator->fails();
     }
 
     /**

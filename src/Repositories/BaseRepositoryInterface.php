@@ -24,7 +24,13 @@ interface BaseRepositoryInterface
      * @return array                  Returns array of model instances. Throws Exception on error.
      * @api
      */
-    public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null);
+    public function findBy(
+        array $criteria,
+        $caseSensitive = false,
+        $limit = 30,
+        $skip = 0,
+        $orderBy = null
+    );
 
     /**
      * Find one model entry by parameters

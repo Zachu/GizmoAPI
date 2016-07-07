@@ -19,17 +19,34 @@ interface BaseModelInterface extends Identifiable, Attributable
     public function exists();
 
     /**
+     * Return attributes that doesn't pass the validator
+     * @return array
+     */
+    public function getInvalid();
+
+    /**
+     * Returns the current validation rules
+     * @return array of \Illuminate\Validation\Factory rules
+     */
+    public function getRules();
+
+    /**
+     * Return the validator instance
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    public function getValidator();
+
+    /**
      * Check if model has saved all the changes
      * @return boolean
      */
     public function isSaved();
 
     /**
-     * Create or update the model
-     * @return BaseModel Return $this for chaining
-     * @throws Exception on error.
+     * Check that the model passes validation rules
+     * @return boolean
      */
-    public function save();
+    public function isValid();
 
     /**
      * Load model attributes and mark them as saved.
@@ -39,22 +56,18 @@ interface BaseModelInterface extends Identifiable, Attributable
     public function load(array $attributes);
 
     /**
-     * Return attributes that doesn't pass the validator
-     * @return array
+     * Merge new rules to the current validation rules
+     * @param array $rules \Illuminate\Validation\Factory rules
+     * @return void
      */
-    public function getInvalid();
+    public function mergeRules(array $rules);
 
     /**
-     * Return the validator instance
-     * @return \Illuminate\Contracts\Validation\Validator
+     * Create or update the model
+     * @return BaseModel Return $this for chaining
+     * @throws Exception on error.
      */
-    public function getValidator();
-
-    /**
-     * Check that the model passes validation rules
-     * @return boolean
-     */
-    public function isValid();
+    public function save();
 
     /**
      * Set the validation rules
@@ -62,17 +75,4 @@ interface BaseModelInterface extends Identifiable, Attributable
      * @return void
      */
     public function setRules(array $rules);
-
-    /**
-     * Returns the current validation rules
-     * @return array of \Illuminate\Validation\Factory rules
-     */
-    public function getRules();
-
-    /**
-     * Merge new rules to the current validation rules
-     * @param array $rules \Illuminate\Validation\Factory rules
-     * @return void
-     */
-    public function mergeRules(array $rules);
 }
