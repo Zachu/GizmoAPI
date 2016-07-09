@@ -1,5 +1,7 @@
 <?php namespace Pisa\GizmoAPI;
 
+use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Exceptions\InternalException;
 use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
@@ -31,6 +33,7 @@ class Gizmo
             'user.rules' => [],
             'host.rules' => [],
             'news.rules' => [],
+            'logger'     => new NullLogger,
         ], $config);
 
         if ($ioc === null) {
@@ -193,6 +196,15 @@ class Gizmo
         );
         $this->ioc->bind(\Symfony\Component\Translation\TranslatorInterface::class, function ($c) {
             return new \Symfony\Component\Translation\Translator('en');
+        });
+
+        $this->ioc->bind(\Psr\Log\LoggerInterface::class, function ($c) {
+            if (!$this->getConfig('logger') instanceof LoggerInterface) {
+                throw new InvalidArgumentException($this->getConfig('logger')
+                    . " doesn't seem to be compatible with \Psr\Log\LoggerInterface");
+            }
+
+            return $this->getConfig('logger');
         });
     }
 }
