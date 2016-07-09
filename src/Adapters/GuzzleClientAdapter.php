@@ -1,26 +1,25 @@
 <?php namespace Pisa\GizmoAPI\Adapters;
 
+use Psr\Log\LogLevel;
+use Psr\Log\LoggerInterface;
 use GuzzleHttp\ClientInterface;
 use Pisa\GizmoAPI\Contracts\HttpClient;
-use GuzzleHttp\Client as ConcreteClient;
 use Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter as HttpResponse;
 
 class GuzzleClientAdapter implements HttpClient
 {
-    /** @var ClientInterface */
+    /** @internal */
     protected $client;
+    protected $logger;
 
     /**
      * Create a new response
-     * @param ClientInterface|null $client If no client is given, one is created automatically
+     * @param ClientInterface $client
      */
-    public function __construct(ClientInterface $client = null)
+    public function __construct(ClientInterface $client, LoggerInterface $logger)
     {
-        if ($client === null) {
-            $client = new ConcreteClient;
-        }
-
         $this->client = $client;
+        $this->logger = $logger;
     }
 
     /**
@@ -70,17 +69,104 @@ class GuzzleClientAdapter implements HttpClient
         if (!empty($parameters)) {
             $options['query'] = $this->fixParameters($parameters);
         }
+
+        $this->logRequest($method, $url, $parameters);
+
+        $time     = microtime(true);
         $response = $this->client->request($method, $url, $options);
-        return new HttpResponse($response);
+        $time     = microtime(true) - $time;
+
+        $response = new HttpResponse($response);
+        $this->logResponse(
+            $method,
+            $url,
+            $parameters,
+            $response,
+            ['time' => round($time, 3)]
+        );
+        return $response;
     }
 
     /**
-     * Converts URL parameters boolean and null parameters to string representations.
-     * @param  array  $parameters URL parameters
-     * @return array
-     *
+     * Log requests
+     * @param  string $method     Http request method
+     * @param  string $url        Request url
+     * @param  array  $parameters Request parameters
+     * @return void
      * @internal
      */
+    protected function logRequest($method, $url, $parameters)
+    {
+        if (in_array(strtoupper($method), ['GET'])) {
+            $logLevel = LogLevel::DEBUG;
+        } else {
+            $logLevel = LogLevel::INFO;
+        }
+
+        $this->logger->log($logLevel, '[HTTP] Request: '
+            . self::makeRequestString($method, $url, $parameters)
+        );
+    }
+
+    /**
+     * Log responses
+     * @param  string       $method     HTTP request method
+     * @param  string       $url        Request url
+     * @param  array        $parameters Request parameters
+     * @param  HttpResponse $response   Response that was
+     * @param  array        $context    Additional info
+     * @return void
+     * @internal
+     */
+    protected function logResponse(
+        $method,
+        $url,
+        $parameters,
+        HttpResponse $response,
+        array $context = []
+    ) {
+        $statusFamily = substr($response->getStatusCode(), 1, 1);
+        if ($statusFamily == 5) {
+            $logLevel = LogLevel::ERROR;
+        } elseif ($statusFamily == 4) {
+            $logLevel = LogLevel::WARNING;
+        } else {
+            $logLevel = LogLevel::DEBUG;
+        }
+
+        $this->logger->log($logLevel, '[HTTP] Response: '
+            . self::makeRequestString($method, $url, $parameters), array_merge([
+                'status' => $response->getStatusCode() . ' ' . $response->getReasonPhrase(),
+                'length' => $response->getHeader('Content-Length')[0],
+            ], $context)
+        );
+    }
+
+    /**
+     * Make a string representation from a requests
+     * @param  string $method     HTTP request method
+     * @param  string $url        Request url
+     * @param  array  $parameters Request parameters
+     * @return string
+     * @example  GET http://www.example.com/hello.html?foo=bar&bar=baz
+     */
+    protected function makeRequestString($method, $url, array $parameters = [])
+    {
+        $string = strtoupper($method) . ' ' . $url;
+        if (!empty($parameters)) {
+            $string .= '?' . http_build_query($parameters);
+        }
+
+        return $string;
+    }
+
+/**
+ * Converts URL parameters boolean and null parameters to string representations.
+ * @param  array  $parameters URL parameters
+ * @return array
+ *
+ * @internal
+ */
     private function fixParameters(array $parameters = [])
     {
         foreach ($parameters as $key => $param) {

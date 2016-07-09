@@ -1,15 +1,16 @@
 <?php namespace spec\Pisa\GizmoAPI\Adapters;
 
-use GuzzleHttp\ClientInterface as HttpClient;
-use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
+use Psr\Log\LoggerInterface;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\ClientInterface as HttpClient;
 use Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter;
 
 class GuzzleClientAdapterSpec extends ObjectBehavior
 {
-    public function let(HttpClient $client)
+    public function let(HttpClient $client, LoggerInterface $logger)
     {
-        $this->beConstructedWith($client);
+        $this->beConstructedWith($client, $logger);
     }
 
     public function it_is_initializable(HttpClient $client)
