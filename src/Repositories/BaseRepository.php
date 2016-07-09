@@ -59,6 +59,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
                 }
             } elseif (is_int($value)) {
                 $filter[] = "{$key} eq {$value}";
+            } elseif (is_bool($value)) {
+                $filter[] = "{$key} eq " . ($value ? 'true' : 'false');
             }
         }
         $filter = implode(' or ', $filter);
