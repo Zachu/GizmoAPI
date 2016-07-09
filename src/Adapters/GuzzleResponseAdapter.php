@@ -122,6 +122,11 @@ class GuzzleResponseAdapter implements HttpResponse
         return $this->response->getHeaders();
     }
 
+    public function getHeader($header)
+    {
+        return $this->response->getHeader($header);
+    }
+
     public function getJson()
     {
         $json = json_decode($this->getBody(false), true);

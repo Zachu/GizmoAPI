@@ -66,6 +66,12 @@ interface HttpResponse
     public function getHeaders();
 
     /**
+     * Get single response header
+     * @return  string
+     */
+    public function getHeader($header);
+
+    /**
      * Get the body json and decode it
      * @return mixed     Response
      * @throws Exception on error
