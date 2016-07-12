@@ -121,7 +121,7 @@ class HostSpec extends ObjectBehavior
             ->duringGetProcesses([], true, $limit, $skip);
     }
 
-//
+    //
     // Get a process
     //
 
@@ -161,7 +161,7 @@ class HostSpec extends ObjectBehavior
             ->duringGetProcess($pid);
     }
 
-//
+    //
     // Get processes by name
     //
 
@@ -220,7 +220,7 @@ class HostSpec extends ObjectBehavior
             ->duringGetProcessesByName($pname);
     }
 
-//
+    //
     // Create process
     //
 
@@ -277,7 +277,7 @@ class HostSpec extends ObjectBehavior
             ->duringCreateProcess("FileName.exe");
     }
 
-//
+    //
     // Terminate process
     //
 
@@ -328,7 +328,7 @@ class HostSpec extends ObjectBehavior
             ->duringTerminateProcess("FileName.exe");
     }
 
-//
+    //
     // Get last user login time
     //
 
@@ -362,7 +362,7 @@ class HostSpec extends ObjectBehavior
             ->duringGetLastUserLoginTime();
     }
 
-//
+    //
     // Get last user logout time
     //
 
@@ -395,7 +395,7 @@ class HostSpec extends ObjectBehavior
             ->duringGetLastUserLogoutTime();
     }
 
-//
+    //
     // Logout user
     //
 
@@ -428,7 +428,7 @@ class HostSpec extends ObjectBehavior
             ->duringUserLogout();
     }
 
-//
+    //
     // Notify UI
     //
 
@@ -472,7 +472,7 @@ class HostSpec extends ObjectBehavior
             ->duringUiNotify($message);
     }
 
-//
+    //
     // Set lock state
     //
 
@@ -582,7 +582,7 @@ class HostSpec extends ObjectBehavior
             ->duringSetSecurityState(true);
     }
 
-//
+    //
     // Set order state
     //
 
@@ -637,7 +637,7 @@ class HostSpec extends ObjectBehavior
             ->duringSetOrderState(true);
     }
 
-//
+    //
     // Get free state
     //
 
