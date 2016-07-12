@@ -1,5 +1,6 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
+use Psr\Log\LoggerInterface;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Exceptions\InternalException;
 use Pisa\GizmoAPI\Exceptions\ValidationException;
@@ -46,15 +47,23 @@ abstract class BaseModel implements BaseModelInterface
     /** @ignore */
     protected $validatorFactory;
 
+    /** @ignore  */
+    protected $logger;
+
     /**
      * Make a new model instance
      * @param HttpClient $client     HTTP client
      * @param Validator  $validator  Model validator
      * @param array      $attributes Attributes to initialize
      */
-    public function __construct(HttpClient $client, Validator $validatorFactory, array $attributes = [])
-    {
+    public function __construct(
+        HttpClient $client,
+        Validator $validatorFactory,
+        LoggerInterface $logger,
+        array $attributes = []
+    ) {
         $this->client = $client;
+        $this->logger = $logger;
         $this->load($attributes);
 
         $this->validatorFactory = $validatorFactory;

@@ -1,6 +1,7 @@
 <?php namespace spec\Pisa\GizmoAPI\Models;
 
 use PhpSpec\ObjectBehavior;
+use Psr\Log\LoggerInterface;
 use Pisa\GizmoAPI\Models\BaseModel;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Illuminate\Contracts\Validation\Factory;
@@ -8,10 +9,13 @@ use Illuminate\Contracts\Validation\Validator;
 
 class BaseModelSpec extends ObjectBehavior
 {
-    public function let(HttpClient $client, Factory $factory)
-    {
+    public function let(
+        HttpClient $client,
+        Factory $factory,
+        LoggerInterface $logger
+    ) {
         $this->beAnInstanceOf('spec\Pisa\GizmoAPI\Models\ConcreteModel');
-        $this->beConstructedWith($client, $factory, ['Id' => 1]);
+        $this->beConstructedWith($client, $factory, $logger, ['Id' => 1]);
     }
 
     public function it_is_initializable()
