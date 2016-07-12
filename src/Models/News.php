@@ -27,6 +27,7 @@ class News extends BaseModel implements NewsInterface
         if (!$this->exists()) {
             throw new RequirementException("News doesn't even exist");
         }
+        $this->logger->notice("[News $this] Deleting news");
 
         $response = $this->client->delete('News/Delete', [
             'feedId' => $this->getPrimaryKeyValue(),
@@ -51,6 +52,7 @@ class News extends BaseModel implements NewsInterface
             throw new RequirementException("News already exists. Did you mean update?");
         }
 
+        $this->logger->notice("[News $this] Creating news");
         $response = $this->client->put('News/Add', $this->getAttributes());
         if ($response === null) {
             throw new InternalException("Response failed");
@@ -109,6 +111,7 @@ class News extends BaseModel implements NewsInterface
             throw new RequirementException("News does not exist. Did you mean create?");
         }
 
+        $this->logger->notice("[News $this] Updating news");
         $response = $this->client->post('News/Update', $this->getAttributes());
         if ($response === null) {
             throw new InternalException("Response failed");
