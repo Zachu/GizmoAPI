@@ -75,4 +75,10 @@ interface BaseModelInterface extends Identifiable, Attributable
      * @return void
      */
     public function setRules(array $rules);
+
+    /**
+     * Cast the model to string
+     * @return string
+     */
+    public function __toString();
 }

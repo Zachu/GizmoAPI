@@ -227,4 +227,19 @@ abstract class BaseModel implements BaseModelInterface
      * @return BaseModel Return $this for chaining.
      */
     abstract protected function update();
+
+    public function __toString()
+    {
+        $className = get_class($this);
+        if (($pos = strrpos($className, '\\')) !== false) {
+            $className = substr($className, $pos + 1);
+        }
+
+        return $className
+        . '[' . $this->getPrimaryKey() . '='
+        . $this->getPrimaryKeyValue() . ']';
+    }
+}
+{
+
 }
