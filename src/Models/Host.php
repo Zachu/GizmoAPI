@@ -90,7 +90,7 @@ class Host extends BaseModel implements HostInterface
     /** @{inheritDoc} */
     protected $fillable = [
         'IsSecurityEnabled',
-        'IsOutOfOrder',
+        'IsInOrder',
         'IsLocked',
     ];
 
@@ -111,28 +111,12 @@ class Host extends BaseModel implements HostInterface
         'GroupId',
     ];
 
-    /**
-     * @see $this->defaultParameters for parameters to modify
-     * @return boolean If ShowDialog is set to true, returns true if user clicks ok, false if user clicks cancel.
-     * @return boolean If ShowDialog is set to false, returns true when message is sent.
-     * @throws  Exception on error
-     */
-    public function UINotify($message, $parameters = [])
+    public function __toString()
     {
-        if ($this->exists() === false) {
-            throw new RequirementException('Model does not exist');
+        if ($this->HostName) {
+            return 'Host[' . $this->HostName . ']';
         } else {
-            $response = $this->client->post('Host/UINotify', array_merge($this->defaultNotifyParameters, $parameters, [
-                'hostId'  => $this->getPrimaryKeyValue(),
-                'message' => (string) $message,
-            ]));
-            if ($response === null) {
-                throw new InternalException('Response failed');
-            }
-
-            $response->assertInteger();
-            $response->assertStatusCodes(200);
-            return $response->getBody();
+            return parent::__toString();
         }
     }
 
@@ -142,7 +126,7 @@ class Host extends BaseModel implements HostInterface
      * Example:
      * <code>
      * $this->createProcess(['FileName' => 'C:\Start.bat']);
-     * </code>
+     * f</code>
      *
      * @return int       Returns the process id.
      * @throws Exception on error
@@ -154,6 +138,9 @@ class Host extends BaseModel implements HostInterface
         } elseif (!is_array($startInfo)) {
             throw new InvalidArgumentException("Start info has to be an array. Try giving a FileName parameter for example");
         } else {
+            $this->logger->notice("[HOST $this] Starting process: "
+                . json_encode($startInfo));
+
             $response = $this->client->post('Host/CreateProcess', array_merge(
                 $startInfo,
                 ['hostId' => $this->getPrimaryKeyValue()]
@@ -362,6 +349,9 @@ class Host extends BaseModel implements HostInterface
         } elseif (!is_bool($isLocked)) {
             throw new InvalidArgumentException("Provided lock state isn't boolean");
         } else {
+            $this->logger->info("[HOST $this] Setting lock state "
+                . ($isLocked ? 'on' : 'off'));
+
             $response = $this->client->post('Host/SetLockState', [
                 'hostId' => $this->getPrimaryKeyValue(),
                 'locked' => ($isLocked ? 'true' : 'false'),
@@ -381,16 +371,19 @@ class Host extends BaseModel implements HostInterface
      * @return  void
      * @throws  Exception on error
      */
-    public function setOrderState($isOutOfOrder)
+    public function setOrderState($isInOrder)
     {
         if ($this->exists() === false) {
             throw new RequirementException('Model does not exist');
-        } elseif (!is_bool($isOutOfOrder)) {
+        } elseif (!is_bool($isInOrder)) {
             throw new InvalidArgumentException("Provided order state isn't boolean");
         } else {
+            $this->logger->info("[HOST $this] Setting order state "
+                . ($isInOrder ? 'in order' : 'out of order'));
+
             $response = $this->client->post('Host/SetOrderState', [
                 'hostId'  => $this->getPrimaryKeyValue(),
-                'inOrder' => (!$isOutOfOrder ? 'true' : 'false'),
+                'inOrder' => ($isInOrder ? 'true' : 'false'),
             ]);
             if ($response === null) {
                 throw new InternalException('Response failed');
@@ -399,7 +392,7 @@ class Host extends BaseModel implements HostInterface
             $response->assertEmpty();
             $response->assertStatusCodes(204);
 
-            $this->IsOutOfOrder = $isOutOfOrder;
+            $this->IsInOrder = $isInOrder;
         }
     }
 
@@ -414,6 +407,9 @@ class Host extends BaseModel implements HostInterface
         } elseif (!is_bool($isEnabled)) {
             throw new InvalidArgumentException("Provided security state isn't boolean");
         } else {
+            $this->logger->info("[HOST $this] Setting security state "
+                . ($isEnabled ? 'on' : 'off'));
+
             $response = $this->client->post('Host/SetSecurityState', [
                 'hostId'  => $this->getPrimaryKeyValue(),
                 'enabled' => ($isEnabled ? 'true' : 'false'),
@@ -440,6 +436,9 @@ class Host extends BaseModel implements HostInterface
             throw new InvalidArgumentException('Kill info has to be an array. '
                 . 'Try giving a FileName parameter for example');
         } else {
+            $this->logger->notice("[HOST $this] Terminating processes: "
+                . json_encode($killInfo));
+
             $response = $this->client->post('Host/TerminateProcess', array_merge(
                 $killInfo,
                 ['hostId' => $this->getPrimaryKeyValue()]
@@ -454,6 +453,33 @@ class Host extends BaseModel implements HostInterface
     }
 
     /**
+     * @see $this->defaultParameters for parameters to modify
+     * @return boolean If ShowDialog is set to true, returns true if user clicks ok, false if user clicks cancel.
+     * @return boolean If ShowDialog is set to false, returns true when message is sent.
+     * @throws  Exception on error
+     */
+    public function uiNotify($message, $parameters = [])
+    {
+        if ($this->exists() === false) {
+            throw new RequirementException('Model does not exist');
+        } else {
+            $this->logger->info("[HOST $this] Sending UINotify: $message");
+
+            $response = $this->client->post('Host/UINotify', array_merge($this->defaultNotifyParameters, $parameters, [
+                'hostId'  => $this->getPrimaryKeyValue(),
+                'message' => (string) $message,
+            ]));
+            if ($response === null) {
+                throw new InternalException('Response failed');
+            }
+
+            $response->assertInteger();
+            $response->assertStatusCodes(200);
+            return $response->getBody();
+        }
+    }
+
+    /**
      * {@inheritDoc}
      *
      * {@inheritDoc}
@@ -464,6 +490,8 @@ class Host extends BaseModel implements HostInterface
         if ($this->exists() === false) {
             throw new RequirementException('Model does not exist');
         } else {
+            $this->logger->notice("[HOST $this] Logging user out");
+
             $response = $this->client->post('Host/UserLogout', [
                 'hostId' => $this->getPrimaryKeyValue(),
             ]);
@@ -497,7 +525,7 @@ class Host extends BaseModel implements HostInterface
     protected function update()
     {
         foreach ($this->changed() as $key => $newValue) {
-            if ($key == 'IsOutOfOrder') {
+            if ($key == 'IsInOrder') {
                 $this->setOrderState($newValue);
             } elseif ($key == 'IsSecurityEnabled') {
                 $this->setSecurityState($newValue);

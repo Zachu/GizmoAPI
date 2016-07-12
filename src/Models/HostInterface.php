@@ -3,15 +3,6 @@
 interface HostInterface extends BaseModelInterface
 {
     /**
-     * Send a message dialog to host
-     * @api
-     * @param string $message    Message to be sent
-     * @param array  $parameters Message parameters
-     * @return true on success, false on failure
-     */
-    public function UINotify($message, $parameters = []);
-
-    /**
      * Create a new process
      * @api
      * @param  array $startInfo  Information about starting the process
@@ -95,6 +86,15 @@ interface HostInterface extends BaseModelInterface
      * @return true on success
      */
     public function terminateProcess($killInfo);
+
+    /**
+     * Send a message dialog to host
+     * @api
+     * @param string $message    Message to be sent
+     * @param array  $parameters Message parameters
+     * @return true on success, false on failure
+     */
+    public function uiNotify($message, $parameters = []);
 
     /**
      * Logs user out from the host
