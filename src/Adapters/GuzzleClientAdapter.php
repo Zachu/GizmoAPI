@@ -97,11 +97,12 @@ class GuzzleClientAdapter implements HttpClient
      */
     protected function logRequest($method, $url, $parameters)
     {
-        if (in_array(strtoupper($method), ['GET'])) {
-            $logLevel = LogLevel::DEBUG;
-        } else {
-            $logLevel = LogLevel::INFO;
-        }
+        // if (in_array(strtoupper($method), ['GET'])) {
+        //     $logLevel = LogLevel::DEBUG;
+        // } else {
+        //     $logLevel = LogLevel::INFO;
+        // }
+        $logLevel = LogLevel::DEBUG;
 
         $this->logger->log($logLevel, '[HTTP] Request: '
             . self::makeRequestString($method, $url, $parameters)
@@ -132,6 +133,15 @@ class GuzzleClientAdapter implements HttpClient
             $logLevel = LogLevel::WARNING;
         } else {
             $logLevel = LogLevel::DEBUG;
+        }
+
+        if (isset($context['time'])) {
+            $time = $context['time'];
+            if ($time > 10) {
+                $logLevel = LogLevel::CRITICAL;
+            } elseif ($time > 5) {
+                $logLevel = LogLevel::WARNING;
+            }
         }
 
         $this->logger->log($logLevel, '[HTTP] Response: '
