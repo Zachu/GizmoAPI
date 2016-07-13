@@ -8,7 +8,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     protected $model = 'HostInterface';
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      * @note   $orderBy doesn't work with Id column.
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
@@ -31,7 +31,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      * @note   $criteria or $orderBy doesn't work with Id column.
      */
     public function findBy(
@@ -60,8 +60,8 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
-     * @uses   findBy for searching
+     * @throws \Exception on error.
+     * @uses   \Pisa\GizmoAPI\Repositories\HostRepository::findBy()
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
@@ -74,7 +74,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function get($id)
     {
@@ -95,7 +95,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function getByNumber($hostNumber)
     {
@@ -111,7 +111,7 @@ class HostRepository extends BaseRepository implements HostRepositoryInterface
     }
 
     /**
-     * @uses  get
+     * @uses \Pisa\GizmoAPI\Repositories\HostRepository::get()
      */
     public function has($id)
     {

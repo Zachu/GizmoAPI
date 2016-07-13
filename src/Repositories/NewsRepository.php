@@ -7,8 +7,7 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
     protected $model = 'NewsInterface';
 
     /**
-     * @throws Exception on error
-     * @api
+     * @throws \Exception on error
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -30,8 +29,7 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
-     * @api
+     * @throws \Exception on error
      */
     public function findBy(
         array $criteria,
@@ -62,9 +60,8 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
-     * @uses   findBy This is a wrapper for findBy
-     * @api
+     * @throws \Exception on error
+     * @uses   \Pisa\GizmoAPI\Repositories\NewsRepository::findBy()
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
@@ -78,9 +75,8 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
-     * @uses   findBy This is a wrapper for findOneBy
-     * @api
+     * @throws \Exception on error
+     * @uses   \Pisa\GizmoAPI\Repositories\NewsRepository::findOneBy()
      */
     public function get($id)
     {
@@ -88,9 +84,8 @@ class NewsRepository extends BaseRepository implements NewsRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
-     * @uses   findBy This is a wrapper for get
-     * @api
+     * @throws \Exception on error
+     * @uses   \Pisa\GizmoAPI\Repositories\NewsRepository::get()
      */
     public function has($id)
     {

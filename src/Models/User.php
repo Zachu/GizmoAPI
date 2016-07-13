@@ -37,7 +37,7 @@ class User extends BaseModel implements UserInterface
     ];
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function delete()
     {
@@ -62,7 +62,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function getLoggedInHostId()
     {
@@ -89,7 +89,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function isLoggedIn()
     {
@@ -111,7 +111,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function lastLoginTime()
     {
@@ -133,7 +133,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function lastLogoutTime()
     {
@@ -156,7 +156,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function login(HostInterface $host)
     {
@@ -185,7 +185,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function logout()
     {
@@ -211,7 +211,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function rename(UserRepositoryInterface $repository, $newUserName)
     {
@@ -280,7 +280,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function setEmail(UserRepositoryInterface $repository, $newEmail)
     {
@@ -307,7 +307,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function setPassword($newPassword)
     {
@@ -330,7 +330,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function setUserGroup($groupId)
     {

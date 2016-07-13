@@ -6,16 +6,16 @@ use Pisa\GizmoAPI\Exceptions\UnexpectedResponseException;
 
 class GuzzleResponseAdapter implements HttpResponse
 {
+    /** @var Response */
     protected $response;
 
+    /**
+     * Create a new Http Response
+     * @param Response $response The real underlying Guzzle Response
+     */
     public function __construct(Response $response)
     {
         $this->response = $response;
-    }
-
-    public function __toString()
-    {
-        return $this->getString();
     }
 
     public function assertArray()
@@ -117,14 +117,14 @@ class GuzzleResponseAdapter implements HttpResponse
         }
     }
 
-    public function getHeaders()
-    {
-        return $this->response->getHeaders();
-    }
-
     public function getHeader($header)
     {
         return $this->response->getHeader($header);
+    }
+
+    public function getHeaders()
+    {
+        return $this->response->getHeaders();
     }
 
     public function getJson()

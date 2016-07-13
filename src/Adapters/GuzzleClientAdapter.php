@@ -8,13 +8,16 @@ use Pisa\GizmoAPI\Adapters\GuzzleResponseAdapter as HttpResponse;
 
 class GuzzleClientAdapter implements HttpClient
 {
-    /** @internal */
+    /** @var ClientInterface */
     protected $client;
+
+    /** @var LoggerInterface */
     protected $logger;
 
     /**
      * Create a new response
-     * @param ClientInterface $client
+     * @param ClientInterface $client Guzzle HTTP client
+     * @param Loggerinterface $logger PSR-3 Logger Interface
      */
     public function __construct(ClientInterface $client, LoggerInterface $logger)
     {
@@ -23,7 +26,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses $this->request() This is a wrapper for request()
+     * @uses \Pisa\GizmoAPI\Adapters\GuzzleClientAdapter::request()
      */
     public function delete($url, array $parameters = [], array $options = [])
     {
@@ -31,7 +34,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses $this->request() This is a wrapper for request()
+     * @uses \Pisa\GizmoAPI\Adapters\GuzzleClientAdapter::request()
      */
     public function get($url, array $parameters = [], array $options = [])
     {
@@ -39,7 +42,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses $this->request() This is a wrapper for request()
+     * @uses \Pisa\GizmoAPI\Adapters\GuzzleClientAdapter::request()
      */
     public function post($url, array $parameters = [], array $options = [])
     {
@@ -47,7 +50,7 @@ class GuzzleClientAdapter implements HttpClient
     }
 
     /**
-     * @uses $this->request() This is a wrapper for request()
+     * @uses \Pisa\GizmoAPI\Adapters\GuzzleClientAdapter::request()
      */
     public function put($url, array $parameters = [], array $options = [])
     {
@@ -170,13 +173,13 @@ class GuzzleClientAdapter implements HttpClient
         return $string;
     }
 
-/**
- * Converts URL parameters boolean and null parameters to string representations.
- * @param  array  $parameters URL parameters
- * @return array
- *
- * @internal
- */
+    /**
+     * Converts URL parameters boolean and null parameters to string representations.
+     * @param  array  $parameters URL parameters
+     * @return array
+     *
+     * @internal
+     */
     private function fixParameters(array $parameters = [])
     {
         foreach ($parameters as $key => $param) {

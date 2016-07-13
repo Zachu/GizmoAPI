@@ -19,8 +19,7 @@ class News extends BaseModel implements NewsInterface
     ];
 
     /**
-     * @throws Exception on error
-     * @api
+     * @throws \Exception on error
      */
     public function delete()
     {
@@ -44,7 +43,7 @@ class News extends BaseModel implements NewsInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     protected function create()
     {
@@ -103,7 +102,7 @@ class News extends BaseModel implements NewsInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     protected function update()
     {

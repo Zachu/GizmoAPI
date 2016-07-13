@@ -129,7 +129,7 @@ class Host extends BaseModel implements HostInterface
      * f</code>
      *
      * @return int       Returns the process id.
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function createProcess($startInfo)
     {
@@ -159,7 +159,7 @@ class Host extends BaseModel implements HostInterface
     /**
      * This method cannot be used. Host is deleted via the server service
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function delete()
     {
@@ -509,7 +509,7 @@ class Host extends BaseModel implements HostInterface
     /**
      * This method cannot be used. Host is created by connecting new host client to the server service
      * @internal Use $this->save() for really create a host.
-     * @throws Exception
+     * @throws \Exception
      */
     protected function create()
     {

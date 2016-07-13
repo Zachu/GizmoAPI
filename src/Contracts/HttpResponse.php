@@ -5,28 +5,28 @@ interface HttpResponse
     /**
      * Check that http response body was an array.
      * @return void
-     * @throws Exception if the body was unexpected
+     * @throws \Pisa\GizmoAPI\Exceptions\UnexpectedResponseException if the response body was unexpected
      */
     public function assertArray();
 
     /**
      * Check that http response body was a boolean.
      * @return void
-     * @throws Exception if the body was unexpected
+     * @throws \Pisa\GizmoAPI\Exceptions\UnexpectedResponseException if the response body was unexpected
      */
     public function assertBoolean();
 
     /**
      * Check that http response body was empty.
      * @return void
-     * @throws Exception if the body was unexpected
+     * @throws \Pisa\GizmoAPI\Exceptions\UnexpectedResponseException if the response body was unexpected
      */
     public function assertEmpty();
 
     /**
      * Check that http response body was an integer.
      * @return void
-     * @throws Exception if the body was unexpected
+     * @throws \Pisa\GizmoAPI\Exceptions\UnexpectedResponseException if the response body was unexpected
      */
     public function assertInteger();
 
@@ -34,21 +34,21 @@ interface HttpResponse
      * Check that http response status codes match the codes we are expecting for.
      * @param  int|array $statusCodes Array of status codes to be expected. Can be a single status code too.
      * @return void
-     * @throws Exception if the status code was unexpected
+     * @throws \Pisa\GizmoAPI\Exceptions\UnexpectedResponseException if the status code was unexpected
      */
     public function assertStatusCodes($statusCodes = []);
 
     /**
      * Check that http response body was string.
      * @return void
-     * @throws Exception if the body was unexpected
+     * @throws \Pisa\GizmoAPI\Exceptions\UnexpectedResponseException if the response body was unexpected
      */
     public function assertString();
 
     /**
      * Check that http response body is a time
      * @return void
-     * @throws Exception if the body was unexpected
+     * @throws \Pisa\GizmoAPI\Exceptions\UnexpectedResponseException if the response body was unexpected
      */
     public function assertTime();
 
@@ -60,21 +60,21 @@ interface HttpResponse
     public function getBody($autodetect = true);
 
     /**
+     * Get single response header
+     * @param   $header Header key
+     * @return  string
+     */
+    public function getHeader($header);
+
+    /**
      * Get the response headers
      * @return array
      */
     public function getHeaders();
 
     /**
-     * Get single response header
-     * @return  string
-     */
-    public function getHeader($header);
-
-    /**
      * Get the body json and decode it
      * @return mixed     Response
-     * @throws Exception on error
      */
     public function getJson();
 
