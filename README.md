@@ -1,6 +1,5 @@
-[![Build Status](https://travis-ci.org/Zachu/GizmoAPI.svg?branch=master)](https://travis-ci.org/Zachu/GizmoAPI)
 
-# GizmoAPI
+# GizmoAPI [![Build Status](https://travis-ci.org/Zachu/GizmoAPI.svg?branch=master)](https://travis-ci.org/Zachu/GizmoAPI)
 [Gizmo Application Management Platform](http://www.gizmopowered.net) API wrapper for PHP.
 
 ## Installation
