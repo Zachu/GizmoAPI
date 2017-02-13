@@ -37,7 +37,7 @@ class User extends BaseModel implements UserInterface
     ];
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function delete()
     {
@@ -47,6 +47,7 @@ class User extends BaseModel implements UserInterface
             $this->logout();
         }
 
+        $this->logger->notice("[User $this] Deleting user");
         $response = $this->client->delete("Users/Delete", [
             'userId' => $this->getPrimaryKeyValue(),
         ]);
@@ -61,7 +62,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function getLoggedInHostId()
     {
@@ -88,7 +89,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function isLoggedIn()
     {
@@ -110,7 +111,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function lastLoginTime()
     {
@@ -132,7 +133,7 @@ class User extends BaseModel implements UserInterface
     }
 
     /**
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function lastLogoutTime()
     {
@@ -155,7 +156,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function login(HostInterface $host)
     {
@@ -169,6 +170,7 @@ class User extends BaseModel implements UserInterface
             throw new RequirementException("Someone is already logged in to that host");
         }
 
+        $this->logger->notice("[User $this] Logging user in to $host");
         $response = $this->client->post('Users/UserLogin', [
             'userId' => $this->getPrimaryKeyValue(),
             'hostId' => $host->getPrimaryKeyValue(),
@@ -183,7 +185,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function logout()
     {
@@ -195,6 +197,7 @@ class User extends BaseModel implements UserInterface
             throw new RequirementException("User is not logged in anywhere");
         }
 
+        $this->logger->notice("[User $this] Logging user out");
         $response = $this->client->post('Users/UserLogout', [
             'userId' => $this->getPrimaryKeyValue(),
         ]);
@@ -208,7 +211,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function rename(UserRepositoryInterface $repository, $newUserName)
     {
@@ -218,6 +221,7 @@ class User extends BaseModel implements UserInterface
             throw new ValidationException("$newUserName already exists");
         }
 
+        $this->logger->info("[User $this] Renaming to $newUserName");
         $response = $this->client->post('Users/Rename', [
             'userId'      => $this->getPrimaryKeyValue(),
             'newUserName' => $newUserName,
@@ -276,7 +280,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function setEmail(UserRepositoryInterface $repository, $newEmail)
     {
@@ -286,6 +290,7 @@ class User extends BaseModel implements UserInterface
             throw new ValidationException("$newEmail is already registered");
         }
 
+        $this->logger->info("[User $this] Changing email to $newEmail");
         $response = $this->client->post('Users/SetUserEmail', [
             'userId'   => $this->getPrimaryKeyValue(),
             'newEmail' => $newEmail,
@@ -302,7 +307,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function setPassword($newPassword)
     {
@@ -310,6 +315,7 @@ class User extends BaseModel implements UserInterface
             throw new RequirementException("User doesn't exist");
         }
 
+        $this->logger->info("[User $this] Changing password");
         $response = $this->client->post('Users/SetUserPassword', [
             'userId'      => $this->getPrimaryKeyValue(),
             'newPassword' => $newPassword,
@@ -324,7 +330,7 @@ class User extends BaseModel implements UserInterface
 
     /**
      * @return  void
-     * @throws  Exception on error
+     * @throws  \Exception on error
      */
     public function setUserGroup($groupId)
     {
@@ -334,6 +340,7 @@ class User extends BaseModel implements UserInterface
 
         $groupId = (int) $groupId;
 
+        $this->logger->info("[User $this] Changing user group to $groupId");
         $response = $this->client->post('Users/SetUserGroup', [
             'userId'       => $this->getPrimaryKeyValue(),
             'newUserGroup' => $groupId,
@@ -359,6 +366,7 @@ class User extends BaseModel implements UserInterface
         if ($this->exists()) {
             throw new RequirementException("User already exist. Maybe try update?");
         } else {
+            $this->logger->notice("[User $this] Creating a new user");
             $response = $this->client->post("Users/Create", $this->getAttributes());
             if ($response === null) {
                 throw new InternalException("Response failed");
@@ -497,4 +505,14 @@ class User extends BaseModel implements UserInterface
             return $this;
         }
     }
+
+    public function __toString()
+    {
+        if ($this->UserName) {
+            return 'User[' . $this->UserName . ']';
+        } else {
+            return parent::__toString();
+        }
+    }
+
 }

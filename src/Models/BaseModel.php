@@ -1,5 +1,6 @@
 <?php namespace Pisa\GizmoAPI\Models;
 
+use Psr\Log\LoggerInterface;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Exceptions\InternalException;
 use Pisa\GizmoAPI\Exceptions\ValidationException;
@@ -27,6 +28,9 @@ abstract class BaseModel implements BaseModelInterface
      */
     protected $guarded = [];
 
+    /** @ignore  */
+    protected $logger;
+
     /**
      * Rules to validate the model instance by
      * @var array
@@ -52,27 +56,33 @@ abstract class BaseModel implements BaseModelInterface
      * @param Validator  $validator  Model validator
      * @param array      $attributes Attributes to initialize
      */
-    public function __construct(HttpClient $client, Validator $validatorFactory, array $attributes = [])
-    {
+    public function __construct(
+        HttpClient $client,
+        Validator $validatorFactory,
+        LoggerInterface $logger,
+        array $attributes = []
+    ) {
         $this->client = $client;
+        $this->logger = $logger;
         $this->load($attributes);
 
         $this->validatorFactory = $validatorFactory;
     }
 
-    /**
-     * Delete the model instance
-     * @return BaseModel Return $this for chaining.
-     */
+    public function __toString()
+    {
+        $className = get_class($this);
+        if (($pos = strrpos($className, '\\')) !== false) {
+            $className = substr($className, $pos + 1);
+        }
+
+        return $className
+        . '[' . $this->getPrimaryKey() . '='
+        . $this->getPrimaryKeyValue() . ']';
+    }
+
     abstract public function delete();
 
-    /**
-     * Check if model exists.
-     *
-     * Checks that the primary key is set and is not empty.
-     *
-     * @return boolean
-     */
     public function exists()
     {
         return (isset($this->{$this->primaryKey}) && $this->{$this->primaryKey});
@@ -93,11 +103,6 @@ abstract class BaseModel implements BaseModelInterface
     {
         $this->validate();
         return $this->validator;
-    }
-
-    public function getValidatorFactory()
-    {
-        return $this->validatorFactory;
     }
 
     /**
@@ -151,7 +156,7 @@ abstract class BaseModel implements BaseModelInterface
 
     public function validate()
     {
-        $this->validator = $this->getValidatorFactory()->make($this->getAttributes(), $this->rules);
+        $this->validator = $this->validatorFactory->make($this->getAttributes(), $this->rules);
         if (!$this->validator instanceof \Illuminate\Contracts\Validation\Validator) {
             throw new InternalException("Validator factory failed to make validator");
         }
@@ -227,4 +232,7 @@ abstract class BaseModel implements BaseModelInterface
      * @return BaseModel Return $this for chaining.
      */
     abstract protected function update();
+}
+{
+
 }

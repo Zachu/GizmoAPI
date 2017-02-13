@@ -6,9 +6,14 @@ use Pisa\GizmoAPI\Contracts\Identifiable;
 interface BaseModelInterface extends Identifiable, Attributable
 {
     /**
+     * Cast the model to string
+     * @return string
+     */
+    public function __toString();
+
+    /**
      * Delete the model
      * @return BaseModel Return $this for chaining.
-     * @throws Exception on error.
      */
     public function delete();
 
@@ -65,7 +70,6 @@ interface BaseModelInterface extends Identifiable, Attributable
     /**
      * Create or update the model
      * @return BaseModel Return $this for chaining
-     * @throws Exception on error.
      */
     public function save();
 
@@ -75,4 +79,10 @@ interface BaseModelInterface extends Identifiable, Attributable
      * @return void
      */
     public function setRules(array $rules);
+
+    /**
+     * Runs validations for the model
+     * @return boolean Return true if something fails, false otherwise
+     */
+    public function validate();
 }

@@ -6,15 +6,19 @@ use Pisa\GizmoAPI\Exceptions\NotImplementedException;
 
 class SessionRepository extends BaseRepository implements SessionRepositoryInterface
 {
+    /** @var HttpClient */
     protected $client;
 
+    /**
+     * @param HttpClient $client Implemention of http client
+     */
     public function __construct(HttpClient $client)
     {
         $this->client = $client;
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -35,10 +39,15 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
-    public function findActiveBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
-    {
+    public function findActiveBy(
+        array $criteria,
+        $caseSensitive = false,
+        $limit = 30,
+        $skip = 0,
+        $orderBy = null
+    ) {
         // Gather filtering info to options
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
@@ -58,10 +67,15 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
-    public function findActiveInfosBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
-    {
+    public function findActiveInfosBy(
+        array $criteria,
+        $caseSensitive = false,
+        $limit = 30,
+        $skip = 0,
+        $orderBy = null
+    ) {
         // Gather filtering info to options
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
@@ -81,10 +95,15 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
-    public function findBy(array $criteria, $caseSensitive = false, $limit = 30, $skip = 0, $orderBy = null)
-    {
+    public function findBy(
+        array $criteria,
+        $caseSensitive = false,
+        $limit = 30,
+        $skip = 0,
+        $orderBy = null
+    ) {
         // Gather filtering info to options
         $filter  = $this->criteriaToFilter($criteria, $caseSensitive);
         $options = ['$filter' => $filter, '$skip' => $skip, '$top' => $limit];
@@ -103,8 +122,8 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
-     * @uses   findActiveBy This is a wrapper for findActiveBy
+     * @throws \Exception on error
+     * @uses   \Pisa\GizmoAPI\Repositories\SessionRepository::findActiveBy()
      */
     public function findOneActiveBy(array $criteria, $caseSensitive = false)
     {
@@ -117,8 +136,8 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
-     * @uses findActiveInfosBy This is a wrapper for findActiveInfosBy
+     * @throws \Exception on error
+     * @uses \Pisa\GizmoAPI\Repositories\SessionRepository::findActiveInfosBy()
      */
     public function findOneActiveInfosBy(array $criteria, $caseSensitive = false)
     {
@@ -131,8 +150,8 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
-     * @uses   findBy This is a wrapper for findBy
+     * @throws \Exception on error
+     * @uses   \Pisa\GizmoAPI\Repositories\SessionRepository::findBy()
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
@@ -145,8 +164,8 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
-     * @uses   findOneBy This is a wrapper for findOneBy
+     * @throws \Exception on error
+     * @uses   \Pisa\GizmoAPI\Repositories\SessionRepository::findOneBy()
      */
     public function get($id)
     {
@@ -154,7 +173,7 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getActive($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -175,7 +194,7 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getActiveInfos($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -197,9 +216,8 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception on error
-     * @uses   findBy This is a wrapper for get
-     * @api
+     * @throws \Exception on error
+     * @uses   \Pisa\GizmoAPI\Repositories\SessionRepository::get()
      */
     public function has($id)
     {
@@ -207,7 +225,7 @@ class SessionRepository extends BaseRepository implements SessionRepositoryInter
     }
 
     /**
-     * @throws Exception always. You can't make up an session.
+     * @throws \Exception always. You can't make up an session.
      */
     public function make(array $attributes)
     {

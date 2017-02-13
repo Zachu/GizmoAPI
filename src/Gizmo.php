@@ -1,5 +1,7 @@
 <?php namespace Pisa\GizmoAPI;
 
+use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 use Pisa\GizmoAPI\Contracts\Container;
 use Pisa\GizmoAPI\Exceptions\InternalException;
 use Pisa\GizmoAPI\Adapters\IlluminateContainerAdapter;
@@ -10,12 +12,18 @@ use Pisa\GizmoAPI\Repositories\UserRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\ServiceRepositoryInterface;
 use Pisa\GizmoAPI\Repositories\SessionRepositoryInterface;
 
+/**
+ * Gizmo Application Management Platforms API wrapper for PHP
+ */
 class Gizmo
 {
+    /** @var array */
     protected $config;
 
+    /** @var Container */
     protected $ioc;
 
+    /** @var array Resolved repositories */
     protected $repositories = [
         'users'    => null,
         'hosts'    => null,
@@ -24,6 +32,11 @@ class Gizmo
         'service'  => null,
     ];
 
+    /**
+     * Construct a GizmoAPI object
+     * @param array          $config
+     * @param Container|null $ioc    If no container is given, one is created automatically.
+     */
     public function __construct(array $config = [], Container $ioc = null)
     {
         $this->config = array_merge([
@@ -31,6 +44,7 @@ class Gizmo
             'user.rules' => [],
             'host.rules' => [],
             'news.rules' => [],
+            'logger'     => new NullLogger,
         ], $config);
 
         if ($ioc === null) {
@@ -41,6 +55,12 @@ class Gizmo
         $this->bootstrap();
     }
 
+    /**
+     * Get a repository
+     * @param  string $name Name of the repository
+     * @return \Pisa\GizmoAPI\Repositories\BaseRepositoryInterface|ServiceRepositoryInterface
+     * @uses   \Pisa\GizmoAPI\Gizmo::getRepository()
+     */
     public function __get($name)
     {
         if ($this->hasRepository($name)) {
@@ -50,6 +70,11 @@ class Gizmo
         }
     }
 
+    /**
+     * Gets a single config value
+     * @param  string $name
+     * @return mixed
+     */
     public function getConfig($name = null)
     {
         if ($name === null) {
@@ -61,6 +86,13 @@ class Gizmo
         }
     }
 
+    /**
+     * Gets a repository. Initializes one if it's not yet initialized
+     * @param  string $name Name of the repository
+     * @return \Pisa\GizmoAPI\Repositories\BaseRepositoryInterface|ServiceRepositoryInterface
+     * @throws \Pisa\GizmoAPI\Exceptions\InternalException on errors in initialization
+     * @throws \Pisa\GizmoAPI\Exceptions\InvalidArgumentException when asked repository is not found
+     */
     public function getRepository($name)
     {
         if ($this->hasRepository($name) && $this->repositoryInitialized($name)) {
@@ -80,16 +112,32 @@ class Gizmo
         }
     }
 
+    /**
+     * Checks if such repository should exist
+     * @param  string $name Name of the repository
+     * @return boolean
+     */
     public function hasRepository($name)
     {
         return array_key_exists($name, $this->repositories);
     }
 
+    /**
+     * Sets a config parameter
+     * @param string $name
+     * @param mixed  $value
+     */
     public function setConfig($name, $value = null)
     {
         $this->config[$name] = $value;
     }
 
+    /**
+     * Initializes a repository and stores it in $this->repositories
+     * @param  string $name Name of the repository
+     * @return boolean      true if initializion succeeded, false otherwise
+     * @internal
+     */
     protected function initializeRepository($name)
     {
         $repository = null;
@@ -119,11 +167,23 @@ class Gizmo
         }
     }
 
+    /**
+     * Check if repository has been initialized yet
+     * @param  string $name Name of the repository
+     * @return boolean
+     */
     protected function repositoryInitialized($name)
     {
         return ($this->hasRepository($name) && is_object($this->repositories[$name]));
     }
 
+    /**
+     * Bootstrap
+     *
+     * Bind concrete implementations to interfaces, initialize them with correct configs etc.
+     * @return void
+     * @internal
+     */
     private function bootstrap()
     {
         $this->ioc->singleton(\Pisa\GizmoAPI\Contracts\Container::class, function ($c) {
@@ -193,6 +253,15 @@ class Gizmo
         );
         $this->ioc->bind(\Symfony\Component\Translation\TranslatorInterface::class, function ($c) {
             return new \Symfony\Component\Translation\Translator('en');
+        });
+
+        $this->ioc->bind(\Psr\Log\LoggerInterface::class, function ($c) {
+            if (!$this->getConfig('logger') instanceof LoggerInterface) {
+                throw new InvalidArgumentException($this->getConfig('logger')
+                    . " doesn't seem to be compatible with \Psr\Log\LoggerInterface");
+            }
+
+            return $this->getConfig('logger');
         });
     }
 }

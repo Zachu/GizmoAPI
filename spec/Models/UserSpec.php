@@ -2,6 +2,7 @@
 
 use Prophecy\Argument;
 use PhpSpec\ObjectBehavior;
+use Psr\Log\LoggerInterface;
 use spec\Pisa\GizmoAPI\Helper;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Pisa\GizmoAPI\Models\HostInterface;
@@ -13,10 +14,14 @@ class UserSpec extends ObjectBehavior
 {
     protected static $user;
 
-    public function let(HttpClient $client, Factory $factory, Validator $validator)
-    {
+    public function let(
+        HttpClient $client,
+        Factory $factory,
+        Validator $validator,
+        LoggerInterface $logger
+    ) {
         self::$user = Helper::fakeUser();
-        $this->beConstructedWith($client, $factory, self::$user);
+        $this->beConstructedWith($client, $factory, $logger, self::$user);
         $factory->make(Argument::any(), Argument::any())->willReturn($validator);
         $validator->fails()->willReturn(false);
     }
@@ -82,9 +87,10 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_delete_if_model_doesnt_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser([
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
             'Id' => null,
         ]));
 
@@ -98,9 +104,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_create_new_user_on_save(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
 
         $client->post('Users/Create', $this->getAttributes())
             ->shouldBeCalled()->willReturn(Helper::noContentResponse());
@@ -110,9 +119,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_create_if_got_unexpected_response(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
 
         $client->post('Users/Create', $this->getAttributes())
             ->shouldBeCalled()->willReturn(Helper::trueResponse());
@@ -218,9 +230,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_get_logged_in_host_id_if_model_doesnt_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
             ->duringGetLoggedInHostId();
@@ -256,9 +271,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_is_logged_in_if_model_doesnt_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
             ->duringIsLoggedIn();
@@ -289,9 +307,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_get_last_login_time_if_model_does_not_exists(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
             ->duringLastLoginTime();
@@ -322,9 +343,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_get_last_logout_time_if_model_does_not_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
             ->duringLastLogoutTime();
@@ -338,6 +362,8 @@ class UserSpec extends ObjectBehavior
         HttpClient $client,
         HostInterface $host
     ) {
+        $host->__toString()->willReturn('');
+
         $host->isFree()->shouldBeCalled()->willReturn(true);
         $host->getPrimaryKeyValue()->shouldBeCalled()->willReturn(1);
         $client->get('Users/GetLoginState', [
@@ -385,9 +411,13 @@ class UserSpec extends ObjectBehavior
     public function it_should_throw_on_login_if_model_doesnt_exist(
         HttpClient $client,
         HostInterface $host,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
+
         $host->isFree()->willReturn(true);
         $host->getPrimaryKeyValue()->willReturn(1);
 
@@ -437,9 +467,12 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_logout_if_model_doesnt_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
             ->duringLogout();
@@ -497,10 +530,13 @@ class UserSpec extends ObjectBehavior
     public function it_should_throw_on_rename_if_model_doesnt_exist(
         HttpClient $client,
         UserRepositoryInterface $repository,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
         $newUserName = 'NewName';
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
             ->duringRename($repository, $newUserName);
@@ -558,9 +594,12 @@ class UserSpec extends ObjectBehavior
     public function it_should_throw_on_set_email_if_model_doesnt_exist(
         HttpClient $client,
         UserRepositoryInterface $repository,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
         $newEmail = 'test@example.com';
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
@@ -585,9 +624,13 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_set_password_if_model_doesnt_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeUser(['Id' => null]));
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeUser([
+            'Id' => null,
+        ]));
+
         $newPassword = 'newPassword';
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')
@@ -636,10 +679,11 @@ class UserSpec extends ObjectBehavior
 
     public function it_should_throw_on_set_user_group_if_model_doesnt_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
         $fakeUser = Helper::fakeUser(['Id' => null]);
-        $this->beConstructedWith($client, $factory, $fakeUser);
+        $this->beConstructedWith($client, $factory, $logger, $fakeUser);
         $newUserGroup = $this->getAttribute('GroupId')->getWrappedObject() + 1;
 
         $this->shouldThrow('\Pisa\GizmoAPI\Exceptions\RequirementException')

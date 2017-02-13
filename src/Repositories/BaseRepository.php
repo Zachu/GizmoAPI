@@ -7,10 +7,10 @@ use Pisa\GizmoAPI\Models\BaseModelInterface as BaseModel;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
-    /** @ignore */
+    /** @var HttpClient */
     protected $client;
 
-    /** @ignore */
+    /** @var Container */
     protected $ioc;
 
     /**
@@ -25,6 +25,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     protected $modelNamespace = 'Pisa\\GizmoAPI\\Models\\';
 
+    /**
+     * @param Container  $ioc    Implementation of the ioc container
+     * @param HttpClient $client Implemention of http client
+     */
     public function __construct(Container $ioc, HttpClient $client)
     {
         $this->client = $client;
@@ -38,14 +42,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     abstract public function all($limit = 30, $skip = 0, $orderBy = null);
 
-    /**
-     * Turn array of criteria into an OData filter
-     *
-     * @param  array   $criteria      Array of criteria
-     * @param  boolean $caseSensitive Is the search supposed to be case sensitive. Defaults to false.
-     * @return string                 Returns string to be put on the OData $filter
-     * @internal
-     */
     public static function criteriaToFilter(array $criteria, $caseSensitive = false)
     {
         $filter = [];
@@ -59,6 +55,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
                 }
             } elseif (is_int($value)) {
                 $filter[] = "{$key} eq {$value}";
+            } elseif (is_bool($value)) {
+                $filter[] = "{$key} eq " . ($value ? 'true' : 'false');
             }
         }
         $filter = implode(' or ', $filter);
@@ -91,7 +89,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
     abstract public function has($id);
 
     /**
-     * @uses \Pisa\GizmoAPI\Models\BaseModel->load()  For inputting the attributes
+     * @uses \Pisa\GizmoAPI\Models\BaseModel::load()  For inputting the attributes
      */
     public function make(array $attributes)
     {
@@ -108,7 +106,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * Makes multiple model entries
      * @param  array  $data Array of attributes
      * @return array        Array of made models
-     * @uses   $this->make  for making a single instance
+     * @uses   \Pisa\GizmoAPI\Models\BaseModel::make()
      */
     protected function makeArray(array $data)
     {

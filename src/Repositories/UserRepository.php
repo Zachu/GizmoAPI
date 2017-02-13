@@ -8,7 +8,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     protected $model = 'UserInterface';
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function all($limit = 30, $skip = 0, $orderBy = null)
     {
@@ -30,7 +30,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function findBy(
         array $criteria,
@@ -58,8 +58,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
-     * @uses  findBy     This is a wrapper for findBy
+     * @throws \Exception on error.
+     * @uses   \Pisa\GizmoAPI\Repositories\UserRepository::findBy()
      */
     public function findOneBy(array $criteria, $caseSensitive = false)
     {
@@ -72,8 +72,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
-     * @uses   findOneBy This is a wrapper for findOneBy
+     * @throws \Exception on error.
+     * @uses   \Pisa\GizmoAPI\Repositories\UserRepository::findOneBy()
      */
     public function get($id)
     {
@@ -81,7 +81,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function has($id)
     {
@@ -97,7 +97,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function hasLoginName($loginName)
     {
@@ -113,7 +113,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function hasUserEmail($userEmail)
     {
@@ -129,7 +129,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws Exception on error.
+     * @throws \Exception on error.
      */
     public function hasUserName($userName)
     {

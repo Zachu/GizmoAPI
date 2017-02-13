@@ -2,6 +2,10 @@
 
 abstract class AbstractAttributable implements Attributable
 {
+    /**
+     * Attributes as a KeyValue array.
+     * @var array
+     */
     protected $attributes = [];
 
     /** @ignore */

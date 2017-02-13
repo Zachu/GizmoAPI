@@ -2,6 +2,7 @@
 
 use Prophecy\Argument;
 use PhpSpec\ObjectBehavior;
+use Psr\Log\LoggerInterface;
 use spec\Pisa\GizmoAPI\Helper;
 use Pisa\GizmoAPI\Contracts\HttpClient;
 use Illuminate\Contracts\Validation\Factory;
@@ -9,9 +10,13 @@ use Illuminate\Contracts\Validation\Validator;
 
 class NewsSpec extends ObjectBehavior
 {
-    public function Let(HttpClient $client, Factory $factory, Validator $validator)
-    {
-        $this->beConstructedWith($client, $factory, Helper::fakeNews());
+    public function let(
+        HttpClient $client,
+        Factory $factory,
+        Validator $validator,
+        LoggerInterface $logger
+    ) {
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeNews());
         $factory->make(Argument::any(), Argument::any())->willReturn($validator);
         $validator->fails()->willReturn(false);
     }
@@ -21,9 +26,12 @@ class NewsSpec extends ObjectBehavior
         $this->shouldHaveType('Pisa\GizmoAPI\Models\News');
     }
 
-    public function it_should_create_news(HttpClient $client, Factory $factory)
-    {
-        $this->beConstructedWith($client, $factory, Helper::fakeNews([
+    public function it_should_create_news(
+        HttpClient $client,
+        Factory $factory,
+        LoggerInterface $logger
+    ) {
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeNews([
             'Id'   => null,
             'Date' => null,
         ]));
@@ -36,9 +44,10 @@ class NewsSpec extends ObjectBehavior
 
     public function it_should_throw_on_create_if_got_unexpected_response(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeNews([
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeNews([
             'Id'   => null,
             'Date' => null,
         ]));
@@ -92,9 +101,10 @@ class NewsSpec extends ObjectBehavior
 
     public function it_should_throw_on_delete_if_news_doesnt_exist(
         HttpClient $client,
-        Factory $factory
+        Factory $factory,
+        LoggerInterface $logger
     ) {
-        $this->beConstructedWith($client, $factory, Helper::fakeNews([
+        $this->beConstructedWith($client, $factory, $logger, Helper::fakeNews([
             'Id'   => null,
             'Date' => null,
         ]));

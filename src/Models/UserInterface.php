@@ -31,13 +31,11 @@ interface UserInterface extends BaseModelInterface
     /**
      * Log user in to a host
      * @param  Pisa\GizmoAPI\Models\HostInterface $host Host to log in
-     * @throws Exception on error
      */
     public function login(HostInterface $host);
 
     /**
      * Log user out from a host
-     * @throws Exception on error
      */
     public function logout();
 
@@ -45,14 +43,12 @@ interface UserInterface extends BaseModelInterface
      * Renames a user
      * @param  Pisa\GizmoAPI\Repositories\UserRepositoryInterface $repository User repository to check whether the new username is available
      * @param  string                                             $newUserName New username
-     * @throws Exception                                          on error
      */
     public function rename(UserRepositoryInterface $repository, $newUserName);
 
     /**
      * Resets the user password so that it will be prompted on next login
      * @return void
-     * @throws Exception on error
      */
     public function resetPassword();
 
@@ -60,14 +56,12 @@ interface UserInterface extends BaseModelInterface
      * Change the user email
      * @param  Pisa\GizmoAPI\Repositories\UserRepositoryInterface $repository User repository to check whether the new email is available
      * @param  string                                             $newEmail   New email
-     * @throws Exception                                          on error
      */
     public function setEmail(UserRepositoryInterface $repository, $newEmail);
 
     /**
      * Set new password for the user
      * @param  string $newPassword New password
-     * @throws Exception on error
      */
     public function setPassword($newPassword);
 
@@ -75,7 +69,6 @@ interface UserInterface extends BaseModelInterface
      * Set user to a new user group
      * @param  integer $groupId New group id
      * @return true on success
-     * @throws Exception on error
      */
     public function setUserGroup($groupId);
 }

@@ -5,15 +5,19 @@ use Pisa\GizmoAPI\Exceptions\InternalException;
 
 class ServiceRepository implements ServiceRepositoryInterface
 {
+    /** @var HttpClient */
     protected $client;
 
+    /**
+     * @param HttpClient $client Implemention of http client
+     */
     public function __construct(HttpClient $client)
     {
         $this->client = $client;
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getHardwareId()
     {
@@ -29,7 +33,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getLicense()
     {
@@ -45,7 +49,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getModule()
     {
@@ -61,7 +65,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getSettings()
     {
@@ -77,7 +81,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getStatus()
     {
@@ -93,7 +97,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getTime()
     {
@@ -108,7 +112,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function getVersion()
     {
@@ -124,7 +128,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function restart()
     {
@@ -141,7 +145,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
-     * @throws Exception on error
+     * @throws \Exception on error
      */
     public function stop()
     {
